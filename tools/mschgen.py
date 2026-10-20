@@ -16,7 +16,7 @@ zlib stream:  uint8 version | int32 len | bytes | int32 links | links*(UTF, int1
 Usage
 -----
   # processor code from a file, link named dome1
-  python tools/mschgen.py logic.mlog -o out.msch --name "无线超" \\
+  python tools/mschgen.py logic.mlog -o out.msch --name "示例逻辑" \\
         --block world-processor --at 0,0 --link dome1@4,4
 
   # short code straight on the command line

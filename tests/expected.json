@@ -320,6 +320,50 @@
       "blocking": "1 wait statement(s), ~45 ticks (0.8 s) blocked per cycle, added above"
     }
   },
+  "cost/counter-op": {
+    "kind": "cost",
+    "case": "counter-op.mlog",
+    "digest": {
+      "worst": "~5 instructions per full cycle (approximate)",
+      "unreachable": [
+        2,
+        4
+      ]
+    }
+  },
+  "cost/counter-set": {
+    "kind": "cost",
+    "case": "counter-set.mlog",
+    "digest": {
+      "worst": "~3 instructions per full cycle (approximate)",
+      "unreachable": [
+        1,
+        2
+      ]
+    }
+  },
+  "cost/counter-unknown": {
+    "kind": "cost",
+    "case": "counter-unknown.mlog",
+    "digest": {
+      "worst": "~7 instructions per full cycle (approximate)"
+    }
+  },
+  "tool/aigenerated": {
+    "kind": "aigenerated",
+    "case": null,
+    "digest": {
+      "sign": 0,
+      "verify": 0,
+      "token": true,
+      "verify_tampered": 1,
+      "resign_refused": 1,
+      "refusal_msg": true,
+      "resign_forced": 0,
+      "verify_forced": 0,
+      "strip": 2
+    }
+  },
   "cross/unit-verdicts": {
     "kind": "cross",
     "case": null,

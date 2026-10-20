@@ -1,4 +1,4 @@
-﻿# mlog-agentskill
+# mlog-agentskill
 
 Mindustry mlog 逻辑的静态分析、规则审计与真执行器模拟工具链，外加两个 DSH skill 与一个 Agent 预设。
 
@@ -29,7 +29,7 @@ python tools/mlogsim.py logic.mlog --ticks 300 --trace trace.tsv --assert-last "
 | `tools/` | 统一入口 `mlog.py`、模拟器 `mlogsim.py`、检查器、IR、值域、打包、规则审计、签名 |
 | `mindustry-blueprint/` | 蓝图/逻辑技能文档（SKILL / REFERENCE / BUILDS）与参考数据 |
 | `rules/` | 25+ 条规则，一条一个 JSON，供 `review.py` 逐条审计 |
-| `tests/` | 26 个 golden 用例，`python tests/run_tests.py` |
+| `tests/` | 30 个 golden 用例，`python tests/run_tests.py` |
 | `.dsh/skills/mlog-agentskill/` | 可独立拷走的 mlog 分析技能（含一份 `tools/`） |
 | `dsh-preset-mlog/` | DeepSeek Harness 的 `mlog` Agent 预设（persona + 技能根 + 工具集） |
 

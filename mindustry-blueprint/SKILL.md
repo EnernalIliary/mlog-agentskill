@@ -1,4 +1,4 @@
-﻿---
+---
 name: mindustry-blueprint
 description: 生成/解析/校验 Mindustry 蓝图与 mlog 逻辑时使用：从蓝图提取逻辑源码、按逻辑生成可粘贴的蓝图码、静态检查 mlog、查方块 content ID 与指令格式。
 whenToUse: 涉及 Mindustry 蓝图（.msch / 蓝图码）、mlog 逻辑编写或审查、需要方块尺寸或 content ID 时。
@@ -117,7 +117,7 @@ whenToUse: 涉及 Mindustry 蓝图（.msch / 蓝图码）、mlog 逻辑编写或
 4. **`cost`**：`worst-case path` 与每圈 tick 对上需求里的周期；把 `wait` 的 `⏸ blocking` 一起看（它一条 ipt 都不烧，但周期时间常常全在这里）。
 5. **`values`**：没有意外的恒真/恒假分支和可证 null（尤其是 `equal X null`——未赋值变量是 0，只有 `===` 区分 null 与 0）。
 6. **跨处理器**（用了 `read`/`write` 别的处理器时）：`cross` 报 `0 never-assigned`；槽名必须在对方先声明，且拼写一致。
-7. **署名**：AI 生成的逻辑先 `python tools/aigenerated.py sign <file>`，交付前 `verify` 一遍；署名不 print、不参与执行，删掉或改逻辑都会验证失败（`strip` 被策略拒绝）。变量命名跟 `style` 里看到的语料风格一致。
+7. **署名**：AI 生成的逻辑先 `python tools/aigenerated.py sign <file>`，交付前 `verify` 一遍。署名是最后一条语句末尾**超出参数个数的字符串**（`end "aigenerated:作者:id"`）：解析器填完字段后把多余 token 丢掉，所以行为、`print` 输出、语句数、最坏指令数都不变；改逻辑或删 token 都会验证失败（`strip` 被策略拒绝）。变量命名跟 `style` 里看到的语料风格一致。
 8. **假设写清**：静态分析之外，时序、跨处理器读写、单位运动、生产/天气/子弹命中都要用 `tools/mlogsim.py` 跑真执行器（见下节）；模拟器覆盖不到的部分（画面、野 AI、波次、建筑被毁的连锁后果）才是推理不是验证。交付时明说哪些是"跑过"，哪些是"读起来没错"。
 9. **蓝图用 `mlog.py gen` 产出**，不要手拼 base64；生成后 `ir`/`check` 再跑一遍确认逻辑没被截断。
 
@@ -251,7 +251,7 @@ python mlog.py block --accepts coal      # 谁吃煤（按 recipe / ammo / any /
 ```
 python mlog.py style 着陆 调度        # 多词不用引号
 python mlog.py style 钍反 防爆 --limit 2
-python mlog.py style 无线超 --code 20  # 连源码前 20 行一起看
+python mlog.py style 某逻辑 --code 20  # 连源码前 20 行一起看
 ```
 
 每个命中会打印六项:
@@ -338,9 +338,6 @@ schematic 里 Stile 存的是方块的**中心格**,不是左上角。**已双�
 留出集精确率 ≥70%:
 
 ```bash
-# 该语料脚本未随公开版发布
-# 该语料脚本未随公开版发布
-# 该语料脚本未随公开版发布
 ```
 
 `数量` / `品质` / `系列` / `无线` / `火控` 这类量不出精确率的值不会出现在建议里 ——
@@ -352,7 +349,7 @@ schematic 里 Stile 存的是方块的**中心格**,不是左上角。**已双�
 
 ```bash
 ### 解析:看逻辑源码和结构
-python tools/mlog.py parse "schematics/无线超.msch"
+python tools/mlog.py parse "schematics/某逻辑.msch"
 
 ### 检查:生成前必做
 python tools/mlog.py check logic.mlog
@@ -382,7 +379,7 @@ python tools/mlog.py pack --msch out.msch
 python tools/mlog.py gen logic.mlog --name "我的逻辑" --link dome1@3,1
 
 ### 生成:连目标方块一起放(--with-block 坐标是【中心格】)
-python tools/mlog.py gen logic.mlog --name "无线超" \
+python tools/mlog.py gen logic.mlog --name "某逻辑" \
     --link dome1@3,1 --with-block overdrive-dome@4,2=248 \
     --out paste.txt --binary out.msch
 
@@ -606,7 +603,7 @@ python tools/mlog.py map <save.msav> --code 3            # 每块再打前 3 行
 ### 全量体检（1421 个存档）
 
 `mlog.py map` 一次读一个文件。要看**所有**存档，先按源码哈希去重再跑静态检查
-（本地语料脚本（未随公开版发布））：1421 个存档、103,787 个处理器，去重后只有
+（个人语料扫描（未随公开版发布））：1421 个存档、103,787 个处理器，去重后只有
 **4,366 份不同的程序**（95.8% 是同一段代码的副本）——所以报告里所有比率的分母
 都是「不同的程序」，不是「处理器」。
 
@@ -619,8 +616,6 @@ python tools/mlog.py map <save.msav> --code 3            # 每块再打前 3 行
 ## 批量跑语料(并行)
 
 ```powershell
-python tools\corpus\_sweep_saves.py              # 1,421 个存档：34 秒
-python tools\corpus\_sweep_analyse.py            # 加六种分析：127 秒
 python mindustry-blueprint\tools\parallel.py --items 1421   # 先看它会开几个 worker、为什么
 ```
 
@@ -764,7 +759,7 @@ python tools/review.py ingest                # 把 md 里填的 ok/bad/unsure/sk
 | `tools/block_sizes.json` | 446 个方块尺寸(从源码推导) |
 | `tools/cmd_index.json` | 86 条 mlog 指令的格式/参数/注意事项 |
 | [REFERENCE.md](REFERENCE.md) | 完整知识库:编号体系、机制、坑、被推翻的旧结论 |
-| [REFERENCE.md](REFERENCE.md) | 逻辑模式库 + 蓝图工程分析 |
+| [PATTERNS.md](PATTERNS.md) | 逻辑模式库 + 蓝图工程分析 |
 
 ## 关键事实速查
 

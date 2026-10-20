@@ -30,7 +30,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
+import shutil
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -116,15 +120,26 @@ def digest_gate(name: str) -> dict:
 
 
 def digest_cost(name: str) -> dict:
-    """Pull the two numbers a human actually checks; the prose can change."""
+    """Pull the numbers a human actually checks; the prose can change."""
     text = C.cost_report(_prepared(name), None)
     out = {}
+    unreachable = []
+    in_unreachable = False
     for line in text.splitlines():
         s = line.strip()
+        if s.startswith("UNREACHABLE"):
+            in_unreachable = True
+            continue
+        if s.startswith(("opcodes", "loop heads", "worst-case", "⏸", "reachability")):
+            in_unreachable = False
         if s.startswith("worst-case path"):
             out["worst"] = s.split(":", 1)[1].strip()
         elif s.startswith("⏸ blocking"):
             out["blocking"] = s.split(":", 1)[1].strip()
+        elif in_unreachable and re.match(r"L\d+:", s):
+            unreachable.append(int(s[1:s.index(":")]))
+    if unreachable:
+        out["unreachable"] = unreachable
     return out
 
 
@@ -229,15 +244,48 @@ SUITE: list[tuple[str, str, str | None]] = [
     ("values/unknown-input",   "values",  "val3.mlog"),
     ("cost/wait-single",       "cost",    "wait1.mlog"),
     ("cost/wait-nested",       "cost",    "wait2.mlog"),
+    ("cost/counter-op",        "cost",    "counter-op.mlog"),
+    ("cost/counter-set",       "cost",    "counter-set.mlog"),
+    ("cost/counter-unknown",   "cost",    "counter-unknown.mlog"),
+    ("tool/aigenerated",       "aigenerated", None),
     ("cross/unit-verdicts",    "cross",   None),
     ("values/cross-fold",     "crossvalues", None),
 ]
+
+def digest_aigenerated() -> dict:
+    """Sign, verify, tamper, re-sign, strip -- on a scratch copy."""
+    tool = HERE.parent / "tools" / "aigenerated.py"
+    out: dict = {}
+    with tempfile.TemporaryDirectory() as d:
+        p = Path(d) / "x.mlog"
+        shutil.copyfile(CASES / "aigenerated.mlog", p)
+
+        def run(*a: str) -> tuple[int, str]:
+            r = subprocess.run([sys.executable, str(tool), *a],
+                               capture_output=True, text=True,
+                               encoding="utf-8", errors="replace")
+            return r.returncode, r.stdout + r.stderr
+
+        out["sign"], _ = run("sign", str(p))
+        out["verify"], _ = run("verify", str(p))
+        body = p.read_text(encoding="utf-8")
+        out["token"] = bool(re.search(r'"aigenerated:[^"]+"\s*$', body))
+        p.write_text(body.replace("set x 1", "set x 2"), "utf-8", newline="\n")
+        out["verify_tampered"], _ = run("verify", str(p))
+        out["resign_refused"], msg = run("sign", str(p))
+        out["refusal_msg"] = "body changed since signing" in msg
+        out["resign_forced"], _ = run("sign", "--force", str(p))
+        out["verify_forced"], _ = run("verify", str(p))
+        out["strip"], _ = run("strip", str(p))
+    return out
+
 
 DIGESTS = {
     "gate": digest_gate, "check": digest_check, "check_msg": digest_check_msg,
     "ir": digest_ir, "values": digest_values, "pack": digest_pack,
     "cost": digest_cost, "cross": lambda _f: digest_cross_unit(),
     "crossvalues": lambda _f: digest_cross_values(),
+    "aigenerated": lambda _f: digest_aigenerated(),
     "odd": lambda _f: digest_odd(),
 }
 

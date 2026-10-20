@@ -52,6 +52,7 @@ KIND_STR = "str"
 KIND_VAR = "var"          # identifier the program owns
 KIND_BUILTIN = "builtin"  # @something
 KIND_WORD = "word"        # bare keyword-ish token (operator name, sub-command)
+_INT_RE = re.compile(r"^-?\d+$")
 
 # LAssembler.var() turns every one of these into a constant, never a variable:
 # decimal/float, 0x hex, 0b binary (all with optional sign), and the %rrggbb /
@@ -432,7 +433,13 @@ class Program:
         return sorted({s.mnemonic for s in self.stmts if s.unknown})
 
     def successors(self, i: int) -> list[int]:
-        """CFG successors. `end` restarts at 0; `stop` is the only real sink."""
+        """CFG successors. `end` restarts at 0; `stop` is the only real sink.
+
+        Writing `@counter` is a computed jump: `set @counter N` is absolute,
+        while `op add @counter @counter K` lands on `i + 1 + K` because the
+        executor increments the register *before* running the instruction.
+        Unresolvable forms fall back to "everything is reachable".
+        """
         if i < 0 or i >= len(self.stmts):
             return []
         s = self.stmts[i]
@@ -441,6 +448,36 @@ class Program:
             return []
         if s.mnemonic == "end":
             return [0] if n else []
+        if s.mnemonic == "set" and s.arg_text(0) == "@counter":
+            arg = s.arg_text(1)
+            if _INT_RE.match(arg):
+                tgt = int(arg)
+                return [tgt] if 0 <= tgt < n else []
+            return list(range(n))
+        if s.mnemonic == "op" and s.arg_text(1) == "@counter":
+            opname, a, b = s.arg_text(0), s.arg_text(2), s.arg_text(3)
+            la = int(a) if _INT_RE.match(a) else None
+            lb = int(b) if _INT_RE.match(b) else None
+            base = i + 1
+            tgt = None
+            if opname == "add":
+                if a == "@counter" and lb is not None:
+                    tgt = base + lb
+                elif b == "@counter" and la is not None:
+                    tgt = base + la
+                elif la is not None and lb is not None:
+                    tgt = la + lb
+            elif opname == "sub":
+                if a == "@counter" and lb is not None:
+                    tgt = base - lb
+                elif la is not None and lb is not None:
+                    tgt = la - lb
+            elif la is not None and lb is not None:
+                tgt = {"mul": la * lb, "div": la // lb if lb else None,
+                       "mod": la % lb if lb else None}.get(opname)
+            if tgt is None:
+                return list(range(n))
+            return [tgt] if 0 <= tgt < n else []
         if s.mnemonic == "jump":
             out = []
             tgt = s.jump_target()
@@ -451,7 +488,7 @@ class Program:
                 # JumpI.run() is guarded by `if(address != -1)`, so a negative
                 # address does nothing and control falls through. Treating it as
                 # a terminator reported the whole rest of the program as dead
-                # (坦克大战.msch: 182 of 190 statements).
+                # (某蓝图.msch: 182 of 190 statements).
                 return [i + 1] if i + 1 < n else []
             cond = s.arg_text(1).lower()
             if cond != "always" and i + 1 < n:
@@ -568,7 +605,7 @@ class Program:
         more than once, so every write after the first is provably discarded
         work.  This is the shape of a real bug found in the corpus: a checker
         that does `ulocate ... found ...` twice and never looks at `found`
-        (17十七硫幽灵四熔毁四油海啸组.msch).  A single never-read write can be
+        (某蓝图.msch).  A single never-read write can be
         a declaration; a second one cannot be anything but waste.
 
         `never-read` -- exactly one write and no read at all.  It may be a

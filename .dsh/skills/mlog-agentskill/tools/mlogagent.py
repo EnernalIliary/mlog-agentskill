@@ -8,7 +8,7 @@ This runs that sequence and ends with a verdict line per program, so you do
 not have to read five separate reports to decide where to look first.
 
     python mlogagent.py report  logic.mlog
-    python mlogagent.py report  --msch "blueprints/无线超.msch"
+    python mlogagent.py report  --msch "blueprints/示例.msch"
     python mlogagent.py report  --msch dir/*.msch --brief
     python mlogagent.py report  logic.mlog --only ir,values
     python mlogagent.py report  logic.mlog --skip cost --trace n

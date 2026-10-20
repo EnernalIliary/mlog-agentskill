@@ -20,7 +20,7 @@ cp -r mindustry-blueprint "$DSH_HOME/skills/"
 cd mindustry-blueprint/tools
 
 # 解析:看蓝图里的方块、链接和逻辑源码
-python mlog.py parse "schematics/无线超.msch"
+python mlog.py parse "schematics/示例.msch"
 
 # 检查:生成前必做,能抓出 @dead 反用等真实 bug
 python mlog.py check logic.mlog
@@ -29,7 +29,7 @@ python mlog.py check logic.mlog
 python mlog.py gen logic.mlog --name "我的逻辑" --link dome1@3,1
 
 # 生成:连目标方块一起放(--with-block 坐标是【中心格】)
-python mlog.py gen logic.mlog --name "无线超" \
+python mlog.py gen logic.mlog --name "示例逻辑" \
     --link dome1@3,1 --with-block overdrive-dome@4,2=248 \
     --out paste.txt --binary out.msch
 

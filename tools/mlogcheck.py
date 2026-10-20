@@ -11,7 +11,7 @@ loops, and unit-control executed without a live `ubind`.
 Usage
 -----
   python tools/mlogcheck.py 逻辑.mlog
-  python tools/mlogcheck.py --blueprint out/无线超.msch     # check a whole schematic
+  python tools/mlogcheck.py --blueprint out/示例逻辑.msch     # check a whole schematic
   python tools/mlogcheck.py --dir logic-corpus/by-blueprint # (md dumps, not for this)
 """
 from __future__ import annotations
@@ -1269,6 +1269,57 @@ def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> l
     return uniq
 
 
+_INT = re.compile(r"^-?\d+$")
+_SET_COUNTER = re.compile(r"^set\s+@counter\s+(\S+)")
+_OP_COUNTER = re.compile(r"^op\s+(\w+)\s+@counter\s+(\S+)\s+(\S+)")
+
+
+def _counter_target(i: int, c: str, n: int) -> list[int] | None:
+    """Successors of a computed `@counter` write, or None if it is not one.
+
+    The executor increments @counter *before* running the instruction, so
+    inside statement `i` the register reads `i + 1`.  That makes
+    `op add @counter @counter 3` land on `i + 4`, and `set @counter 7` land
+    on 7 (absolute).  Anything we cannot resolve to a literal is treated as
+    an unknown branch: every statement stays reachable, which is the only
+    honest answer for a dispatch table.
+    """
+    m = _SET_COUNTER.match(c)
+    if m and m.group(1) != "@counter":
+        arg = m.group(1)
+        if _INT.match(arg):
+            tgt = int(arg)
+            return [tgt] if 0 <= tgt < n else []
+        return list(range(n))
+
+    m = _OP_COUNTER.match(c)
+    if not m:
+        return None
+    opname, a, b = m.group(1), m.group(2), m.group(3)
+    base = i + 1
+    la = int(a) if _INT.match(a) else None
+    lb = int(b) if _INT.match(b) else None
+    tgt = None
+    if opname == "add":
+        if a == "@counter" and lb is not None:
+            tgt = base + lb
+        elif b == "@counter" and la is not None:
+            tgt = base + la
+        elif la is not None and lb is not None:
+            tgt = la + lb
+    elif opname == "sub":
+        if a == "@counter" and lb is not None:
+            tgt = base - lb
+        elif la is not None and lb is not None:
+            tgt = la - lb
+    elif la is not None and lb is not None:
+        tgt = {"mul": la * lb, "div": la // lb if lb else None,
+               "mod": la % lb if lb else None}.get(opname)
+    if tgt is None:
+        return list(range(n))
+    return [tgt] if 0 <= tgt < n else []
+
+
 def _cfg(stmts: list[tuple[int, str]]) -> list[list[int]]:
     """Control-flow successors for each statement index.
 
@@ -1279,6 +1330,8 @@ def _cfg(stmts: list[tuple[int, str]]) -> list[list[int]]:
       * `stop` really does halt, so it IS a sink.
       * `jump -1` never branches (it is the decorative no-op form), so it just
         falls through.
+      * writing `@counter` is a computed jump; `_counter_target` resolves the
+        literal forms and conservatively keeps everything reachable otherwise.
     """
     n = len(stmts)
     succ: list[list[int]] = []
@@ -1300,6 +1353,10 @@ def _cfg(stmts: list[tuple[int, str]]) -> list[list[int]]:
                 if i + 1 < n:
                     out.append(i + 1)
             succ.append(out)
+            continue
+        counter = _counter_target(i, c, n)
+        if counter is not None:
+            succ.append(counter)
             continue
         succ.append([i + 1] if i + 1 < n else [0])
     return succ
