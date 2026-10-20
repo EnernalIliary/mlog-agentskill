@@ -1,4 +1,4 @@
-﻿# tools/ 索引
+# tools/ 索引
 
 日常只有两个入口：`mlog.py`（解析/检查/生成蓝图与逻辑）和 `mlogsim.py`（拿真 v159.3 执行器跑逻辑）。
 其余文件是它们的数据、分析层和一次性维护脚本。
@@ -11,6 +11,8 @@
 | 静态检查 | `python tools/mlog.py check x.mlog`（`--cost` 加成本/最坏指令数） |
 | 生成只含处理器的蓝图 | `python tools/mlog.py gen --name 名字 --code x.mlog` |
 | 模拟运行 | `python tools/mlogsim.py x.mlog --ticks 120 --trace t.csv` |
+| 值域 / 跳转表 | `python tools/mlogrange.py ranges x.mlog --var n`；`jumps x.mlog --var n` |
+| 指令级执行流 | `python tools/mlogsim.py x.mlog --ticks 120 --itrace t.tsv --itrace-var n` |
 | 这个程序需要哪些世界符号 | `python tools/mlog_needs.py 图.msch` |
 | 整批存档里的逻辑 | `python tools/mlog.py map <存档目录>` |
 | 规则逐条审计 | `python tools/review.py md` |
@@ -39,6 +41,6 @@
 
 ## 维护约定
 
-- 一次性脚本不必入库；稳定并有人引用后再提到顶层。
+- 新写的一次性脚本先放 `tools/dev/`；成体系的语料分析放 `tools/corpus/`；稳定并有人引用后再提到顶层。
 - 提到顶层的门槛：`tests/run_tests.py` 有 golden 用例，或文档里有命令引用。
 - 顶层不放大文件、不放大图；截图/日志/导出物放 `out/`。

@@ -11,7 +11,7 @@ loops, and unit-control executed without a live `ubind`.
 Usage
 -----
   python tools/mlogcheck.py 逻辑.mlog
-  python tools/mlogcheck.py --blueprint out/示例逻辑.msch     # check a whole schematic
+  python tools/mlogcheck.py --blueprint out/无线超.msch     # check a whole schematic
   python tools/mlogcheck.py --dir logic-corpus/by-blueprint # (md dumps, not for this)
 """
 from __future__ import annotations
@@ -727,6 +727,23 @@ def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> l
     for _, c in stmts:
         ever_defined |= set(defs_of(c))
     ever_defined |= link_vars
+
+    # ---- a name containing '-' can never be a link variable ---------------
+    # LogicBlock.getLinkName() builds the link name from the block name's LAST
+    # '-'-separated segment (plus its index): `silicon-arc-furnace` -> `furnace1`.
+    # So `silicon-arc-furnace1` never binds; the statement silently does nothing.
+    _HYPHEN_NAME = re.compile(r"^[A-Za-z_][\w.]*(?:-[\w.]+)+$")
+    for _ln, _code in stmts:
+        for _tok in re.findall(r"\S+", _code):
+            if _tok.startswith('"') or _tok.startswith("@"):
+                continue
+            if _HYPHEN_NAME.match(_tok):
+                out.append(Finding(
+                    "ERR", _ln + 1, "link-name-hyphen",
+                    f"`{_tok}` contains '-': the game derives a link's name from the "
+                    f"block name's last hyphenated segment plus its index "
+                    f"(`silicon-arc-furnace` -> `furnace1`), so this name never binds "
+                    f"and the statement is a silent no-op"))
 
     # ---- read/write @this "name": a string addresses a processor variable ----
     # `LogicBlock.read` looks the name up in `executor.optionalVar(name)`, then

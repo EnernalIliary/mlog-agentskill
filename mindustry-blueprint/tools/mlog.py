@@ -37,10 +37,10 @@ python mlog.py style <words>           # how the corpus writes it: naming, shape
 Examples
 --------
   # blueprint -> readable dump (logic extracted verbatim)
-  python mlog.py parse "schem/示例.msch"
+  python mlog.py parse "schem/无线超.msch"
 
   # emit a paste-ready blueprint code, with the target block placed
-  python mlog.py gen logic.mlog --name "示例逻辑" \
+  python mlog.py gen logic.mlog --name "无线超" \
       --link dome1@3,1 --with-block overdrive-dome@4,2=248
 
   # check logic before generating
@@ -388,7 +388,7 @@ def _ir_tier(prog, i: int, v: str, kind: str) -> str:
     # the syntax making you name a variable you don't need, but writing the
     # same slot twice and never reading it means the first write is provably
     # discarded -- the `found`/`found` bug in
-    # 某蓝图.msch, which the slot tier used to hide.
+    # 17十七硫幽灵四熔毁四油海啸组.msch, which the slot tier used to hide.
     if kind in ("overwritten", "stale-write"):
         return "reported"
     s = prog.stmts[i]

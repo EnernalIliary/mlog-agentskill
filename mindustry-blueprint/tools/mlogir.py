@@ -488,7 +488,7 @@ class Program:
                 # JumpI.run() is guarded by `if(address != -1)`, so a negative
                 # address does nothing and control falls through. Treating it as
                 # a terminator reported the whole rest of the program as dead
-                # (某蓝图.msch: 182 of 190 statements).
+                # (坦克大战.msch: 182 of 190 statements).
                 return [i + 1] if i + 1 < n else []
             cond = s.arg_text(1).lower()
             if cond != "always" and i + 1 < n:
@@ -605,7 +605,7 @@ class Program:
         more than once, so every write after the first is provably discarded
         work.  This is the shape of a real bug found in the corpus: a checker
         that does `ulocate ... found ...` twice and never looks at `found`
-        (某蓝图.msch).  A single never-read write can be
+        (17十七硫幽灵四熔毁四油海啸组.msch).  A single never-read write can be
         a declaration; a second one cannot be anything but waste.
 
         `never-read` -- exactly one write and no read at all.  It may be a

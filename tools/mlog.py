@@ -37,10 +37,10 @@ python mlog.py style <words>           # how the corpus writes it: naming, shape
 Examples
 --------
   # blueprint -> readable dump (logic extracted verbatim)
-  python mlog.py parse "schem/示例.msch"
+  python mlog.py parse "schem/无线超.msch"
 
   # emit a paste-ready blueprint code, with the target block placed
-  python mlog.py gen logic.mlog --name "示例逻辑" \
+  python mlog.py gen logic.mlog --name "无线超" \
       --link dome1@3,1 --with-block overdrive-dome@4,2=248
 
   # check logic before generating
@@ -68,6 +68,7 @@ import os
 import re
 import sys
 import textwrap
+from pathlib import Path
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path:
@@ -80,6 +81,7 @@ import mlogcross as _cx
 import mlogval as _val              # noqa: E402
 import msch                          # noqa: E402
 import mschgen as _gen              # noqa: E402
+import aigenerated as _sig          # noqa: E402
 
 
 def _load_json(name: str) -> dict:
@@ -201,6 +203,24 @@ def cmd_gen(args) -> int:
             code = fh.read()
     else:
         code = sys.stdin.read()
+
+    if not args.no_sign:
+        # auto-sign what we are about to emit: an AI-written program should not
+        # depend on a human remembering a second command.
+        if args.source:
+            try:
+                msg = _sig.sign(Path(args.source), args.author, force=False)
+            except _sig.SignError:
+                msg = _sig.sign(Path(args.source), args.author, force=True)
+            with open(args.source, encoding="utf-8") as fh:
+                code = fh.read()
+            print(f"# {msg}", file=sys.stderr)
+        else:
+            try:
+                code, pid = _sig.sign_text(code, args.author)
+            except _sig.SignError:
+                code, pid = _sig.sign_text(code, args.author, force=True)
+            print(f"# signed id={pid} author={args.author}", file=sys.stderr)
 
     try:
         px, py = (int(v) for v in args.at.split(","))
@@ -388,7 +408,7 @@ def _ir_tier(prog, i: int, v: str, kind: str) -> str:
     # the syntax making you name a variable you don't need, but writing the
     # same slot twice and never reading it means the first write is provably
     # discarded -- the `found`/`found` bug in
-    # 某蓝图.msch, which the slot tier used to hide.
+    # 17十七硫幽灵四熔毁四油海啸组.msch, which the slot tier used to hide.
     if kind in ("overwritten", "stale-write"):
         return "reported"
     s = prog.stmts[i]
@@ -1644,6 +1664,10 @@ def main() -> int:
                         "also places the link target")
     p.add_argument("--auto-link", action="store_true",
                    help="report the game link-name for each --with-block")
+    p.add_argument("--no-sign", action="store_true",
+                   help="do not auto-attach the @aigenerated signature")
+    p.add_argument("--author", default=_sig.DEFAULT_AUTHOR,
+                   help="signature author (default: 猪猪鱼)")
     p.add_argument("--out", help="write the paste code (base64) to this file")
     p.add_argument("--binary", help="write a .msch binary to this path")
     p.add_argument("--quiet", action="store_true", help="do not print the paste code")

@@ -49,6 +49,8 @@ python tools/mlogagent.py info --verify                # 校验 MANIFEST.sha256
 批量与并行：
 
 ```powershell
+python tools\corpus\_sweep_saves.py        # 1,421 个存档：34 秒
+python tools\corpus\_sweep_analyse.py      # 加六种分析：127 秒
 python mindustry-blueprint\tools\parallel.py --items 1421   # 它会开几个 worker、为什么
 ```
 
@@ -92,7 +94,7 @@ python mindustry-blueprint\tools\parallel.py --items 1421   # 它会开几个 wo
 | `declaration` | `set x <字面量>` 之后没读 | 作者的声明式初始化；**也可能是留给使用者改的配置**（`set count 0`、`set limit 40`）——先看文件头注释/命名（`cfg.*`）再决定删 |
 | `annotation` | 变量名是纯标点（`//`、`--`） | 作者拿变量名当注释，不是 bug |
 
-`stale-write` 专治「强制输出槽写两次」：写**一次**且没人读，可能只是语法逼你起个名字（`slot`，隐藏）；同一个槽**写两次**且从没人读，第一次写就可证被丢弃 —— 那是真 bug。实例：`某蓝图.msch` 的 micro-processor @(16,8)，`found` 在 `L6` 与 `L61` 各被 `ulocate` 写一次、全程序无读；改动前它被归进 `slot`、只算进 `(+3 hidden)`，改动后才作为 `reported` 报出来。
+`stale-write` 专治「强制输出槽写两次」：写**一次**且没人读，可能只是语法逼你起个名字（`slot`，隐藏）；同一个槽**写两次**且从没人读，第一次写就可证被丢弃 —— 那是真 bug。实例：`17十七硫幽灵四熔毁四油海啸组.msch` 的 micro-processor @(16,8)，`found` 在 `L6` 与 `L61` 各被 `ulocate` 写一次、全程序无读；改动前它被归进 `slot`、只算进 `(+3 hidden)`，改动后才作为 `reported` 报出来。
 
 mlog **只有 `#` 起注释**（`LParser.java:98-99`），没有行尾注释 —— 所以 `set // 上个位置` 是**真语句**，游戏照执行。这类占语料 `reported` 的 222 条，已归入 `annotation`。
 
@@ -126,6 +128,7 @@ mlog **只有 `#` 起注释**（`LParser.java:98-99`），没有行尾注释 —
 | `true`/`false` 是**注册常量**（1 / 0） | `GlobalVars.java:54-55` `putEntry("false", 0)`、`putEntry("true", 1)`，`LAssembler.var()` 先查 `logicVars` 才轮到 `putVar` | `jump T equal X true` 就是 `X == 1`，**不是**未赋值变量 |
 | `lookup` 的结果在**第 2 参** | `LStatements.java:875-909`，第 0 位是 `ContentType` 关键字 | 把 `unit` 当目标 ⇒ 每个 `ubind u` 都变假错 |
 | `ubind` 给类型和给单位的语义不同 | `LExecutor.UnitBindI`：类型走 `unitCache`，`exec.binds[id]` 取模后自增（轮转）；单位满足同队/特权且 `logicControllable` 才直接绑 | `ubind @flare` 每轮可能是不同单位；要盯一个就 `ubind unit.target`，否则 `sensor` 读到的是“另一个单位” |
+| 读核心库存没有内置变量 | 没有 `@core`；`ulocate` 先走 `checkLogicAI`，要求 `@unit` 已绑（`LExecutor.java:230`） | 先 `ubind @mono`，再 `ulocate building core false @copper cx cy cf core`，然后 `sensor n core @silicon` / `sensor cap core @itemCapacity` |
 | `ucontrol getBlock x y a b c` 有**三个输出** | `LExecutor.java:491-509`（p3/p4/p5） | 只认一个输出会把 `b` 当未赋值 |
 | `ucontrol within x y r result` | `LExecutor.java:377` `p4.setnum(unit.within(...))` | `r` 是半径，`result` 是 1/0 |
 | `equal X null` ⇔ `X.num() == 0` | `ConditionOp.java:31-40` | 对未赋值变量**恒真**；只有 `===` 区分 null 与 0 |
@@ -139,6 +142,7 @@ mlog **只有 `#` 起注释**（`LParser.java:98-99`），没有行尾注释 —
 | `control` 的 p2–p4 各方块忽略 | `LExecutor.ControlI.run()` | 实用有效位只有三个 |
 | `ucontrol payTake`/`boost` 只吃布尔 | `LUnitControl.java:17,20` | 未赋值 ⇒ 恒 false，"只捡建筑" |
 | `read`/`write` 的 `@this "名字"` 是**处理器变量** | `LogicBlock.java:607-620, 644-650`：字符串先 `optionalVar(name)`，没有再 `optionalLink(name)`；write 找不到变量直接 return | 名字是字符串不是变量；写未声明=静默空操作（`check` 报 INFO `self-write-noop`），读未声明=null（INFO `self-read-undefined`）；数字下标 `read v @this 0` 是链接 |
+| **链接名不是方块全名** | `LogicBlock.getLinkName()` 取方块名最后一个连字符段再加序号：`silicon-arc-furnace` → `furnace1`；`large` 结尾先去掉 `large` | 写 `silicon-arc-furnace1` 永远不绑定（静默无操作）；`check` 报 ERR `link-name-hyphen` |
 
 ## 「我以为是作者写错」清单（其实都是检查器的 bug）
 
@@ -148,7 +152,7 @@ mlog **只有 `#` 起注释**（`LParser.java:98-99`），没有行尾注释 —
 - 一元 `op` 的第三位被当读取 → 182 条假警告清零。
 - `jump T always x false` 的补位被当变量 → 276 个块凭空多出未定义 `x`。
 - 派发表（写 `@counter`）⇒ 不可达 9384 → 495。
-- `jump -1 always` 当终止 ⇒ `某蓝图.msch` 190 条里报 182 条不可达，实际全部可达。
+- `jump -1 always` 当终止 ⇒ `坦克大战.msch` 190 条里报 182 条不可达，实际全部可达。
 - `lookup` 目标位算错 ⇒ `u` 族 23 条假错。
 - **只看 `LAssembler.var()` 就断定 `true`/`false` 不是关键字** ⇒ 653 条假 WARN。真相在 `GlobalVars.init()`:它们是 `putEntry` 注册的常量 1 / 0。教训:**判一个名字是不是内建，要查"注册了什么"，不是查"解析函数怎么处理"** —— `var()` 第一步 `logicVars.get()` 就把它们接走了。
 - `ucontrol getBlock` 只认一个输出 ⇒ `f` 假错。
@@ -195,6 +199,8 @@ python tools/mlogsim.py logic.mlog --save scene.msav --units fortress:1 \
 - 世界：空白 64×64（默认）/ `--host` 随机真实图 / `--save` 载存档（自动在我方核心旁放处理器，`--base X,Y` 覆盖）。
 - 单位：`--units name:count`、`--unit-pos X,Y`、`--unit-ai all`（场景原有单位按 AI 行动）。单位落在实体格会在第一次 `update()` 被 `kill()`，所以 tick 1 会跑 `PREFLIGHT:`（编译失败、单位没生成、落地即死都会直接报，不用等 1200 tick）。
 - 库存：`--core-items silicon:400,copper:200` 给核心灌料（空白世界会自动放一个 `core-shard`）；`ulocate` 找核心、`itemTake`/`itemDrop` 取放料由此可断言（距离上限 `45 world + 方块半宽`，先 `approach` 到 2 格内）。
+- 值域 / 跳转表：`tools/mlogrange.py ranges logic.mlog --var unit.n`、`jumps logic.mlog --var unit.n`（独立 CLI，同上不在本副本）。只从写点推区间，`sensor`/`read`/`ubind`/`ulocate` 一律 unknown；`jumps` 只展开 `op add/sub @counter`。
+- 指令级执行流：`--itrace out/it.tsv --itrace-var unit.n`，每执行一条语句一行 `tick pc vars source`；`pc` 就是当时的 `@counter`。逐指令有开销，`.msch` 暂不支持。
 - 链接：裸 `.mlog` 没有链接表；`--links auto`（默认）会找出读而不赋值的链接名（`cell1`、`bank1`、`message1`、`dome1`）自动放同类方块并接线（同队、10 格内），`--links off` 才是 `null`。`.msch` 用自己的链接表。
 - 世界更新：`--update all` 跑真 `Building.update()` 与 `LogicAI` 单位；`--power full|none` 钉电力；`--combat on`（`--ticks` 默认）按 `Logic.updateEntities()` 推进子弹物理/碰撞/伤害；`--weather rain` 强制开局天气。
 - 观测：`--trace FILE` 每 tick 一行（`unit,tick,ux,uy,uhp,range,tx,ty,dist,cx,cy,chp,bullets,shots`，tile 坐标）；`--assert EXPR` 逐行、`--assert-last EXPR` 只查末行，失败退 3。
@@ -209,7 +215,7 @@ python tools/mlogsim.py logic.mlog --save scene.msav --units fortress:1 \
 - **外部输入一律 ⊤**。`sensor` / `getlink` / `ulocate` 拿到的都是运行期状态 ⇒ 一半变量退化成未知，`values` 只能对纯计算链说话。
 - `values` 3 轮后按变量放宽；`cost` 在 1000 条处截断并显式打 `>=`（那是下界，不是总量）。
 - `pack` 只认**同一 `src` 上 ≥2 个不同指数**的 `op idiv`，不重建表达式；`MIN_EXP = 3`。
-- **模拟器只到「逻辑层 + 单位运动层（B 档）+ 世界更新/天气 + 子弹命中」**。`tools/mlogsim.py` 跑真 `LExecutor`；`--update all` 下真 `Building.update()`（工厂/传送带/电力消费者，满电由 `--power` 钉）与真 `LogicAI` 单位 `update()`；tick 循环复刻 `Logic.updateWeather()` 的冷却/生成并 `Groups.weather.update()`；`--combat on`（`--ticks` 默认）按 `Logic.updateEntities()` 的顺序跑 `Groups.bullet.updatePhysics/update/collide`，所以 `ucontrol target` 的子弹会飞、会命中、会掉血。能证明 `move/approach/within/@x/@y`、生产进度、`weathersense/weatherset` 时序、目标 hp 变化。`--trace FILE` 每 tick 记逻辑单位一行（`unit,tick,ux,uy,uhp,range,tx,ty,dist,cx,cy,chp,bullets,shots`），`--assert` 逐行不变量、`--assert-last` 只看末行（失败退 3）。`weathersense`/`weatherset` 等特权语句只有 world processor 认，微处理器会把整行**静默删掉**（`--processor auto` 按语句自动选）。不模拟野 AI、波次、敌方 AI、电力图、真实地形碰撞，也不结算建筑被毁后的连锁后果。`shots` 增加不等于命中——必须看 `chp` 并开 `--combat off` 对照。**真游戏行为必须由玩家在游戏里验收**——模拟器通过不等于上手能跑；交付时要把「哪些部分是模拟器验证过的、哪些要你进游戏试」分开写。普通处理器读 `@client`/`@clientUnit` 等特权内置变量不会报错，而是静默得到 `null`（`GlobalVars.get(name,false)`）；要玩家/客户端数据只能用 world processor。AI 生成的逻辑必须先 `python tools/aigenerated.py sign` 签名（交付前 `verify`）：署名是最后一条语句末尾**超出参数个数的字符串**（`end "aigenerated:作者:id"`），解析器多 token 惰性丢弃，所以行为、print、语句数都不变；删 token 或改正文都会验证失败，`strip` 被策略拒绝。
+- **模拟器只到「逻辑层 + 单位运动层（B 档）+ 世界更新/天气 + 子弹命中」**。`tools/mlogsim.py` 跑真 `LExecutor`；`--update all` 下真 `Building.update()`（工厂/传送带/电力消费者，满电由 `--power` 钉）与真 `LogicAI` 单位 `update()`；tick 循环复刻 `Logic.updateWeather()` 的冷却/生成并 `Groups.weather.update()`；`--combat on`（`--ticks` 默认）按 `Logic.updateEntities()` 的顺序跑 `Groups.bullet.updatePhysics/update/collide`，所以 `ucontrol target` 的子弹会飞、会命中、会掉血。能证明 `move/approach/within/@x/@y`、生产进度、`weathersense/weatherset` 时序、目标 hp 变化。`--trace FILE` 每 tick 记逻辑单位一行（`unit,tick,ux,uy,uhp,range,tx,ty,dist,cx,cy,chp,bullets,shots`），`--assert` 逐行不变量、`--assert-last` 只看末行（失败退 3）。`weathersense`/`weatherset` 等特权语句只有 world processor 认，微处理器会把整行**静默删掉**（`--processor auto` 按语句自动选）。不模拟野 AI、波次、敌方 AI、电力图、真实地形碰撞，也不结算建筑被毁后的连锁后果。`shots` 增加不等于命中——必须看 `chp` 并开 `--combat off` 对照。**真游戏行为必须由玩家在游戏里验收**——模拟器通过不等于上手能跑；交付时要把「哪些部分是模拟器验证过的、哪些要你进游戏试」分开写。普通处理器读 `@client`/`@clientUnit` 等特权内置变量不会报错，而是静默得到 `null`（`GlobalVars.get(name,false)`）；要玩家/客户端数据只能用 world processor。AI 生成的逻辑必须先 `python tools/aigenerated.py sign` 签名（交付前 `verify`）：署名写在最后一条语句的**声明参数槽**里——`jump 0 always 0 "aigenerated:作者:id"`，用它替换末尾的 `end`（`always` 不读 p3/p4，`jump 0` 与 `end` 同样归零；p4 是声明字段，游戏自己的 `LAssembler.write` 往返会保留它）。尾部多余 token（`end "…"`）重新序列化时会丢，注释也会被剥掉；删签名或改正文都会验证失败，`strip` 被策略拒绝。
 
 ## 典型流程
 
@@ -293,7 +299,7 @@ python tools/mlog.py map <save.msav> --code 3            # 每块再打前 3 行
 ### 全量体检（1421 个存档）
 
 `mlog.py map` 一次读一个文件。要看**所有**存档，先按源码哈希去重再跑静态检查
-（个人语料扫描（未随公开版发布））：1421 个存档、103,787 个处理器，去重后只有
+（`tools/corpus/_sweep_analyse.py`）：1421 个存档、103,787 个处理器，去重后只有
 **4,366 份不同的程序**（95.8% 是同一段代码的副本）——所以报告里所有比率的分母
 都是「不同的程序」，不是「处理器」。
 
@@ -319,6 +325,8 @@ python tools/mlog.py map <save.msav> --code 3            # 每块再打前 3 行
 ### 批量跑语料
 
 ```powershell
+python tools\corpus\_sweep_saves.py              # 1,421 个存档：34 秒
+python tools\corpus\_sweep_analyse.py            # 加六种分析：127 秒
 python mindustry-blueprint\tools\parallel.py --items 1421   # 先看它会开几个 worker、为什么
 ```
 

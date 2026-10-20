@@ -205,6 +205,20 @@
       ]
     ]
   },
+  "check/link-hyphen": {
+    "kind": "check",
+    "case": "link-hyphen.mlog",
+    "digest": [
+      [
+        "ERR",
+        0
+      ],
+      [
+        "ERR",
+        1
+      ]
+    ]
+  },
   "check/spin-deadlock": {
     "kind": "check",
     "case": "spin.mlog",
@@ -361,7 +375,13 @@
       "refusal_msg": true,
       "resign_forced": 0,
       "verify_forced": 0,
-      "strip": 2
+      "strip": 2,
+      "gen_rc": 0,
+      "gen_signed": true,
+      "gen_source_signed": true,
+      "gen_nosign_rc": 0,
+      "gen_nosign_signed": false,
+      "gen_nosign_source_signed": false
     }
   },
   "cross/unit-verdicts": {

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """Regression tests for the mlog toolchain.
 
 Why this exists
@@ -236,6 +236,7 @@ SUITE: list[tuple[str, str, str | None]] = [
     # undeclared name reads null / writes nothing. INFO, because both are
     # legal -- and the second one is the silent no-op worth seeing.
     ("check/self-readwrite",  "check",   "self-readwrite.mlog"),
+    ("check/link-hyphen",     "check",   "link-hyphen.mlog"),
     ("check/spin-deadlock",   "check",   "spin.mlog"),
     ("check/spin-handshake",  "check",   "spin-ok.mlog"),
     ("pack/three-fields",      "pack",    "pack1.mlog"),
@@ -277,6 +278,23 @@ def digest_aigenerated() -> dict:
         out["resign_forced"], _ = run("sign", "--force", str(p))
         out["verify_forced"], _ = run("verify", str(p))
         out["strip"], _ = run("strip", str(p))
+
+        # `mlog.py gen` must sign both the source and the emitted blueprint.
+        import msch
+        mlog_tool = HERE.parent / "tools" / "mlog.py"
+        for label, extra in (("gen", []), ("gen_nosign", ["--no-sign"])):
+            src = Path(d) / f"{label}.mlog"
+            shutil.copyfile(CASES / "aigenerated.mlog", src)
+            bp = Path(d) / f"{label}.msch"
+            r = subprocess.run(
+                [sys.executable, str(mlog_tool), "gen", str(src),
+                 "--name", "t", "--binary", str(bp), "--quiet", *extra],
+                capture_output=True, text=True, encoding="utf-8", errors="replace")
+            code = msch.parse_file(bp).logic_tiles()[0].logic.code
+            out[f"{label}_rc"] = r.returncode
+            out[f"{label}_signed"] = "aigenerated:" in code
+            out[f"{label}_source_signed"] = "aigenerated:" in src.read_text(
+                encoding="utf-8")
     return out
 
 

@@ -96,6 +96,9 @@ whenToUse: 涉及 Mindustry 蓝图（.msch / 蓝图码）、mlog 逻辑编写或
 4. **取货点用 `move`,不要用 `approach`** —— `approach` 停在半径外可能够不到仓库,而 `itemTake` 够不到时**静默跳过**。
    `move` 不读第 3 个参数。(`move` 精确到 1 格;`approach` 停在 `radius - 7`)
 5. **`ulocate` 要无条件执行,不能放进分支** —— 否则另一条路径上坐标从未赋值,单位会飞向 `(0,0)`。
+   读核心库存没有内置变量:先 `ubind` 拿一个己方单位(常用 `@mono`),再 `ulocate building core false @copper cx cy cf core`;
+   `sensor n core @silicon` / `sensor cap core @itemCapacity`。`cf=0` 时先判掉,别拿坐标去飞。
+   **链接名不是方块全名**:游戏取方块名最后一个连字符段 (`silicon-arc-furnace` → `furnace1`),写全名永远不绑定;`check` 报 `link-name-hyphen`。
 6. **`end` 是"跳回开头"**,不能用来"结束一个分支后继续往下"。分支互斥请用 `jump`。
 7. **`jump` 存的是绝对行号** —— 增删一行全盘偏移,生成前逐条数一遍。重点查:目标是否落在 `sensor`/`set` 这类有副作用的行上。
 8. **单位只能带一种物品** —— `itemCapacity` 是**堆叠上限**,不是每种物品的上限。
@@ -117,7 +120,7 @@ whenToUse: 涉及 Mindustry 蓝图（.msch / 蓝图码）、mlog 逻辑编写或
 4. **`cost`**：`worst-case path` 与每圈 tick 对上需求里的周期；把 `wait` 的 `⏸ blocking` 一起看（它一条 ipt 都不烧，但周期时间常常全在这里）。
 5. **`values`**：没有意外的恒真/恒假分支和可证 null（尤其是 `equal X null`——未赋值变量是 0，只有 `===` 区分 null 与 0）。
 6. **跨处理器**（用了 `read`/`write` 别的处理器时）：`cross` 报 `0 never-assigned`；槽名必须在对方先声明，且拼写一致。
-7. **署名**：AI 生成的逻辑先 `python tools/aigenerated.py sign <file>`，交付前 `verify` 一遍。署名是最后一条语句末尾**超出参数个数的字符串**（`end "aigenerated:作者:id"`）：解析器填完字段后把多余 token 丢掉，所以行为、`print` 输出、语句数、最坏指令数都不变；改逻辑或删 token 都会验证失败（`strip` 被策略拒绝）。变量命名跟 `style` 里看到的语料风格一致。
+7. **署名**：AI 生成的逻辑先 `python tools/aigenerated.py sign <file>`，交付前 `verify` 一遍。`mlog.py gen` 现在**默认自动签名**（源文件一并签好；`--no-sign` 关闭）。署名写在最后一条语句的**声明参数槽**里：`jump 0 always 0 "aigenerated:作者:id"`，用它替换末尾的 `end`（`always` 不读 p3/p4，`jump 0` 与 `end` 同样归零，行为不变；p4 是声明字段，游戏自己的 `LAssembler.write` 往返会保留它）。尾部多余 token（`end "…"`）重新序列化时会丢，注释也会被剥掉。改逻辑或删签名都会验证失败（`strip` 被策略拒绝）。变量命名跟 `style` 里看到的语料风格一致。
 8. **假设写清**：静态分析之外，时序、跨处理器读写、单位运动、生产/天气/子弹命中都要用 `tools/mlogsim.py` 跑真执行器（见下节）；模拟器覆盖不到的部分（画面、野 AI、波次、建筑被毁的连锁后果）才是推理不是验证。交付时明说哪些是"跑过"，哪些是"读起来没错"。
 9. **蓝图用 `mlog.py gen` 产出**，不要手拼 base64；生成后 `ir`/`check` 再跑一遍确认逻辑没被截断。
 
@@ -142,6 +145,25 @@ python tools/mlogsim.py my.mlog --save scene.msav --ticks 120 \
 - 特权语句（`weathersense/weatherset/setrule/message/cutscene/effect/fetch/sync/getblock/setblock/spawn/status`）只有 world processor 认；放进微处理器会被**静默删掉整行**。`--processor auto` 按语句自动选处理器。
 - 特权**内置变量**（`@server`、`@client`、`@clientLocale`、`@clientUnit`、`@clientName`、`@clientTeam`、`@clientMobile`、`@clientMusicPlaying`）在普通处理器里不报错，而是被 `GlobalVars.get(name, false)` 换成 `null` 常量——分支永远不走。要在普通逻辑里判断玩家/客户端，换成 world processor 或游戏内可观测的数据。
 - 能证明：`move/approach/within/@x/@y`、`ipt`、跨处理器读写、生产进度、天气时序、子弹命中掉血。不能证明：野 AI、波次、电力图、真实地形碰撞、建筑被毁的连锁；`draw` 会执行但没有画面。**真游戏行为必须由玩家验收**。
+
+### 值域与跳转表：`tools/mlogrange.py`
+
+```bash
+python tools/mlogrange.py ranges my.mlog --var unit.n
+python tools/mlogrange.py jumps  my.mlog --var unit.n
+```
+
+- `ranges` 是前向区间分析：只从写点推区间，分支按与字面量的比较收窄。`sensor`/`read`/`ubind`/`ulocate` 的结果一律 **unknown**，不猜。
+- `jumps` 展开 `op add/sub @counter @counter V` 这种算术派发，逐值给落点；`set @counter 变量` 只能给 unknown。
+- 它回答的是“可能取什么值/可能落到哪”，不是“一定会”。循环无法收敛时会放宽成 unknown。
+
+### 指令级执行流：`--itrace`
+
+```bash
+python tools/mlogsim.py my.mlog --ticks 60 --itrace out/it.tsv --itrace-var unit.n
+```
+
+每执行一条语句一行：`tick  pc  vars  source`。`pc` 就是当时的 `@counter`，`vars` 是点名变量的快照（对象显示 `<obj>`）——比 `--trace`（只记单位轨迹）细，适合查“第几拍走到哪一行、变量是什么”。`.msch` 暂不支持，逐指令有开销。
 
 场景：`out/scenes/` 有 5 张现实存档（open / garded-line / maze / PVP / campaign）；`benches/run.py` 是 memory/processor/sensor/core 四张合成台（62 项断言）；`_snapshot.py` 出 PNG 快照。
 
@@ -251,7 +273,7 @@ python mlog.py block --accepts coal      # 谁吃煤（按 recipe / ammo / any /
 ```
 python mlog.py style 着陆 调度        # 多词不用引号
 python mlog.py style 钍反 防爆 --limit 2
-python mlog.py style 某逻辑 --code 20  # 连源码前 20 行一起看
+python mlog.py style 无线超 --code 20  # 连源码前 20 行一起看
 ```
 
 每个命中会打印六项:
@@ -338,6 +360,9 @@ schematic 里 Stile 存的是方块的**中心格**,不是左上角。**已双�
 留出集精确率 ≥70%:
 
 ```bash
+python tools/corpus/label_auto.py                      # 学习规则 + 留出集报表
+python tools/corpus/label_auto.py --suggest F.msch      # 只输出可信建议(附依据与精确率)
+python tools/corpus/label_auto.py --apply F.msch --out DIR   # 写回副本,不动原件
 ```
 
 `数量` / `品质` / `系列` / `无线` / `火控` 这类量不出精确率的值不会出现在建议里 ——
@@ -349,7 +374,7 @@ schematic 里 Stile 存的是方块的**中心格**,不是左上角。**已双�
 
 ```bash
 ### 解析:看逻辑源码和结构
-python tools/mlog.py parse "schematics/某逻辑.msch"
+python tools/mlog.py parse "schematics/无线超.msch"
 
 ### 检查:生成前必做
 python tools/mlog.py check logic.mlog
@@ -379,7 +404,7 @@ python tools/mlog.py pack --msch out.msch
 python tools/mlog.py gen logic.mlog --name "我的逻辑" --link dome1@3,1
 
 ### 生成:连目标方块一起放(--with-block 坐标是【中心格】)
-python tools/mlog.py gen logic.mlog --name "某逻辑" \
+python tools/mlog.py gen logic.mlog --name "无线超" \
     --link dome1@3,1 --with-block overdrive-dome@4,2=248 \
     --out paste.txt --binary out.msch
 
@@ -447,7 +472,7 @@ worst-case path : ~2001 instructions       ← 一次完整决策最坏多少条
 | `declaration` | `set x 字面量` 且没人读 | 声明式初始化；**也可能是给使用者留的配置**（`set count 0`、`set limit 40`）——有 `cfg.` 命名或文件头注释就别删 |
 | `annotation` | 变量名是纯标点(`//`) | mlog 没有行尾注释(只有 `#`),作者拿它当注释 |
 
-`stale-write` 是为「强制输出槽写两次」加的一层:写**一次**且没人读,可能只是语法逼你起个名字(`slot`,降级隐藏);但同一个槽**写两次**且从没人读,第一次写可证被丢弃 —— 那是真 bug。实例:`某蓝图.msch` 的 micro-processor @(16,8) 里 `found` 在 `L6` 与 `L61` 各被 `ulocate` 写一次、全程序无读,改动前它被 `slot` 层藏住(`dead-store 0(+3 hidden)`),改动后才报出来。
+`stale-write` 是为「强制输出槽写两次」加的一层:写**一次**且没人读,可能只是语法逼你起个名字(`slot`,降级隐藏);但同一个槽**写两次**且从没人读,第一次写可证被丢弃 —— 那是真 bug。实例:`17十七硫幽灵四熔毁四油海啸组.msch` 的 micro-processor @(16,8) 里 `found` 在 `L6` 与 `L61` 各被 `ulocate` 写一次、全程序无读,改动前它被 `slot` 层藏住(`dead-store 0(+3 hidden)`),改动后才报出来。
 
 **校准(全语料 617 文件 / 2409 块,已排除模拟器蓝图)**:80.9% 的处理器**一条都不报**,p50=0、p90=1;均值 0.829/块是被约 20 个代码生成式蓝图拉高的。抽样 28 个站点人工核对,**全部为真**。
 
@@ -603,7 +628,7 @@ python tools/mlog.py map <save.msav> --code 3            # 每块再打前 3 行
 ### 全量体检（1421 个存档）
 
 `mlog.py map` 一次读一个文件。要看**所有**存档，先按源码哈希去重再跑静态检查
-（个人语料扫描（未随公开版发布））：1421 个存档、103,787 个处理器，去重后只有
+（`tools/corpus/_sweep_analyse.py`）：1421 个存档、103,787 个处理器，去重后只有
 **4,366 份不同的程序**（95.8% 是同一段代码的副本）——所以报告里所有比率的分母
 都是「不同的程序」，不是「处理器」。
 
@@ -616,6 +641,8 @@ python tools/mlog.py map <save.msav> --code 3            # 每块再打前 3 行
 ## 批量跑语料(并行)
 
 ```powershell
+python tools\corpus\_sweep_saves.py              # 1,421 个存档：34 秒
+python tools\corpus\_sweep_analyse.py            # 加六种分析：127 秒
 python mindustry-blueprint\tools\parallel.py --items 1421   # 先看它会开几个 worker、为什么
 ```
 
@@ -698,7 +725,7 @@ DSH 没有"单个技能的作用范围"开关,作用域**就是它所在的目�
 | 位置 | 谁看得见 |
 |---|---|
 | `<仓库>/.dsh/skills/mlog-agentskill/` | 只有这个仓库(本仓库既是源码,也是这种用法) |
-| `$DSH_HOME/skills/mlog-agentskill/` | **所有项目**。本机 `C:/Users/<you>/.dsh/skills` 是指向 `.dsh-pack/skills/default` 的 junction,所以写进去等于装成内置技能 |
+| `$DSH_HOME/skills/mlog-agentskill/` | **所有项目**。本机 `C:/Users/lliary/.dsh/skills` 是指向 `.dsh-pack/skills/default` 的 junction,所以写进去等于装成内置技能 |
 
 一条命令装到用户级,装完逐文件校验:
 
