@@ -1,0 +1,35 @@
+# 上游源码树：各自带独立的 .git，本仓库不跟踪（需要时用 submodule）
+/Mindustry-Source/
+/Arc-Source/
+
+# server runtime data if a headless server is started from the repo root
+/config/
+
+# 生成物与垃圾
+/out/npmcache/
+__pycache__/
+*.pyc
+
+# 系统文件
+desktop.ini
+Thumbs.db
+.DS_Store
+
+# derived scan artifacts (rebuildable, large)
+out/caime/
+out/caime_scan.json
+out/_sweep_*.txt
+out/mine_scan.json
+out/_portrait*.txt
+out/_user*.msch
+out/_junk.msch
+out/caime_scan*.txt
+.find_cache.json
+/out/_label_backup_*/
+/out/_label_*.txt
+/out/_find*.txt
+/out/_sweep_*.txt
+/out/_ili_backup_*/
+
+# publishable export (own git repo) - /dist/mlog-toolkit
+/dist/

@@ -1,0 +1,26 @@
+﻿{
+  "id": "bool-param-constantly-zero",
+  "kind": "heuristic",
+  "severity": "WARN",
+  "claim": "An unassigned variable in a boolean parameter slot is constantly 0 (false), so the instruction never does the thing it looks like it does.",
+  "why": "mlog has no bool type: `p1.bool()` is `num() != 0`, and an unset variable is 0. Harmless when it is a signature, fatal when it was meant to be a switch.",
+  "source": "source",
+  "ref": "m14750",
+  "since": "2026-10-18",
+  "counter_example": "tests/cases/reactor-guard-ok.mlog",
+  "match": {
+    "sevs": [
+      "WARN"
+    ],
+    "msg_any": [
+      "read as a boolean"
+    ]
+  },
+  "auto_downgrade": false,
+  "observed": {
+    "hits": 4,
+    "programs": 2,
+    "share": 0.0,
+    "dir": "<local saves>"
+  }
+}

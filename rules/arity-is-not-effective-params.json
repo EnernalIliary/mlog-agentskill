@@ -1,0 +1,28 @@
+﻿{
+  "id": "arity-is-not-effective-params",
+  "kind": "semantics",
+  "severity": "INFO",
+  "claim": "`ucontrol move x y` takes four fields, not six. The parser keeps a slot count (`arity`); the instruction only reads a prefix of it.",
+  "why": "LExecutor.java:344-352 — `case move, stop, approach, pathfind` reads x,y and (only for `approach`) a radius. The `p1..p4` toNumber() calls happen before dispatch, so `uses` is always 1,2,3 even when nothing reads them. Reporting a missing/extra slot against `arity` flags correct community code.",
+  "source": "user",
+  "ref": "m14600",
+  "since": "2026-10-18",
+  "counter_example": "tests/cases/reactor-guard-ok.mlog",
+  "match": {
+    "sevs": [
+      "WARN",
+      "INFO"
+    ],
+    "msg_any": [
+      "args, expects",
+      "effective arity"
+    ]
+  },
+  "auto_downgrade": false,
+  "observed": {
+    "hits": 0,
+    "programs": 0,
+    "share": 0.0,
+    "dir": "<local saves>"
+  }
+}

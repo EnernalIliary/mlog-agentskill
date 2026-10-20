@@ -1,0 +1,377 @@
+{
+  "gate/noop-drift": {
+    "kind": "gate",
+    "case": "gate1.mlog",
+    "digest": {
+      "floor": 150,
+      "users": [
+        "select"
+      ],
+      "baseline": 146,
+      "reports": true
+    }
+  },
+  "gate/baseline-silent": {
+    "kind": "gate",
+    "case": "baseline.mlog",
+    "digest": {
+      "floor": 146,
+      "users": [],
+      "baseline": 146,
+      "reports": false
+    }
+  },
+  "gate/op-emod": {
+    "kind": "gate",
+    "case": "gate-emod.mlog",
+    "digest": {
+      "floor": 150,
+      "users": [
+        "op emod"
+      ],
+      "baseline": 146,
+      "reports": true
+    }
+  },
+  "ir/labels-resolved": {
+    "kind": "ir",
+    "case": "label.mlog",
+    "digest": {
+      "stmts": 5,
+      "dead": [],
+      "stores": [],
+      "kinds": [],
+      "labels": {
+        "loop": 1
+      },
+      "writes_counter": false
+    }
+  },
+  "ir/odd-name": {
+    "kind": "odd",
+    "case": null,
+    "digest": {
+      "odd": {
+        "cy！": [
+          2
+        ]
+      }
+    }
+  },
+  "ir/stale-write": {
+    "kind": "ir",
+    "case": "stale.mlog",
+    "digest": {
+      "stmts": 7,
+      "dead": [],
+      "stores": [
+        [
+          1,
+          "a"
+        ],
+        [
+          2,
+          "a"
+        ],
+        [
+          5,
+          "b"
+        ],
+        [
+          6,
+          "b"
+        ]
+      ],
+      "kinds": [
+        [
+          1,
+          "a",
+          "overwritten"
+        ],
+        [
+          2,
+          "a",
+          "overwritten"
+        ],
+        [
+          5,
+          "b",
+          "stale-write"
+        ],
+        [
+          6,
+          "b",
+          "stale-write"
+        ]
+      ],
+      "labels": {},
+      "writes_counter": false
+    }
+  },
+  "check/labels-blank": {
+    "kind": "check",
+    "case": "labels-check.mlog",
+    "digest": []
+  },
+  "check/reactor-slow": {
+    "kind": "check",
+    "case": "reactor-guard-slow.mlog",
+    "digest": [
+      [
+        "WARN",
+        1
+      ]
+    ]
+  },
+  "check/reactor-ok": {
+    "kind": "check",
+    "case": "reactor-guard-ok.mlog",
+    "digest": []
+  },
+  "check/reactor-unknown": {
+    "kind": "check",
+    "case": "reactor-guard-unknown.mlog",
+    "digest": [
+      [
+        "INFO",
+        0
+      ]
+    ]
+  },
+  "check/reactor-impact": {
+    "kind": "check",
+    "case": "reactor-guard-impact.mlog",
+    "digest": [
+      [
+        "WARN",
+        1
+      ]
+    ]
+  },
+  "check/reactor-impact-ok": {
+    "kind": "check",
+    "case": "reactor-guard-impact-ok.mlog",
+    "digest": []
+  },
+  "check/label-index": {
+    "kind": "check",
+    "case": "label-index.mlog",
+    "digest": [
+      [
+        "INFO",
+        0
+      ],
+      [
+        "INFO",
+        1
+      ]
+    ]
+  },
+  "check/virus": {
+    "kind": "check",
+    "case": "virus-logic.mlog",
+    "digest": [
+      [
+        "INFO",
+        1
+      ]
+    ]
+  },
+  "check/privileged-var": {
+    "kind": "check",
+    "case": "privileged-var.mlog",
+    "digest": [
+      [
+        "INFO",
+        1
+      ],
+      [
+        "INFO",
+        2
+      ]
+    ]
+  },
+  "check/self-readwrite": {
+    "kind": "check",
+    "case": "self-readwrite.mlog",
+    "digest": [
+      [
+        "INFO",
+        4
+      ],
+      [
+        "INFO",
+        5
+      ]
+    ]
+  },
+  "check/spin-deadlock": {
+    "kind": "check",
+    "case": "spin.mlog",
+    "digest": [
+      [
+        "ERR",
+        3
+      ]
+    ]
+  },
+  "check/spin-handshake": {
+    "kind": "check",
+    "case": "spin-ok.mlog",
+    "digest": []
+  },
+  "pack/three-fields": {
+    "kind": "pack",
+    "case": "pack1.mlog",
+    "digest": {
+      "sites": [
+        {
+          "low_exp": 6,
+          "cap": 20,
+          "fields": [
+            [
+              "idiv",
+              8,
+              "status"
+            ],
+            [
+              "idiv",
+              6,
+              "outputID"
+            ],
+            [
+              "mod",
+              6,
+              "mask"
+            ]
+          ],
+          "overlaps": 1,
+          "masked": 0
+        }
+      ],
+      "peels": [
+        [
+          7,
+          "mask",
+          "lowbit"
+        ]
+      ]
+    }
+  },
+  "values/const-branch": {
+    "kind": "values",
+    "case": "val1.mlog",
+    "digest": {
+      "rounds": 3,
+      "stable": true,
+      "branches": [
+        [
+          2,
+          "always",
+          "1"
+        ]
+      ],
+      "nulls": [
+        [
+          2,
+          "r"
+        ]
+      ]
+    }
+  },
+  "values/arithmetic": {
+    "kind": "values",
+    "case": "val2.mlog",
+    "digest": {
+      "rounds": 3,
+      "stable": true,
+      "branches": [],
+      "nulls": [
+        [
+          8,
+          "q"
+        ]
+      ]
+    }
+  },
+  "values/unknown-input": {
+    "kind": "values",
+    "case": "val3.mlog",
+    "digest": {
+      "rounds": 3,
+      "stable": true,
+      "branches": [],
+      "nulls": []
+    }
+  },
+  "cost/wait-single": {
+    "kind": "cost",
+    "case": "wait1.mlog",
+    "digest": {
+      "worst": "~16 instructions per full cycle (approximate)",
+      "blocking": "2 wait statement(s), ~240 ticks (4.0 s) blocked per cycle, added above"
+    }
+  },
+  "cost/wait-nested": {
+    "kind": "cost",
+    "case": "wait2.mlog",
+    "digest": {
+      "worst": "~77 instructions per full cycle (approximate)",
+      "blocking": "1 wait statement(s), ~45 ticks (0.8 s) blocked per cycle, added above"
+    }
+  },
+  "cross/unit-verdicts": {
+    "kind": "cross",
+    "case": null,
+    "digest": {
+      "cross_reads": 2,
+      "never_assigned": [
+        [
+          "ghost",
+          2
+        ]
+      ],
+      "constant": [
+        [
+          "v",
+          "42"
+        ]
+      ],
+      "dead_writes": [
+        "orphan"
+      ]
+    }
+  },
+  "values/cross-fold": {
+    "kind": "crossvalues",
+    "case": null,
+    "digest": {
+      "bare": {
+        "folded": 0,
+        "branches": [],
+        "nulls": []
+      },
+      "fed": {
+        "folded": 2,
+        "branches": [
+          [
+            5,
+            "never"
+          ]
+        ],
+        "nulls": [
+          [
+            3,
+            "y"
+          ],
+          [
+            5,
+            "y"
+          ]
+        ],
+        "x": "42",
+        "y": "null"
+      }
+    }
+  }
+}

@@ -1,0 +1,162 @@
+﻿# ============================================================================
+# dsh-preset-mlog — DSH bundle patch
+# ============================================================================
+# 声明一个 agent 预设 `mlog`：DSH 里「新建会话 → 选预设」会多出这一项。
+# 它 = 官方 `preset-standard` 的完整插件清单（逐项照抄，见 asar 里的
+# preset-standard 声明），只改这几处：
+#   1. 行 id `preset-standard` → `preset-mlog`，`config.id` `standard` → `mlog`
+#   2. `order` 1 → 5（standard 1 / 其它预设已占 2-4）
+#   3. `persona.prefix` 换成 Mindustry 逻辑语境（猪猪鱼）
+#   4. `skill-filesystem` 加 `customSkillDirs`，预加载本仓库 .dsh/skills 下的两个技能
+#   5. 补回官方 preset-standard 里 plan-mode 的 `config.section`（旧版漏写）
+# 注意：DSH 的补丁**替换整份 config**（无深合并），所以下面必须把
+# preset-standard 的每个插件都重述一遍；少写一个就真的少一个工具。
+# 升级 DSH 后若官方 preset-standard 增删了插件，这里要手动对齐。
+#
+# 安装：
+#   dsh plugin --profile desktop add link:<repo>\dsh-preset-mlog
+# 卸载：
+#   dsh plugin --profile desktop remove dsh-preset-mlog
+# ============================================================================
+
+- insert:
+    - id: preset-mlog
+      name: '@deepseek-ai/dsh-agent-preset'
+      config:
+        id: mlog
+        order: 5
+        plugins:
+          - id: persona
+            name: '@deepseek-ai/dsh-persona'
+            config:
+              prefix: |
+                You are 猪猪鱼, a Mindustry mlog / blueprint / save specialist working with 艾铭 (iliary). Answer in Chinese unless asked otherwise.
+
+                你的主场：Mindustry 的逻辑处理器（mlog）、蓝图（.msch）、存档（.msav）——读别人的逻辑、静态检查、整图体检、给社区玩家写逻辑。`mlog-agentskill` 技能自带一份 `tools/`（入口 `python tools/mlogagent.py report ...`）；完整开发副本在 `<repo>/mindustry-blueprint/tools/`（统一入口 `python mlog.py <子命令>`）。`mindustry-blueprint` 与 `mlog-agentskill` 两个技能记录了每个子命令与全部校准数字；本预设已把 `<repo>/.dsh/skills` 设为技能根，换项目也照样加载。
+
+                两条长期规则，来自用户，不可协商：
+                1. 写任何新逻辑之前，先问清 3-5 个问题（数量 / 阈值 / 失败策略 / 依赖方块 / 周期），问完再动手。
+                2. 交付任何逻辑之前，过一遍 SKILL 里的九条自检（check 0E0W / ir 无死存储 / cost 对上周期含 ⏸ blocking / values 无意外恒真 / cross 无未声明槽 / 命名与署名 / 用 `mlog.py gen` 出蓝图），并写清"模拟器验证不了的部分"。
+
+                这个项目的全部价值在于「能指到源码那一行」：不要凭印象说任何运行时行为，去 `Mindustry-Source/` 读，或用 `check / ir / values / cross / map` 跑一遍再说。
+          - id: agent-instructions
+            name: '@deepseek-ai/dsh-agent-instructions'
+            config:
+              maxBytes: 65536
+          - id: time-context
+            name: '@deepseek-ai/dsh-time-context'
+          - id: tool-bash
+            name: '@deepseek-ai/dsh-tool-bash'
+            disabled: !!js process.platform === 'win32'
+          - id: tool-pwsh
+            name: '@deepseek-ai/dsh-tool-pwsh'
+            disabled: !!js process.platform !== 'win32'
+          - id: tool-fs
+            name: '@deepseek-ai/dsh-tool-fs'
+          - id: tool-fs-search
+            name: '@deepseek-ai/dsh-tool-fs-search'
+            config:
+              sampleOverCapGlobResults: false
+          - id: tool-jobs
+            name: '@deepseek-ai/dsh-tool-jobs'
+          - id: tool-schedule
+            name: '@deepseek-ai/dsh-tool-schedule'
+          - id: skill-filesystem
+            name: '@deepseek-ai/dsh-skill-filesystem'
+            config:
+              # 这两个技能（mindustry-blueprint / mlog-agentskill）只在本仓库的
+              # .dsh/skills 下。把绝对路径加为 custom root（rank 300），换任何
+              # 工作目录开会话都能加载；在本仓库时 project root（rank 100）优先，
+              # 同名技能不会重复注册。
+              customSkillDirs:
+                - '<repo>/.dsh/skills'
+          - id: tool-skill
+            name: '@deepseek-ai/dsh-tool-skill'
+          - id: command-goal
+            name: '@deepseek-ai/dsh-command-goal'
+          - id: tool-goal
+            name: '@deepseek-ai/dsh-tool-goal'
+          - id: planning
+            name: cordis:group
+            group: true
+            isolate:
+              planMode: true
+            config:
+              - id: plan-mode
+                name: '@deepseek-ai/dsh-plan-mode'
+                config:
+                  section: |
+                    You are in plan mode. Stay in plan mode until the user approves your plan through exit_plan_mode or switches the session mode. Imperative language to implement changes means plan the implementation, not execute it. A user's conversational agreement — including an answer confirming something you asked — approves nothing and does not end plan mode; fold the confirmed decision into the plan and submit it through exit_plan_mode.
+
+                    Explore first. Use non-mutating reads, searches, static analysis, and checks to ground the plan in the actual repository. Do not edit or write files, change configuration, run formatters or code generation that rewrites tracked files, commit, or otherwise carry out the plan. Prefer existing functions and patterns over new machinery.
+
+                    The tool catalog stays the same across modes for request-cache stability. These plan-mode rules override any later tool description or guidance that suggests using mutation tools; those tools remain listed to keep the tool catalog unchanged. Do not use todo_write to track this planning phase: it tracks implementation after an approved plan, while the plan itself belongs in exit_plan_mode.
+
+                    Resolve discoverable facts by inspection. Use ask_user_question only for user-owned choices or material ambiguity that inspection cannot answer. Do not ask the user where code lives or how current behavior works when you can find out.
+
+                    Make the plan decision-complete: state the goal and success criteria; group implementation changes by subsystem; identify public API, schema, and data-flow changes; cover edge cases, failure modes, tests, acceptance criteria, and explicit assumptions. Keep it concise enough to review but detailed enough that another engineer can implement it without making design decisions.
+
+                    When ready, call exit_plan_mode with the complete plan markdown, starting with a # title. Make exit_plan_mode the only and final tool call in that assistant response: it presents the plan for approval, and implementation begins only in a later step after approval. Do not paste the final plan as a plain reply or ask "should I proceed?" through prose or ask_user_question. If review rejects it, incorporate the feedback and present again. If the review channel is unavailable or aborted, stay in plan mode and ask the user to switch modes manually; do not proceed with implementation.
+          - id: compaction
+            name: cordis:group
+            group: true
+            isolate:
+              compaction: true
+              toolResultPruner: true
+            config:
+              - id: compaction-basic
+                name: '@deepseek-ai/dsh-compaction-basic'
+              - id: command-compact
+                name: '@deepseek-ai/dsh-command-compact'
+              - id: tool-result-pruner
+                name: '@deepseek-ai/dsh-compaction-tool-result-pruner'
+                config:
+                  thresholdChars: 8192
+                  headChars: 4096
+                  tailChars: 1024
+          - id: delegation
+            name: cordis:group
+            group: true
+            isolate:
+              workflowEngine: true
+            config:
+              - id: tool-subagent-control
+                name: '@deepseek-ai/dsh-tool-subagent-control'
+              - id: tool-subagent-list-agents
+                name: '@deepseek-ai/dsh-tool-subagent-control/list-agents'
+              - id: tool-subagent
+                name: '@deepseek-ai/dsh-tool-subagent'
+                config:
+                  provider: spawn
+                  toolName: subagent
+                  modelSelectionSettings: true
+              - id: tool-subagent-fork
+                name: '@deepseek-ai/dsh-tool-subagent'
+                config:
+                  provider: fork
+                  toolName: subagent_fork
+              - id: workflow-ptc
+                name: '@deepseek-ai/dsh-workflow-ptc'
+                config:
+                  provider: spawn
+              - id: tool-workflow
+                name: '@deepseek-ai/dsh-tool-workflow'
+          - id: tool-ask-user
+            name: '@deepseek-ai/dsh-tool-ask-user'
+          - id: tool-todo
+            name: '@deepseek-ai/dsh-tool-todo'
+            config:
+              allowParallelInProgress: true
+          - id: tool-web
+            name: '@deepseek-ai/dsh-tool-web'
+            config:
+              fetch: true
+              searchTimeoutMs: 60000
+          - id: present
+            name: '@deepseek-ai/dsh-tool-present'
+          - id: tool-plugin-manager
+            name: '@deepseek-ai/dsh-plugin-manager/tools'
+            disabled: true
+          - id: tool-plugin-market
+            name: '@deepseek-ai/dsh-plugin-market/tools'
+            disabled: true

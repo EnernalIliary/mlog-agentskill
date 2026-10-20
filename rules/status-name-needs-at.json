@@ -1,0 +1,20 @@
+﻿{
+ "id": "status-name-needs-at",
+ "kind": "semantics",
+ "severity": "INFO",
+ "claim": "A bare status-effect name (`status false unmoving @unit 0.1`) is an unset variable, so the instruction applies nothing. Content constants need the @ prefix (`@unmoving`; some builds spell it `@status_<name>`).",
+ "why": "StatusEffects.java declares `unmoving` etc.; LAssembler.var() only resolves `@name` against GlobalVars, so a bare name becomes putVar and reads null. StatusI does nothing when the effect is null.",
+ "source": "user",
+ "ref": "m15225",
+ "since": "2026-10-19",
+ "counter_example": "status false @unmoving @unit 0.1",
+ "match": {
+  "sevs": [
+   "INFO"
+  ],
+  "msg_any": [
+   "is the name of a status effect"
+  ]
+ },
+ "heuristic_note": "data comes from status_names.json (generated from StatusEffects.java)"
+}

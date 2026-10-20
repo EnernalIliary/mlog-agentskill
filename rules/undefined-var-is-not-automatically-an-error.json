@@ -1,0 +1,29 @@
+﻿{
+  "id": "undefined-var-is-not-automatically-an-error",
+  "kind": "semantics",
+  "severity": "INFO",
+  "claim": "A never-assigned variable used only in `print` is a signature; used only as a null guard it is a constant-false branch; only other uses are errors.",
+  "why": "The editor lists every referenced name, so authors sign their work with a bare identifier (`print by:NOSB(hghg`). Counting those as errors produced 883 hard errors on a community pack; classifying them cut it to 367.",
+  "source": "user",
+  "ref": "m07232",
+  "since": "2026-10-18",
+  "counter_example": "tests/cases/virus-logic.mlog",
+  "match": {
+    "sevs": [
+      "INFO",
+      "WARN",
+      "ERR"
+    ],
+    "msg_any": [
+      "never assigned",
+      "signature only"
+    ]
+  },
+  "auto_downgrade": false,
+  "observed": {
+    "hits": 18670,
+    "programs": 927,
+    "share": 0.0942,
+    "dir": "<local saves>"
+  }
+}

@@ -1,0 +1,26 @@
+﻿{
+  "id": "undefined-var-read",
+  "kind": "semantics",
+  "severity": "ERR",
+  "claim": "Reading a variable that is never assigned and is not a link or built-in is a hard error: it silently reads 0.",
+  "why": "This is the residual after signatures (print-only), comments (punctuation-only) and constant null guards are peeled off — see undefined-var-is-not-automatically-an-error for those.",
+  "source": "source",
+  "ref": "m07232",
+  "since": "2026-10-18",
+  "counter_example": "tests/cases/reactor-guard-ok.mlog",
+  "match": {
+    "sevs": [
+      "ERR"
+    ],
+    "msg_any": [
+      "is read here but is never assigned"
+    ]
+  },
+  "auto_downgrade": false,
+  "observed": {
+    "hits": 0,
+    "programs": 0,
+    "share": 0.0,
+    "dir": "<local saves>"
+  }
+}
