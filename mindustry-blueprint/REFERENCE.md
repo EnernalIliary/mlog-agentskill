@@ -1426,8 +1426,6 @@ mindustry-blueprint/
 ├── SKILL.md                 规范:铁律 + 标准流程 + 坐标约定(agent 读这个)
 ├── README.md                安装与用法
 ├── REFERENCE.md             完整知识库(本文件的副本)
-├── PATTERNS.md              逻辑模式库
-├── BLUEPRINT-ANALYSIS.md    蓝图层逐类精讲
 ├── .gitignore
 └── tools/
     ├── mlog.py              ⭐ 统一 CLI 入口

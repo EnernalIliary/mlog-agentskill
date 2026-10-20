@@ -450,7 +450,7 @@ worst-case path : ~2001 instructions       ← 一次完整决策最坏多少条
 | `declaration` | `set x 字面量` 且没人读 | 声明式初始化；**也可能是给使用者留的配置**（`set count 0`、`set limit 40`）——有 `cfg.` 命名或文件头注释就别删 |
 | `annotation` | 变量名是纯标点(`//`) | mlog 没有行尾注释(只有 `#`),作者拿它当注释 |
 
-`stale-write` 是为「强制输出槽写两次」加的一层:写**一次**且没人读,可能只是语法逼你起个名字(`slot`,降级隐藏);但同一个槽**写两次**且从没人读,第一次写可证被丢弃 —— 那是真 bug。实例:`17十七硫幽灵四熔毁四油海啸组.msch` 的 micro-processor @(16,8) 里 `found` 在 `L6` 与 `L61` 各被 `ulocate` 写一次、全程序无读,改动前它被 `slot` 层藏住(`dead-store 0(+3 hidden)`),改动后才报出来。
+`stale-write` 是为「强制输出槽写两次」加的一层:写**一次**且没人读,可能只是语法逼你起个名字(`slot`,降级隐藏);但同一个槽**写两次**且从没人读,第一次写可证被丢弃 —— 那是真 bug。实例:`某蓝图.msch` 的 micro-processor @(16,8) 里 `found` 在 `L6` 与 `L61` 各被 `ulocate` 写一次、全程序无读,改动前它被 `slot` 层藏住(`dead-store 0(+3 hidden)`),改动后才报出来。
 
 **校准(全语料 617 文件 / 2409 块,已排除模拟器蓝图)**:80.9% 的处理器**一条都不报**,p50=0、p90=1;均值 0.829/块是被约 20 个代码生成式蓝图拉高的。抽样 28 个站点人工核对,**全部为真**。
 
@@ -764,7 +764,7 @@ python tools/review.py ingest                # 把 md 里填的 ok/bad/unsure/sk
 | `tools/block_sizes.json` | 446 个方块尺寸(从源码推导) |
 | `tools/cmd_index.json` | 86 条 mlog 指令的格式/参数/注意事项 |
 | [REFERENCE.md](REFERENCE.md) | 完整知识库:编号体系、机制、坑、被推翻的旧结论 |
-| [PATTERNS.md](PATTERNS.md) | 逻辑模式库 + 蓝图工程分析 |
+| [REFERENCE.md](REFERENCE.md) | 逻辑模式库 + 蓝图工程分析 |
 
 ## 关键事实速查
 

@@ -94,7 +94,7 @@ python mindustry-blueprint\tools\parallel.py --items 1421   # 它会开几个 wo
 | `declaration` | `set x <字面量>` 之后没读 | 作者的声明式初始化；**也可能是留给使用者改的配置**（`set count 0`、`set limit 40`）——先看文件头注释/命名（`cfg.*`）再决定删 |
 | `annotation` | 变量名是纯标点（`//`、`--`） | 作者拿变量名当注释，不是 bug |
 
-`stale-write` 专治「强制输出槽写两次」：写**一次**且没人读，可能只是语法逼你起个名字（`slot`，隐藏）；同一个槽**写两次**且从没人读，第一次写就可证被丢弃 —— 那是真 bug。实例：`17十七硫幽灵四熔毁四油海啸组.msch` 的 micro-processor @(16,8)，`found` 在 `L6` 与 `L61` 各被 `ulocate` 写一次、全程序无读；改动前它被归进 `slot`、只算进 `(+3 hidden)`，改动后才作为 `reported` 报出来。
+`stale-write` 专治「强制输出槽写两次」：写**一次**且没人读，可能只是语法逼你起个名字（`slot`，隐藏）；同一个槽**写两次**且从没人读，第一次写就可证被丢弃 —— 那是真 bug。实例：`某蓝图.msch` 的 micro-processor @(16,8)，`found` 在 `L6` 与 `L61` 各被 `ulocate` 写一次、全程序无读；改动前它被归进 `slot`、只算进 `(+3 hidden)`，改动后才作为 `reported` 报出来。
 
 mlog **只有 `#` 起注释**（`LParser.java:98-99`），没有行尾注释 —— 所以 `set // 上个位置` 是**真语句**，游戏照执行。这类占语料 `reported` 的 222 条，已归入 `annotation`。
 
@@ -150,7 +150,7 @@ mlog **只有 `#` 起注释**（`LParser.java:98-99`），没有行尾注释 —
 - 一元 `op` 的第三位被当读取 → 182 条假警告清零。
 - `jump T always x false` 的补位被当变量 → 276 个块凭空多出未定义 `x`。
 - 派发表（写 `@counter`）⇒ 不可达 9384 → 495。
-- `jump -1 always` 当终止 ⇒ `坦克大战.msch` 190 条里报 182 条不可达，实际全部可达。
+- `jump -1 always` 当终止 ⇒ `某蓝图.msch` 190 条里报 182 条不可达，实际全部可达。
 - `lookup` 目标位算错 ⇒ `u` 族 23 条假错。
 - **只看 `LAssembler.var()` 就断定 `true`/`false` 不是关键字** ⇒ 653 条假 WARN。真相在 `GlobalVars.init()`:它们是 `putEntry` 注册的常量 1 / 0。教训:**判一个名字是不是内建，要查"注册了什么"，不是查"解析函数怎么处理"** —— `var()` 第一步 `logicVars.get()` 就把它们接走了。
 - `ucontrol getBlock` 只认一个输出 ⇒ `f` 假错。

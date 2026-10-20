@@ -1,4 +1,4 @@
-# mindustry-blueprint
+﻿# mindustry-blueprint
 
 **Mindustry 蓝图与 mlog 逻辑工具链** —— 一个 DSH skill。
 
@@ -47,8 +47,6 @@ python mlog.py selftest          # 429 个真实蓝图往返校验
 |---|---|
 | [SKILL.md](SKILL.md) | 规范:铁律、标准流程、最容易搞错的坐标约定 |
 | [REFERENCE.md](REFERENCE.md) | 完整知识库:编号体系、机制、坑、被推翻的旧结论 |
-| [PATTERNS.md](PATTERNS.md) | 逻辑模式库(按兵控/物流/火控/建造/显示分类,附源码依据) |
-| [BLUEPRINT-ANALYSIS.md](BLUEPRINT-ANALYSIS.md) | 蓝图层逐类精讲与工程分析 |
 
 ## 参考数据
 
