@@ -16,7 +16,7 @@ zlib stream:  uint8 version | int32 len | bytes | int32 links | links*(UTF, int1
 Usage
 -----
   # processor code from a file, link named dome1
-  python tools/mschgen.py logic.mlog -o out.msch --name "示例逻辑" \\
+  python tools/mschgen.py logic.mlog -o out.msch --name "无线超" \\
         --block world-processor --at 0,0 --link dome1@4,4
 
   # short code straight on the command line
@@ -276,7 +276,27 @@ class Blueprint:
         ys += [p[1] for p in self.link_points]
         if not xs:
             return 1, 1
-        return max(max(xs) + 1, 1), max(max(ys) + 1, 1)
+        return max(xs) - min(xs) + 1, max(ys) - min(ys) + 1
+
+    def _origin(self) -> tuple[int, int, int, int]:
+        """Bounding box (minx, miny, maxx, maxy) in the caller's coordinates.
+
+        Schematic tiles are written normalised (min at 0,0), so `build()` needs
+        the origin to subtract; otherwise `--at 20,20` leaves the build offset
+        inside a bigger box and the pasted copy lands 20 tiles away.
+        """
+        xs: list[int] = []
+        ys: list[int] = []
+        for t in self.tiles:
+            sz = block_size(t.block)
+            half = (sz - 1) // 2
+            xs += [t.x - half, t.x - half + sz - 1]
+            ys += [t.y - half, t.y - half + sz - 1]
+        xs += [p[0] for p in self.link_points]
+        ys += [p[1] for p in self.link_points]
+        if not xs:
+            return 0, 0, 0, 0
+        return min(xs), min(ys), max(xs), max(ys)
 
     def build(self) -> bytes:
         if not self.tiles:
@@ -297,6 +317,7 @@ class Blueprint:
                 dict_names.append(t.block)
 
         w, h = self.bounds()
+        ox, oy, _, _ = self._origin()
         body = bytearray()
         body += struct.pack(">hh", w, h)
 
@@ -312,7 +333,11 @@ class Blueprint:
         body += struct.pack(">i", len(self.tiles))
         for t in self.tiles:
             body.append(dict_names.index(t.block) & 0xFF)
-            body += struct.pack(">i", _pack(t.x, t.y))
+            # Schematic tile coordinates are normalised to the bounding box:
+            # every real blueprint starts at (0,0). Writing raw center coords
+            # (e.g. --at 20,20) leaves the content offset inside a larger box,
+            # which shifts the pasted build and breaks the preview.
+            body += struct.pack(">i", _pack(t.x - ox, t.y - oy))
             write_object(body, t.config)
             body.append(t.rotation & 0xFF)
 

@@ -35,15 +35,19 @@ body normalised to LF, the signature line removed, and a trailing `end`
 guaranteed (so signing is idempotent even for programs that omitted it).
 """
 import argparse
+import base64
 import hashlib
+import json
 import re
 import sys
+import zlib
 from pathlib import Path
 
 DEFAULT_AUTHOR = "猪猪鱼"
-SIG_LINE = 'jump 0 always 0 "aigenerated:{author}:{pid}"'
+SIG_LINE = 'jump 0 always 0 "aigenerated:{author}:{pid}{payload}"'
 SIG_RE = re.compile(
-    r'^jump\s+0\s+always\s+0\s+"aigenerated:([^":]+):([0-9a-f]{12})"\s*$')
+    r'^jump\s+0\s+always\s+0\s+"aigenerated:([^":]+):([0-9a-f]{12})'
+    r'(?::([A-Za-z0-9_-]+))?"\s*$')
 # older releases used a comment header + unreachable set; drop those on re-sign
 OLD_MARK_RE = re.compile(
     r"^(?:# @aigenerated(?:-end)?\b.*|set aigenerated\.[0-9a-f]{12}\b.*)$")
@@ -70,6 +74,8 @@ def _clean(text: str) -> list[str]:
     text = text.replace("\r\n", "\n").replace("\r", "\n")
     out = []
     for line in text.split("\n"):
+        if line.strip().startswith("#"):
+            continue
         if SIG_RE.match(line.strip()) or OLD_MARK_RE.match(line):
             continue
         if OLD_TAIL_RE.match(line.strip()):
@@ -92,13 +98,64 @@ def _canonical(lines: list[str]) -> str:
             break
     if last < 0:
         return ""
-    if lines[last].strip() != "end":
-        lines.insert(last + 1, "end")
-    return "\n".join(lines) + "\n"
+    trailing = [l for l in lines[last + 1:] if l.strip().startswith("#")]
+    head = lines[:last + 1]
+    if head[last].strip() == "end":
+        head = head[:last]
+    return "\n".join(head + trailing + ["end"]) + "\n"
 
 
 def _body(text: str) -> str:
     return _canonical(_clean(text))
+
+
+_LABEL_LINE = re.compile(r"^\s*([A-Za-z_][\w.\-]*):\s*$")
+
+
+def collect_comments(text: str) -> list[dict]:
+    """Comments with their original 1-based line and statement anchor.
+
+    `stmt` is the number of statements before the comment; label lines do not
+    count, so the anchor survives `resolve_labels` and re-labelling.
+    """
+    text = text.replace("\r\n", "\n").replace("\r", "\n")
+    out: list[dict] = []
+    stmt = 0
+    for no, line in enumerate(text.split("\n"), 1):
+        s = line.strip()
+        if not s:
+            continue
+        if s.startswith("#"):
+            out.append({"line": no, "stmt": stmt, "text": s})
+            continue
+        if _LABEL_LINE.match(line):
+            continue
+        stmt += 1
+    return out
+
+
+def encode_comments(comments: list[dict]) -> str:
+    if not comments:
+        return ""
+    raw = json.dumps(
+        [[c["line"], c["stmt"], c["text"]] for c in comments],
+        ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+    comp = zlib.compress(raw, 9)
+    blob = (b"z" + comp) if len(comp) < len(raw) else (b"j" + raw)
+    return base64.urlsafe_b64encode(blob).decode("ascii").rstrip("=")
+
+
+def decode_comments(payload: str | None) -> list[dict]:
+    if not payload:
+        return []
+    pad = "=" * (-len(payload) % 4)
+    try:
+        blob = base64.urlsafe_b64decode(payload + pad)
+        raw = zlib.decompress(blob[1:]) if blob[:1] == b"z" else blob[1:]
+        rows = json.loads(raw.decode("utf-8"))
+    except (ValueError, UnicodeDecodeError, zlib.error, json.JSONDecodeError):
+        raise SignError("bad comment payload in the signature")
+    return [{"line": int(r[0]), "stmt": int(r[1]), "text": str(r[2])} for r in rows]
 
 
 def _hash(author: str, body: str) -> str:
@@ -110,8 +167,13 @@ def _find(text: str):
     return [m for m in (SIG_RE.match(ln.strip()) for ln in text.split("\n")) if m]
 
 
-def sign_text(text: str, author: str = DEFAULT_AUTHOR, force: bool = False):
-    """Return (signed_text, id).  Raises SignError if it would change an id."""
+def sign_text(text: str, author: str = DEFAULT_AUTHOR, force: bool = False,
+              comments: list[dict] | None = None):
+    """Return (signed_text, id).  Raises SignError if it would change an id.
+
+    Comments are moved into the signature string (base64 payload), so the
+    delivered code carries them without occupying lines.
+    """
     hits = _find(text)
     body = _body(text)
     if not body:
@@ -126,8 +188,20 @@ def sign_text(text: str, author: str = DEFAULT_AUTHOR, force: bool = False):
             raise SignError(
                 f"body changed since signing (id {old_id} -> {pid}); "
                 f"pass --force to re-sign")
+    cs = collect_comments(text) if comments is None else comments
+    old = (decode_comments(hits[0].group(3))
+           if hits and hits[0].group(3) else [])
+    if comments is None and old:
+        if len(cs) == len(old):
+            # keep the original line numbers, refresh the text/anchors
+            for o, c in zip(old, cs):
+                c["line"] = o["line"]
+        else:
+            cs = old
+    enc = encode_comments(cs)
+    payload = f":{enc}" if enc else ""
     lines = body.rstrip("\n").split("\n")
-    lines[-1] = SIG_LINE.format(author=author, pid=pid)
+    lines[-1] = SIG_LINE.format(author=author, pid=pid, payload=payload)
     return "\n".join(lines) + "\n", pid
 
 
@@ -211,6 +285,22 @@ def resolve_labels(text: str) -> tuple[str, int, int]:
     return "\n".join(out) + "\n", len(labels), rewritten
 
 
+def _group_comments(text: str) -> str:
+    """Move every `#` line to just before the signature (delivery layout)."""
+    lines = text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+    code, comments = [], []
+    for line in lines:
+        if line.strip().startswith("#"):
+            comments.append(line.rstrip())
+        elif line.strip() or code:
+            code.append(line.rstrip())
+    while code and not code[-1].strip():
+        code.pop()
+    if not comments:
+        return "\n".join(code) + "\n"
+    return "\n".join(code + [""] + comments) + "\n"
+
+
 def post(path: Path, author: str, output: Path | None = None) -> str:
     """Delivery post-process: labels -> line numbers, then sign."""
     text = _read(path)
@@ -224,6 +314,44 @@ def post(path: Path, author: str, output: Path | None = None) -> str:
     _write(dst, signed)
     return (f"post  {dst}: {nlabels} label(s), {rewritten} jump(s) numeric; "
             f"signed id={pid} author={author}")
+
+
+def extract_text(text: str) -> list[dict]:
+    hits = _find(text)
+    if not hits:
+        raise SignError("missing hidden @aigenerated argument")
+    return decode_comments(hits[0].group(3))
+
+
+def restore_text(text: str) -> tuple[str, str, list[dict]]:
+    """Put the comments back before their anchor statements, same token."""
+    hits = _find(text)
+    if not hits:
+        raise SignError("missing hidden @aigenerated argument")
+    author = hits[0].group(1)
+    cs = decode_comments(hits[0].group(3))
+    body = _body(text)
+    lines = body.rstrip("\n").split("\n")
+    total = len(lines)
+    buckets: dict[int, list[dict]] = {}
+    for c in cs:
+        buckets.setdefault(min(max(c["stmt"], 0), total), []).append(c)
+    out: list[str] = []
+    for i, line in enumerate(lines):
+        out.extend(c["text"] for c in buckets.pop(i, []))
+        if line.strip() == "end" and i == total - 1:
+            out.extend(c["text"] for k in sorted(buckets) for c in buckets[k])
+            buckets.clear()
+        out.append(line)
+    out.extend(c["text"] for k in sorted(buckets) for c in buckets[k])
+    # keep the comments in the delivered text; only the hash ignores them
+    enc = encode_comments(cs)
+    payload = f":{enc}" if enc else ""
+    sig = SIG_LINE.format(author=author, pid=hits[0].group(2), payload=payload)
+    while out and not out[-1].strip():
+        out.pop()
+    out[-1] = sig
+    return "\n".join(out) + "\n", hits[0].group(2), cs
 
 
 def main(argv) -> int:
@@ -246,6 +374,12 @@ def main(argv) -> int:
     pp.add_argument("--author", default=DEFAULT_AUTHOR)
     pp.add_argument("-o", "--output", help="write here instead of in place (single file)")
 
+    pe = sub.add_parser("extract", help="list the comments hidden in the signature")
+    pe.add_argument("files", nargs="+")
+
+    pr = sub.add_parser("restore", help="put the hidden comments back into the file")
+    pr.add_argument("files", nargs="+")
+
     args = ap.parse_args(argv)
     if args.cmd == "strip":
         print("refused: the @aigenerated signature is an attribution term and cannot be stripped;\n"
@@ -259,7 +393,22 @@ def main(argv) -> int:
             print(f"missing file: {path}", file=sys.stderr)
             failed += 1
             continue
-        if args.cmd == "post":
+        if args.cmd == "extract":
+            try:
+                for c in extract_text(_read(path)):
+                    print(f"L{c['line']} (stmt {c['stmt']}): {c['text']}")
+            except SignError as e:
+                print(f"FAIL  {path}: {e}", file=sys.stderr)
+                failed += 1
+        elif args.cmd == "restore":
+            try:
+                signed, pid, cs = restore_text(_read(path))
+                _write(path, signed)
+                print(f"restored  {path}: {len(cs)} comment(s), id={pid}")
+            except SignError as e:
+                print(f"FAIL  {path}: {e}", file=sys.stderr)
+                failed += 1
+        elif args.cmd == "post":
             if args.output and len(args.files) != 1:
                 print("-o/--output only works with a single file", file=sys.stderr)
                 return 2

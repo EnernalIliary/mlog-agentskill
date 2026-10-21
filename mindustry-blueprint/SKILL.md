@@ -120,7 +120,7 @@ whenToUse: 涉及 Mindustry 蓝图（.msch / 蓝图码）、mlog 逻辑编写或
 4. **`cost`**：`worst-case path` 与每圈 tick 对上需求里的周期；把 `wait` 的 `⏸ blocking` 一起看（它一条 ipt 都不烧，但周期时间常常全在这里）。
 5. **`values`**：没有意外的恒真/恒假分支和可证 null（尤其是 `equal X null`——未赋值变量是 0，只有 `===` 区分 null 与 0）。
 6. **跨处理器**（用了 `read`/`write` 别的处理器时）：`cross` 报 `0 never-assigned`；槽名必须在对方先声明，且拼写一致。
-7. **署名**：AI 生成的逻辑先 `python tools/aigenerated.py sign <file>`，交付前 `verify` 一遍。`mlog.py gen` 现在**默认自动签名**（源文件一并签好；`--no-sign` 关闭）。署名写在最后一条语句的**声明参数槽**里：`jump 0 always 0 "aigenerated:作者:id"`，用它替换末尾的 `end`（`always` 不读 p3/p4，`jump 0` 与 `end` 同样归零，行为不变；p4 是声明字段，游戏自己的 `LAssembler.write` 往返会保留它）。尾部多余 token（`end "…"`）重新序列化时会丢，注释也会被剥掉。改逻辑或删签名都会验证失败（`strip` 被策略拒绝）。变量命名跟 `style` 里看到的语料风格一致。
+7. **署名**：AI 生成的逻辑先 `python tools/aigenerated.py sign <file>`，交付前 `verify` 一遍。`mlog.py gen` 现在**默认自动签名**（源文件一并签好；`--no-sign` 关闭）。署名写在最后一条语句的**声明参数槽**里：`jump 0 always 0 "aigenerated:作者:id"`，用它替换末尾的 `end`（`always` 不读 p3/p4，`jump 0` 与 `end` 同样归零，行为不变；p4 是声明字段，游戏自己的 `LAssembler.write` 往返会保留它）。尾部多余 token（`end "…"`）重新序列化时会丢。`#` 注释不留在正文，压进 token 的 base64 payload（带原始行号 + 语句锚点），用 `aigenerated.py extract/restore` 取回；哈希只覆盖无注释正文。改逻辑或删签名都会验证失败（`strip` 被策略拒绝）。变量命名跟 `style` 里看到的语料风格一致。
 8. **假设写清**：静态分析之外，时序、跨处理器读写、单位运动、生产/天气/子弹命中都要用 `tools/mlogsim.py` 跑真执行器（见下节）；模拟器覆盖不到的部分（画面、野 AI、波次、建筑被毁的连锁后果）才是推理不是验证。交付时明说哪些是"跑过"，哪些是"读起来没错"。
 9. **蓝图用 `mlog.py gen` 产出**，不要手拼 base64；生成后 `ir`/`check` 再跑一遍确认逻辑没被截断。
 
@@ -140,7 +140,8 @@ python tools/mlogsim.py my.mlog --save scene.msav --ticks 120 \
 - `--core-items ITEM:N,...` 给核心灌库存（空白世界会在处理器旁自动放一个 `core-shard`）；`ulocate`/`itemTake`/`itemDrop` 由此可断言。取放料要求同队、目标有 `items`、距离在 `45 world + 方块半宽`（约 6 格）内。
 - `--links auto`（`.mlog` 默认）：裸 `.mlog` 没有链接表，模拟器会找出“读而不赋值”的链接名（`cell1`、`bank1`、`message1`、`dome1`），在处理器旁放同类方块并接上（同队、10 格内）；`.msch` 用自己的链接表；`--links off` 恢复原样（读 `null`）。没放成或超出 10 格的链接现在会在预检阶段报 `PREFLIGHT: link 'x' did not bind`，不再等到跑完才发现是 null。
 - **批量与预热**：`mlogsim.py a.mlog b.mlog --ticks 60` 只启动一次 JVM，每个文件前重载世界（约 0.12 s）；`--daemon` 先在后台预热，`--remote x.mlog --ticks 60` 直接投任务（单文件约 0.6 s，冷启动约 3.7 s）。预处理阶段就可以先起 `--daemon`，检查/标签化跑完再 `--remote`。
-- `read`/`write` 的 `@this` 地址是**处理器变量**：`read v @this "slot"` 读、`write v @this "slot"` 写，名字是**字符串**；写一个程序里没声明过的名字是静默空操作（`check` 报 INFO `self-write-noop`），读未声明的名字得到 `null`（`self-read-undefined`）。数字下标 `read v @this 0` 取的是链接，不是变量。
+- `read`/`write` 的 `@this` 地址是**处理器变量**：`read v @this "slot"` 读、`write v @this "slot"` 写，名字是**字符串**；写一个程序里没出现过的名字是静默空操作（`check` 报 INFO `self-write-noop`），读没出现过的名字得到 `null`（`self-read-undefined`）。数字下标 `read v @this 0` 取的是链接，不是变量。
+- **声明不等于赋值**：汇编器 `readVar()` 用 `vars.get(name, true)`，任何语句里第一次出现的名字都会被创建（初值 null），不要求 `set`。所以 `draw triangle a b c d e f` 是“一次声明 6 个”的紧凑写法（每个都是 null→0）；只有全文从未出现过的名字才算未声明。`op add x copper 1` 里 `copper` 被声明但从未赋值，读到的是 null（不是 0）；`check` 不会按“未定义”报它，算术上要自己保证先赋值。
 - `--update all` 才跑 `Building.update()`（工厂、传送带、电力消费者）与 `LogicAI` 单位；`--power full|none` 把电力钉死；`--combat on`（`--ticks` 默认）按 `Logic.updateEntities()` 的顺序推进子弹物理/碰撞/伤害；`--weather rain` 可强制开局天气。
 - `--trace FILE` 每 tick 一行逻辑单位轨迹（`unit,tick,ux,uy,uhp,range,tx,ty,dist,cx,cy,chp,bullets,shots`，tile 坐标）；`--assert EXPR` 对每行、`--assert-last EXPR` 只对末行求值，失败退 3。列名就是变量名。
 - 特权语句（`weathersense/weatherset/setrule/message/cutscene/effect/fetch/sync/getblock/setblock/spawn/status`）只有 world processor 认；放进微处理器会被**静默删掉整行**。`--processor auto` 按语句自动选处理器。
@@ -428,6 +429,8 @@ python tools/mlog.py explain op add
 
 - 前缀**不固定**:游戏自己写 `78 9c`(默认 zlib),`mschgen` 用 `78 da`(最高压缩)⇒ 第 11 个字符会不同(`bXNjaAF4**2**mPg` vs `bXNjaAF4**n**mPg`)。**两种都合法**,只认解码后的 `msch` 魔数。
 - `--with-block` / `--link` 的坐标都是**相对处理器的中心格**,和方块的绝对坐标不是一回事。
+- **输出坐标一律归一化到 (0,0)**:`--at 20,20` 只是摆位时用的参考系,`build()` 会减去整个包围盒的原点再写盘(真实蓝图也从 0 开始)。曾经没减,`--at 20,20` 出来一块 24×21 的画布、内容偏在右下角,粘贴后整体偏 20 格——用 `mlog.py parse` 看 `size` 和 tile 坐标能立刻发现。
+- `--source` 按 `utf-8-sig` 读:PowerShell `Set-Content -Encoding utf8` 带 BOM,而 BOM 开头的第一行会被编译成 `noop` 静默丢掉(症状是第一条语句不执行)。
 
 ## 成本分析(`--cost`)看什么
 

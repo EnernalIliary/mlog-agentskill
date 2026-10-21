@@ -200,7 +200,9 @@ def cmd_gen(args) -> int:
     if args.logic:
         code = args.logic
     elif args.source:
-        with open(args.source, encoding="utf-8") as fh:
+        # utf-8-sig: PowerShell's Set-Content writes a BOM, and a BOM-prefixed
+        # first line compiles to a Noop (the statement silently disappears).
+        with open(args.source, encoding="utf-8-sig") as fh:
             code = fh.read()
     else:
         code = sys.stdin.read()
@@ -213,7 +215,7 @@ def cmd_gen(args) -> int:
                 msg = _sig.sign(Path(args.source), args.author, force=False)
             except _sig.SignError:
                 msg = _sig.sign(Path(args.source), args.author, force=True)
-            with open(args.source, encoding="utf-8") as fh:
+            with open(args.source, encoding="utf-8-sig") as fh:
                 code = fh.read()
             print(f"# {msg}", file=sys.stderr)
         else:
@@ -1693,7 +1695,9 @@ def main() -> int:
     p.add_argument("--description", default="")
     p.add_argument("--label", action="append", default=[])
     p.add_argument("--block", default="micro-processor")
-    p.add_argument("--at", default="0,0", help="processor center x,y")
+    p.add_argument("--at", default="0,0",
+                   help="processor center in the input frame; the emitted "
+                        "schematic is normalised to (0,0)")
     p.add_argument("--rotation", type=int, default=0)
     p.add_argument("--link", action="append", default=[],
                    help="name@dx,dy (relative to the processor)")

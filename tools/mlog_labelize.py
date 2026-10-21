@@ -141,16 +141,24 @@ def main(argv=None) -> int:
     import aigenerated
     signed = not aigenerated.verify_text(text)
     author = aigenerated.DEFAULT_AUTHOR
+    comments = []
     if signed:
         m = re.search(r'"aigenerated:([^":]+):[0-9a-f]{12}"', text)
         if m:
             author = m.group(1)
+        comments = aigenerated.extract_text(text)
         text = aigenerated._canonical(aigenerated._clean(text))
+    else:
+        comments = aigenerated.collect_comments(text)
 
     out_text, total, njumps, labels = labelize(text, args.prefix)
     pid = None
     if signed or args.sign:
-        out_text, pid = aigenerated.sign_text(out_text, author, force=True)
+        out_text, pid = aigenerated.sign_text(
+            out_text, author, force=True, comments=comments)
+        if comments:
+            # visible for editing; the token keeps the original line numbers
+            out_text, pid, _ = aigenerated.restore_text(out_text)
 
     dst = Path(args.output) if args.output else src.with_suffix(".labels.mlog")
     dst.write_text(out_text.replace("\r\n", "\n"), encoding="utf-8", newline="\n")

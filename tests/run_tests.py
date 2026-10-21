@@ -251,7 +251,9 @@ SUITE: list[tuple[str, str, str | None]] = [
     ("cost/counter-op",        "cost",    "counter-op.mlog"),
     ("cost/counter-set",       "cost",    "counter-set.mlog"),
     ("cost/counter-unknown",   "cost",    "counter-unknown.mlog"),
+    ("check/declared-by-mention", "check", "declared-by-mention.mlog"),
     ("tool/aigenerated",       "aigenerated", None),
+    ("gen/normalized",         "gen",     None),
     ("cross/unit-verdicts",    "cross",   None),
     ("values/cross-fold",     "crossvalues", None),
 ]
@@ -282,6 +284,22 @@ def digest_aigenerated() -> dict:
         out["verify_forced"], _ = run("verify", str(p))
         out["strip"], _ = run("strip", str(p))
 
+        # comments travel inside the signature payload, with original lines
+        c = Path(d) / "c.mlog"
+        c.write_text("# head\nset x 1\n# mid\nprint \"hi\"\nend\n",
+                     "utf-8", newline="\n")
+        out["comments_sign"], _ = run("sign", "--force", str(c))
+        out["comments_body_has_none"] = not any(
+            l.strip().startswith("#")
+            for l in c.read_text(encoding="utf-8").splitlines()[:-1])
+        _, txt = run("extract", str(c))
+        out["comments_extract"] = [l for l in txt.splitlines() if l.startswith("L")]
+        out["comments_restore"], _ = run("restore", str(c))
+        out["comments_lines"] = [
+            i + 1 for i, l in enumerate(c.read_text(encoding="utf-8").splitlines())
+            if l.strip().startswith("#")]
+        out["comments_verify"], _ = run("verify", str(c))
+
         # `mlog.py gen` must sign both the source and the emitted blueprint.
         import msch
         mlog_tool = HERE.parent / "tools" / "mlog.py"
@@ -301,12 +319,44 @@ def digest_aigenerated() -> dict:
     return out
 
 
+def digest_gen() -> dict:
+    """`gen` must normalise schematic coordinates and strip a source BOM.
+
+    Regression: `--at 20,20` used to be written raw, so a 4x1 build claimed a
+    24x21 canvas and pasted 20 tiles away from the cursor; a BOM-prefixed first
+    line compiled to a Noop and silently vanished.
+    """
+    import msch
+    out: dict = {}
+    with tempfile.TemporaryDirectory() as d:
+        src = Path(d) / "g.mlog"
+        # deliberately BOM-prefixed, like PowerShell's Set-Content
+        src.write_text("\ufeffwrite 42 cell1 0\nread r cell1 0\nprint r\nend\n",
+                       encoding="utf-8", newline="\n")
+        bp = Path(d) / "g.msch"
+        r = subprocess.run(
+            [sys.executable, str(HERE.parent / "tools" / "mlog.py"), "gen", str(src),
+             "--name", "g", "--at", "20,20", "--link", "cell1@3,0",
+             "--with-block", "memory-cell@3,0", "--binary", str(bp),
+             "--no-sign", "--quiet"],
+            capture_output=True, text=True, encoding="utf-8", errors="replace")
+        sch = msch.parse_file(bp)
+        out["rc"] = r.returncode
+        out["size"] = [sch.width, sch.height]
+        out["tiles"] = [[t.block, t.x, t.y] for t in sch.tiles]
+        out["links"] = [[l.name, l.x, l.y]
+                        for t in sch.tiles if t.logic for l in t.logic.links]
+        out["first_line"] = sch.logic_tiles()[0].logic.code.splitlines()[0]
+    return out
+
+
 DIGESTS = {
     "gate": digest_gate, "check": digest_check, "check_msg": digest_check_msg,
     "ir": digest_ir, "values": digest_values, "pack": digest_pack,
     "cost": digest_cost, "cross": lambda _f: digest_cross_unit(),
     "crossvalues": lambda _f: digest_cross_values(),
     "aigenerated": lambda _f: digest_aigenerated(),
+    "gen": lambda _f: digest_gen(),
     "odd": lambda _f: digest_odd(),
 }
 
