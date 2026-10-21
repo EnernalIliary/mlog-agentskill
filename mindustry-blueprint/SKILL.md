@@ -726,7 +726,7 @@ DSH 没有"单个技能的作用范围"开关,作用域**就是它所在的目�
 | 位置 | 谁看得见 |
 |---|---|
 | `<仓库>/.dsh/skills/mlog-agentskill/` | 只有这个仓库(本仓库既是源码,也是这种用法) |
-| `$DSH_HOME/skills/mlog-agentskill/` | **所有项目**。本机 `C:/Users/lliary/.dsh/skills` 是指向 `.dsh-pack/skills/default` 的 junction,所以写进去等于装成内置技能 |
+| `$DSH_HOME/skills/mlog-agentskill/` | **所有项目**。本机 `C:/Users/<you>/.dsh/skills` 是指向 `.dsh-pack/skills/default` 的 junction,所以写进去等于装成内置技能 |
 
 一条命令装到用户级,装完逐文件校验:
 
