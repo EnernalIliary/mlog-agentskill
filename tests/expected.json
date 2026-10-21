@@ -219,6 +219,11 @@
       ]
     ]
   },
+  "check/link-hyphen-ok": {
+    "kind": "check",
+    "case": "link-hyphen-ok.mlog",
+    "digest": []
+  },
   "check/spin-deadlock": {
     "kind": "check",
     "case": "spin.mlog",

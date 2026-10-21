@@ -734,8 +734,15 @@ def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> l
     # So `silicon-arc-furnace1` never binds; the statement silently does nothing.
     _HYPHEN_NAME = re.compile(r"^[A-Za-z_][\w.]*(?:-[\w.]+)+$")
     for _ln, _code in stmts:
-        for _tok in re.findall(r"\S+", _code):
+        # Strip string literals first: `print "Power Gauge v0-B.2"` tokenises to
+        # `v0-B.2`, which is not a link name at all.
+        _bare_code = re.sub(r'"[^"]*"', '""', _code)
+        for _tok in re.findall(r"\S+", _bare_code):
             if _tok.startswith('"') or _tok.startswith("@"):
+                continue
+            # A hyphenated name that the program itself assigns is a legal
+            # variable (`set needed-icon ""`), not a unbound link.
+            if _tok in ever_defined:
                 continue
             if _HYPHEN_NAME.match(_tok):
                 out.append(Finding(

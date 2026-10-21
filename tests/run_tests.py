@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Regression tests for the mlog toolchain.
 
 Why this exists
@@ -237,6 +237,9 @@ SUITE: list[tuple[str, str, str | None]] = [
     # legal -- and the second one is the silent no-op worth seeing.
     ("check/self-readwrite",  "check",   "self-readwrite.mlog"),
     ("check/link-hyphen",     "check",   "link-hyphen.mlog"),
+    # A hyphenated name the program assigns is a legal variable; a hyphen
+    # inside a quoted string is not a name at all. Neither may be reported.
+    ("check/link-hyphen-ok",  "check",   "link-hyphen-ok.mlog"),
     ("check/spin-deadlock",   "check",   "spin.mlog"),
     ("check/spin-handshake",  "check",   "spin-ok.mlog"),
     ("pack/three-fields",      "pack",    "pack1.mlog"),

@@ -63,6 +63,7 @@ from __future__ import annotations
 import argparse
 import base64
 import collections
+import importlib
 import json
 import os
 import re
@@ -1621,6 +1622,44 @@ def cmd_map(args) -> int:
     return rc
 
 
+def _tool(name: str):
+    return importlib.import_module(name)
+
+
+def cmd_sim(args) -> int:
+    return _tool("mlogsim").main(args.sim_args)
+
+
+def cmd_ranges(args) -> int:
+    return _tool("mlogrange").cmd_ranges(args.file, args.var)
+
+
+def cmd_jumps(args) -> int:
+    return _tool("mlogrange").cmd_jumps(args.file, args.max, args.var)
+
+
+def cmd_post(args) -> int:
+    import aigenerated
+    from pathlib import Path
+    if args.output and len(args.files) > 1:
+        sys.exit("-o takes a single file")
+    out = Path(args.output) if args.output else None
+    for f in args.files:
+        print(aigenerated.post(Path(f), args.author or aigenerated.DEFAULT_AUTHOR, out))
+    return 0
+
+
+def cmd_labelize(args) -> int:
+    argv = [args.file, "--prefix", args.prefix]
+    if args.output:
+        argv += ["-o", args.output]
+    if args.check:
+        argv.append("--check")
+    if args.sign:
+        argv.append("--sign")
+    return _tool("mlog_labelize").main(argv)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(
         prog="mlog", description=__doc__,
@@ -1788,6 +1827,36 @@ def main() -> int:
 
     p = sub.add_parser("selftest", help="round-trip every blueprint in the game dir")
     p.set_defaults(fn=lambda a: _gen.selftest())
+
+    p = sub.add_parser("sim", help="run logic on the real executor (forwards to mlogsim.py)")
+    p.add_argument("sim_args", nargs=argparse.REMAINDER,
+                   help="everything after `sim` goes to mlogsim.py, e.g. --ticks 120 x.mlog")
+    p.set_defaults(fn=cmd_sim)
+
+    p = sub.add_parser("ranges", help="possible value range of each variable per statement")
+    p.add_argument("file")
+    p.add_argument("--var")
+    p.set_defaults(fn=cmd_ranges)
+
+    p = sub.add_parser("jumps", help="expand `op add @counter ...` into a jump table")
+    p.add_argument("file")
+    p.add_argument("--var")
+    p.add_argument("--max", type=int, default=64)
+    p.set_defaults(fn=cmd_jumps)
+
+    p = sub.add_parser("post", help="labels -> numbers, then apply the hidden signature")
+    p.add_argument("files", nargs="+")
+    p.add_argument("-o", "--output")
+    p.add_argument("--author", default=None)
+    p.set_defaults(fn=cmd_post)
+
+    p = sub.add_parser("labelize", help="numeric jump targets -> jump labels (for editing)")
+    p.add_argument("file")
+    p.add_argument("-o", "--output")
+    p.add_argument("--prefix", default="L")
+    p.add_argument("--check", action="store_true")
+    p.add_argument("--sign", action="store_true")
+    p.set_defaults(fn=cmd_labelize)
 
     args = ap.parse_args()
     return args.fn(args)

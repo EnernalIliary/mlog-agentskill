@@ -170,6 +170,62 @@ def verify(path: Path) -> list[str]:
     return [f"{path}: {p}" for p in verify_text(_read(path))]
 
 
+LABEL_LINE_RE = re.compile(r"^\s*([A-Za-z_][\w.\-]*):\s*$")
+JUMP_LABEL_RE = re.compile(r"^(\s*jump\s+)([A-Za-z_][\w.\-]*)(\s+.*)?$", re.I)
+
+
+def resolve_labels(text: str) -> tuple[str, int, int]:
+    """Turn `jump label` back into `jump N` and drop the label lines.
+
+    A label line does not occupy a statement slot, so `label -> N` is the
+    number of statements before it. Unknown labels are left untouched.
+    """
+    lines = text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+    if lines and lines[-1] == "":
+        lines.pop()
+    labels: dict[str, int] = {}
+    kinds: list[str] = []
+    idx = 0
+    for line in lines:
+        s = line.strip()
+        m = LABEL_LINE_RE.match(line)
+        if not s or s.startswith("#"):
+            kinds.append("keep")
+        elif m:
+            labels[m.group(1)] = idx
+            kinds.append("label")
+        else:
+            kinds.append("stmt")
+            idx += 1
+    out: list[str] = []
+    rewritten = 0
+    for line, kind in zip(lines, kinds):
+        if kind == "label":
+            continue
+        if kind == "stmt":
+            m = JUMP_LABEL_RE.match(line)
+            if m and not m.group(2).isdigit() and m.group(2) in labels:
+                line = f"{m.group(1)}{labels[m.group(2)]}{m.group(3) or ''}"
+                rewritten += 1
+        out.append(line)
+    return "\n".join(out) + "\n", len(labels), rewritten
+
+
+def post(path: Path, author: str, output: Path | None = None) -> str:
+    """Delivery post-process: labels -> line numbers, then sign."""
+    text = _read(path)
+    if not verify_text(text):
+        m = re.search(r'"aigenerated:([^":]+):[0-9a-f]{12}"', text)
+        if m:
+            author = m.group(1)
+    numeric, nlabels, rewritten = resolve_labels(text)
+    signed, pid = sign_text(numeric, author, force=True)
+    dst = output or path
+    _write(dst, signed)
+    return (f"post  {dst}: {nlabels} label(s), {rewritten} jump(s) numeric; "
+            f"signed id={pid} author={author}")
+
+
 def main(argv) -> int:
     ap = argparse.ArgumentParser(description="hidden @aigenerated signature for AI-written mlog")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -185,6 +241,11 @@ def main(argv) -> int:
     pt = sub.add_parser("strip", help="refused by policy")
     pt.add_argument("files", nargs="+")
 
+    pp = sub.add_parser("post", help="delivery post-process: labels -> numbers, then sign")
+    pp.add_argument("files", nargs="+")
+    pp.add_argument("--author", default=DEFAULT_AUTHOR)
+    pp.add_argument("-o", "--output", help="write here instead of in place (single file)")
+
     args = ap.parse_args(argv)
     if args.cmd == "strip":
         print("refused: the @aigenerated signature is an attribution term and cannot be stripped;\n"
@@ -198,7 +259,16 @@ def main(argv) -> int:
             print(f"missing file: {path}", file=sys.stderr)
             failed += 1
             continue
-        if args.cmd == "sign":
+        if args.cmd == "post":
+            if args.output and len(args.files) != 1:
+                print("-o/--output only works with a single file", file=sys.stderr)
+                return 2
+            try:
+                print(post(path, args.author, Path(args.output) if args.output else None))
+            except SignError as e:
+                print(f"FAIL  {e}", file=sys.stderr)
+                failed += 1
+        elif args.cmd == "sign":
             try:
                 print(sign(path, args.author, args.force))
             except SignError as e:

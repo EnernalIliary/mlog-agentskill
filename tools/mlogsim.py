@@ -188,6 +188,13 @@ class Server:
         base = os.path.join(ROOT, "out", "_sim")
         os.makedirs(base, exist_ok=True)
         self.workdir = tempfile.mkdtemp(prefix="run-", dir=base)
+        self._save = save
+        self._base0 = None
+        self._init_src = None
+        self._core_spec = None
+        self._unit_spec = None
+        self._unit_pos = None
+        self._weather_specs = []
         os.makedirs(os.path.join(self.workdir, "config", "logs"), exist_ok=True)
         self.proc = subprocess.Popen(
             [java, "-Dstdout.encoding=UTF-8", "-Dstderr.encoding=UTF-8", "-jar", jar],
@@ -319,6 +326,44 @@ class Server:
             raise SimError("--core-items: no core found and the auto-placed one was not created")
         self.cores = cores
         return cores
+
+    def reset_world(self):
+        """Put the world back to its initial state so one JVM can run many jobs."""
+        if getattr(self, "_save", None):
+            self.send("load scene")
+            self.wait_for("Save loaded.", 120)
+            self.send("pause on")
+            time.sleep(0.2)
+            out = self.js(PICK_BASE_JS)
+            base_line = next((ln for ln in out if ln.startswith("BASE\t")), None)
+            if base_line is None:
+                raise SimError("reset: could not find an empty tile for the processor")
+            _, bx, by = base_line.split("\t")
+            self.base = (int(bx), int(by))
+        elif self.world_size:
+            self.js(LOAD_JS % {"n": self.world_size})
+        else:
+            self.send("stop")
+            time.sleep(0.2)
+            self.send("host")
+            self.wait_for("Opened a server", 120)
+            self.send("pause on")
+            time.sleep(0.3)
+        if self._base0 is not None:
+            self.base = self._base0
+
+    def prepare(self):
+        """Re-apply world setup that reset_world() wipes (init-js, cores, units)."""
+        if self._init_src:
+            self.js(self._init_src)
+        if self._core_spec:
+            self.fill_cores(self._core_spec)
+        if self._unit_spec:
+            wx, wy = self._unit_pos or (self.base[0] * 8 + 4, self.base[1] * 8 + 4)
+            self.js(UNIT_JS % {"spec": json.dumps(self._unit_spec), "wx": wx, "wy": wy})
+        if self._weather_specs:
+            for wname, wint in self._weather_specs:
+                self.js(weather_js(wname, wint))
 
     def close(self):
         try:
@@ -477,6 +522,15 @@ if(!b.executor.initialized()){
     throw new Error("PREFLIGHT: program did not compile (run mlog.py check; "
                     + "a jump target out of range/undefined label compiles to nothing)");
 }
+/* a link that is out of range/silently unbound becomes a null constant; catch it
+   now instead of debugging "why is cell1 null" after a long run */
+for(var k = 0; k < b.links.size; k++){
+    var lk = b.links.get(k);
+    if(!lk.valid){
+        throw new Error("PREFLIGHT: link '" + lk.name + "' did not bind (missing target "
+                        + "or farther than 10 tiles)");
+    }
+}
 /* updateTile() copies the team in; paused world never runs it */
 b.executor.team = Packages.mindustry.game.Team.sharded;
 /* a block placed via setBlock keeps efficiency 0 until updateEfficiency runs */
@@ -522,6 +576,13 @@ for(var i = 0; i < tiles.length; i++){
     b.updateCode(b.code);
     if(!b.executor.initialized()){
         throw new Error("PREFLIGHT: processor at " + t.x + "," + t.y + " did not compile");
+    }
+    for(var k = 0; k < b.links.size; k++){
+        var lk = b.links.get(k);
+        if(!lk.valid){
+            throw new Error("PREFLIGHT: processor at " + t.x + "," + t.y + " link '"
+                            + lk.name + "' did not bind (missing target or farther than 10 tiles)");
+        }
     }
     /* updateTile() copies the team in; paused world never runs it */
     b.executor.team = team;
@@ -960,6 +1021,11 @@ def run_mlog(srv: Server, name: str, code: str, steps: int, ticks: bool = False,
                         "loop": _loop_js("b", steps, ticks, update, power, combat, trace, unit_ai,
                                          preflight, itr)}
         lines = srv.js(js)
+        if preflight:
+            warns = [ln.split("\t") for ln in lines if ln.startswith("LINKWARN\t")]
+            if warns:
+                detail = "; ".join(f"{w[1]}: {w[2]}" for w in warns if len(w) > 2)
+                raise SimError(f"link preflight: {detail} (use --links off to allow null links)")
         recs = parse_results(lines)
         rec = recs[0] if recs else {"vars": {}, "counter": None, "text": ""}
         rec["trace"] = parse_trace(lines) if trace else []
@@ -1069,9 +1135,132 @@ def _write_trace(path: str, rows: list[list[str]]):
             fh.write(",".join(row) + "\n")
 
 
+def configure_server(srv: Server, args):
+    """Attach per-run world setup so prepare() can replay it after each reset."""
+    if args.base:
+        srv.base = tuple(int(v) for v in args.base.split(","))
+        srv._base0 = srv.base
+    if args.init_js:
+        if os.path.exists(args.init_js):
+            with open(args.init_js, encoding="utf-8-sig") as fh:
+                srv._init_src = fh.read()
+        else:
+            srv._init_src = args.init_js
+    if args.core_items:
+        srv._core_spec = args.core_items
+    if args.units:
+        spec = []
+        for part in args.units.split(","):
+            part = part.strip()
+            if not part:
+                continue
+            name, _, cnt = part.partition(":")
+            spec.append([name.strip(), int(cnt) if cnt else 1])
+        srv._unit_spec = spec
+        if args.unit_pos:
+            ux, uy = (float(v) for v in args.unit_pos.split(","))
+            srv._unit_pos = (ux * 8 + 4, uy * 8 + 4)
+    if args.weather:
+        for wspec in args.weather:
+            wname, _, wint = wspec.partition(":")
+            srv._weather_specs.append((wname.strip(), float(wint) if wint else 1.0))
+
+
+DAEMON_FILE = os.path.join(ROOT, "out", "_mlogsimd.json")
+
+
+def serve_daemon(args, steps: int, ticks: bool, update: str, power: float, combat: bool,
+                 preflight: bool):
+    """Boot once, then answer JSON-line jobs over localhost (prewarm for a session)."""
+    import socket
+    world_size = None if args.host or args.world == 0 else args.world
+    srv = Server(args.java, args.jar, world_size, args.save)
+    configure_server(srv, args)
+    srv.prepare()
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    sock.bind(("127.0.0.1", args.port))
+    sock.listen(4)
+    port = sock.getsockname()[1]
+    with open(DAEMON_FILE, "w", encoding="utf-8") as fh:
+        json.dump({"pid": os.getpid(), "port": port, "world": world_size, "save": args.save}, fh)
+    print("DAEMON\t%d" % port, flush=True)
+    try:
+        while True:
+            conn, _ = sock.accept()
+            try:
+                with conn:
+                    line = conn.makefile("r", encoding="utf-8").readline()
+                    req = json.loads(line)
+                    srv.reset_world()
+                    srv.prepare()
+                    f = req["file"]
+                    n = int(req.get("ticks") or 0)
+                    t = n > 0
+                    st = n if t else int(req.get("steps") or steps)
+                    if f.lower().endswith(".msch"):
+                        recs = run_msch(srv, os.path.basename(f), f, st, t, update, power,
+                                        combat, False, args.unit_ai, preflight)
+                    else:
+                        with open(f, encoding="utf-8-sig") as fh:
+                            code = fh.read()
+                        recs = [run_mlog(srv, os.path.basename(f), code, st, t, update, power,
+                                         args.processor, combat, False, args.unit_ai,
+                                         preflight, args.links)]
+                    conn.sendall((json.dumps({"ok": True, "results": recs},
+                                             ensure_ascii=False) + "\n").encode("utf-8"))
+            except Exception as e:  # noqa: BLE001 - report to the client, keep serving
+                try:
+                    conn.sendall((json.dumps({"ok": False, "error": str(e)},
+                                             ensure_ascii=False) + "\n").encode("utf-8"))
+                except OSError:
+                    pass
+    finally:
+        try:
+            os.unlink(DAEMON_FILE)
+        except OSError:
+            pass
+        srv.close()
+
+
+def remote_client(args) -> int:
+    """Send files to a running --daemon and print its results."""
+    import socket
+    if not os.path.exists(DAEMON_FILE):
+        sys.exit("no daemon: start `python tools/mlogsim.py --daemon` first")
+    with open(DAEMON_FILE, encoding="utf-8") as fh:
+        cfg = json.load(fh)
+    out = []
+    for f in args.files:
+        req = {"file": os.path.abspath(f)}
+        if args.ticks:
+            req["ticks"] = args.ticks
+        elif args.steps:
+            req["steps"] = args.steps
+        try:
+            with socket.create_connection(("127.0.0.1", cfg["port"]), timeout=300) as s:
+                s.sendall((json.dumps(req) + "\n").encode("utf-8"))
+                line = s.makefile("r", encoding="utf-8").readline()
+        except OSError:
+            sys.exit(f"daemon not running (stale {DAEMON_FILE}?); start --daemon again")
+        resp = json.loads(line)
+        if not resp.get("ok"):
+            sys.exit(f"sim failed: {resp.get('error')}")
+        out.extend(resp["results"])
+    print(json.dumps(out, ensure_ascii=False, indent=2) if args.json else
+          "\n".join(f"== {r['name']} ==" for r in out))
+    return 0
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description="run mlog on the real Mindustry LExecutor")
-    ap.add_argument("files", nargs="+", help=".mlog files (or .msch schematics)")
+    ap.add_argument("files", nargs="*", help=".mlog files (or .msch schematics)")
+    ap.add_argument("--daemon", action="store_true",
+                    help="boot once and serve JSON jobs on 127.0.0.1 (warm start for a session)")
+    ap.add_argument("--remote", action="store_true",
+                    help="send the files to the running --daemon instead of booting a server")
+    ap.add_argument("--port", type=int, default=0,
+                    help="--daemon port (0 = pick a free one and write out/_mlogsimd.json)")
     ap.add_argument("--steps", type=int, default=None, help="instructions to execute (default 200)")
     ap.add_argument("--ticks", type=int, default=None,
                     help="simulated ticks: drive updateTile() with Time.delta=1 (accumulator/ipt/wait)")
@@ -1146,39 +1335,23 @@ def main(argv=None):
         sys.exit(f"missing server jar: {args.jar}")
 
     world_size = None if args.host or args.world == 0 else args.world
+    if args.remote:
+        return remote_client(args)
+    if args.daemon:
+        serve_daemon(args, steps, ticks, update, power, combat, preflight)
+        return 0
+    if not args.files:
+        sys.exit("no input files (or use --daemon)")
     srv = Server(args.java, args.jar, world_size, args.save)
-    if args.base:
-        srv.base = tuple(int(v) for v in args.base.split(","))
+    configure_server(srv, args)
     results = []
     try:
-        if args.init_js:
-            if os.path.exists(args.init_js):
-                with open(args.init_js, encoding="utf-8-sig") as fh:
-                    init_src = fh.read()
-            else:
-                init_src = args.init_js
-            srv.js(init_src)
-        if args.core_items:
-            srv.fill_cores(args.core_items)
-        if args.units:
-            spec = []
-            for part in args.units.split(","):
-                part = part.strip()
-                if not part:
-                    continue
-                name, _, cnt = part.partition(":")
-                spec.append([name.strip(), int(cnt) if cnt else 1])
-            if args.unit_pos:
-                ux, uy = (float(v) for v in args.unit_pos.split(","))
-                wx, wy = ux * 8 + 4, uy * 8 + 4
-            else:
-                wx, wy = srv.base[0] * 8 + 4, srv.base[1] * 8 + 4
-            srv.js(UNIT_JS % {"spec": json.dumps(spec), "wx": wx, "wy": wy})
-        if args.weather:
-            for spec in args.weather:
-                wname, _, wint = spec.partition(":")
-                srv.js(weather_js(wname.strip(), float(wint) if wint else 1.0))
-        for f in args.files:
+        for idx, f in enumerate(args.files):
+            if idx:
+                # one JVM for the whole batch: reload the world (~0.12 s) instead
+                # of paying the ~3 s server boot for every file
+                srv.reset_world()
+            srv.prepare()
             if f.lower().endswith(".msch"):
                 results.extend(run_msch(srv, os.path.basename(f), f, steps, ticks, update, power,
                                         combat, want_trace, args.unit_ai, preflight))
