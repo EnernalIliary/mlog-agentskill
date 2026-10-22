@@ -33,3 +33,11 @@ out/caime_scan*.txt
 
 # publishable export (own git repo) - /dist/mlog-toolkit
 /dist/
+
+# 本地知识库：模型/依赖/索引都只在本机，不进仓库
+/out/_kblibs/
+/out/_kbmodels/
+/out/_kb/
+
+# 知识库的 Python 3.11 依赖副本（3.12 用 out/_kblibs）
+/out/_kblibs311/

@@ -21,9 +21,39 @@
 | 这个程序需要哪些世界符号 | `python tools/mlog_needs.py 图.msch` |
 | 整批存档里的逻辑 | `python tools/mlog.py map <存档目录>` |
 | 规则逐条审计 | `python tools/review.py md` |
+| 本地知识库（向量+重排） | `python tools/kb.py search "read @this 怎么写" -k 6` |
 | 自检工具链 | `python tools/mlog.py selftest`；`python tests/run_tests.py` |
 
 `mlog.py --help` 是子命令总表；`tools/mlogsim.py --help` 是模拟器参数（世界、单位、战斗 tick、trace/assert）。
+
+## 本地知识库（`kb.py`）
+
+把仓库里的公开文档与工具源码切成块，存进 SQLite，检索走“向量召回 + FTS 召回 → RRF 融合 → cross-encoder 重排”。模型与索引都在本机，不进仓库。
+
+```bash
+# 首次：下载模型并建索引（约 1 分钟）
+python tools/kb.py build
+# 查询：默认向量+FTS+重排
+python tools/kb.py search "模拟器战斗 tick 怎么开" -k 6
+python tools/kb.py search "ulocate" -k 4 --kind code --no-rerank
+# MCP stdio 服务（给 DSH / Claude Desktop 之类用）
+python tools/kb.py serve
+```
+
+- 依赖与模型：`fastembed` 装在 `out/_kblibs`，模型缓存在 `out/_kbmodels`（`BAAI/bge-small-zh-v1.5` + `BAAI/bge-reranker-base`）。首次运行前设置 `HF_ENDPOINT=https://hf-mirror.com`（国内镜像）。
+- 索引：`out/_kb/kb.sqlite3`；`build` 可重复跑，重建整表。
+- MCP 配置（以 DSH 的 mcp 配置为例）：
+
+```json
+{"mcpServers": {"mlog-kb": {
+  "command": "python",
+  "args": ["<repo>/tools/kb.py", "serve"],
+  "env": {"HF_ENDPOINT": "https://hf-mirror.com"}
+}}}
+```
+
+- 工具名 `kb_search(query, k=6, kind="")`；`kind` 取 `doc` 或 `code`。
+
 
 ## 文件分层
 
