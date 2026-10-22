@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "DSH agent preset for Mindustry mlog / blueprint / save work (猪猪鱼 persona + the mlog.py toolkit conventions).",
+  "description": "DSH agent preset for Mindustry mlog / blueprint / save work (mlog specialist persona + the mlog.py toolkit conventions).",
   "license": "MIT",
   "dsh": {
     "bundle": {

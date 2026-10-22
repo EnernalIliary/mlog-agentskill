@@ -1,4 +1,4 @@
-﻿# ============================================================================
+# ============================================================================
 # dsh-preset-mlog — DSH bundle patch
 # ============================================================================
 # 声明一个 agent 预设 `mlog`：DSH 里「新建会话 → 选预设」会多出这一项。
@@ -6,7 +6,7 @@
 # preset-standard 声明），只改这几处：
 #   1. 行 id `preset-standard` → `preset-mlog`，`config.id` `standard` → `mlog`
 #   2. `order` 1 → 5（standard 1 / 其它预设已占 2-4）
-#   3. `persona.prefix` 换成 Mindustry 逻辑语境（猪猪鱼）
+#   3. `persona.prefix` 换成 Mindustry 逻辑语境
 #   4. `skill-filesystem` 加 `customSkillDirs`，预加载本仓库 .dsh/skills 下的两个技能
 #   5. 补回官方 preset-standard 里 plan-mode 的 `config.section`（旧版漏写）
 # 注意：DSH 的补丁**替换整份 config**（无深合并），所以下面必须把
@@ -14,7 +14,7 @@
 # 升级 DSH 后若官方 preset-standard 增删了插件，这里要手动对齐。
 #
 # 安装：
-#   dsh plugin --profile desktop add link:<repo>\dsh-preset-mlog
+#   dsh plugin --profile desktop add "link:<repo>\dsh-preset-mlog"
 # 卸载：
 #   dsh plugin --profile desktop remove dsh-preset-mlog
 # ============================================================================
@@ -24,17 +24,19 @@
       name: '@deepseek-ai/dsh-agent-preset'
       config:
         id: mlog
+        name: 'Mlog 逻辑专家'
+        description: '读逻辑、静态检查、真执行器验证、蓝图与存档体检'
         order: 5
         plugins:
           - id: persona
             name: '@deepseek-ai/dsh-persona'
             config:
               prefix: |
-                You are 猪猪鱼, a Mindustry mlog / blueprint / save specialist working with 艾铭 (iliary). Answer in Chinese unless asked otherwise.
+                You are an mlog specialist for Mindustry: logic processors (mlog), blueprints (.msch) and saves (.msav). Read other people's logic, run static checks, audit whole blueprints and saves, and write logic for community players. Answer in Chinese unless asked otherwise.
 
-                你的主场：Mindustry 的逻辑处理器（mlog）、蓝图（.msch）、存档（.msav）——读别人的逻辑、静态检查、整图体检、给社区玩家写逻辑。`mlog-agentskill` 技能自带一份 `tools/`（入口 `python tools/mlogagent.py report ...`）；完整开发副本在 `<repo>/mindustry-blueprint/tools/`（统一入口 `python mlog.py <子命令>`）。`mindustry-blueprint` 与 `mlog-agentskill` 两个技能记录了每个子命令与全部校准数字；本预设已把 `<repo>/.dsh/skills` 设为技能根，换项目也照样加载。
+                你的主场：Mindustry 的逻辑处理器（mlog）、蓝图（.msch）、存档（.msav）——读别人的逻辑、静态检查、整图体检、给社区玩家写逻辑。`mlog-agentskill` 技能自带一份 `tools/`（入口 `python tools/mlogagent.py report ...`）；仓库根目录的 `mindustry-blueprint/tools/` 是完整开发副本（统一入口 `python mlog.py <子命令>`）。`mindustry-blueprint` 与 `mlog-agentskill` 两个技能记录了每个子命令与全部校准数字；本预设已把仓库的 `.dsh/skills` 设为技能根，换项目也照样加载。
 
-                两条长期规则，来自用户，不可协商：
+                两条长期规则：
                 1. 写任何新逻辑之前，先问清 3-5 个问题（数量 / 阈值 / 失败策略 / 依赖方块 / 周期），问完再动手。
                 2. 交付任何逻辑之前，过一遍 SKILL 里的九条自检（check 0E0W / ir 无死存储 / cost 对上周期含 ⏸ blocking / values 无意外恒真 / cross 无未声明槽 / 命名与署名 / 用 `mlog.py gen` 出蓝图），并写清"模拟器验证不了的部分"。
 
@@ -64,12 +66,12 @@
           - id: skill-filesystem
             name: '@deepseek-ai/dsh-skill-filesystem'
             config:
-              # 这两个技能（mindustry-blueprint / mlog-agentskill）只在本仓库的
-              # .dsh/skills 下。把绝对路径加为 custom root（rank 300），换任何
+              # 这两个技能（mindustry-blueprint / mlog-agentskill）在本仓库的
+              # .dsh/skills 下。把技能根加为 custom root（rank 300），换任何
               # 工作目录开会话都能加载；在本仓库时 project root（rank 100）优先，
-              # 同名技能不会重复注册。
+              # 同名技能不会重复注册。默认取当前工作目录，可用 MLOG_SKILL_ROOT 覆盖。
               customSkillDirs:
-                - '<repo>/.dsh/skills'
+                - !!js process.env.MLOG_SKILL_ROOT || process.cwd() + '/.dsh/skills'
           - id: tool-skill
             name: '@deepseek-ai/dsh-tool-skill'
           - id: command-goal
