@@ -7,8 +7,24 @@ whenToUse: 涉及 Mindustry 蓝图（.msch / 蓝图码）、mlog 逻辑编写或
 # Mindustry 蓝图与 mlog 工具链
 
 
+## 60 秒上手（第一次用先跑这条）
+
+```bash
+cd <repo>                 # 仓库根；不是 .dsh/skills 下的技能副本
+python tools/mlog.py doctor
+```
+
+`doctor` 会打印入口、Java/服务端 jar 是否就绪，再列一遍下面五条。
+
+- 单一入口 `python tools/mlog.py ...`；**不要** `cd` 进 `.dsh/skills/mindustry-blueprint/tools`（分发副本，路径假设不同）。
+- 输出已经是 UTF-8：直接读工具结果，**不要** `> tmp\out.txt` 再 `read`（多两次调用就多两轮）。
+- 看一个逻辑：`check --cost` + `ir` + `values` 三条足够，不要 parse/text/gen 逐个试探。
+- 跑真实行为：`python tools/mlogsim.py FILE --ticks 120 --update all`；多文件先 `--daemon`。
+- 记不清指令：`python tools/mlog.py cmd <名字>` / `explain <名字>`，比翻源码快。
+
 ## 目录
 
+- 60 秒上手（第一次用先跑这条）
 - 这个技能能做什么
 - 标准流程
 - 铁律(生成前逐条自查)

@@ -84,6 +84,13 @@ import msch                          # noqa: E402
 import mschgen as _gen              # noqa: E402
 import aigenerated as _sig          # noqa: E402
 
+# Windows consoles default to cp936; every report below is UTF-8.
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+except Exception:                     # pragma: no cover - non-TTY pipes
+    pass
+
 
 def _load_json(name: str) -> dict:
     p = os.path.join(HERE, name)
@@ -200,7 +207,9 @@ def cmd_gen(args) -> int:
     if args.logic:
         code = args.logic
     elif args.source:
-        with open(args.source, encoding="utf-8") as fh:
+        # utf-8-sig: PowerShell's Set-Content writes a BOM, and a BOM-prefixed
+        # first line compiles to a Noop (the statement silently disappears).
+        with open(args.source, encoding="utf-8-sig") as fh:
             code = fh.read()
     else:
         code = sys.stdin.read()
@@ -213,7 +222,7 @@ def cmd_gen(args) -> int:
                 msg = _sig.sign(Path(args.source), args.author, force=False)
             except _sig.SignError:
                 msg = _sig.sign(Path(args.source), args.author, force=True)
-            with open(args.source, encoding="utf-8") as fh:
+            with open(args.source, encoding="utf-8-sig") as fh:
                 code = fh.read()
             print(f"# {msg}", file=sys.stderr)
         else:
@@ -1660,11 +1669,47 @@ def cmd_labelize(args) -> int:
     return _tool("mlog_labelize").main(argv)
 
 
+def cmd_doctor(_args) -> int:
+    """First-run orientation: environment, entry point, five commands."""
+    import shutil
+
+    root = Path(HERE).parent
+    jar = root / "out" / "_server160.jar"
+    jre = root / "out" / "jre21" / "jdk-21.0.5+11-jre" / "bin" / "java.exe"
+    py = "%d.%d.%d" % sys.version_info[:3]
+    ok = lambda b: "yes" if b else "no"
+    print("== mlog doctor ==")
+    print("repo root : %s" % root)
+    print("entry     : %s   (run from the repo root; do NOT cd into .dsh/skills)" % (root / "tools" / "mlog.py"))
+    print("python    : %s" % py)
+    print("stdout    : utf-8 (safe to read directly; do not redirect to a file)")
+    print("server jar: %s  %s" % (ok(jar.exists()), jar))
+    print("jre21     : %s  %s" % (ok(jre.exists()), jre))
+    jpath = shutil.which("java")
+    print("java PATH : %s  %s%s" % (ok(jpath), jpath or "-",
+          "  (Java 8 stub -- mlogsim uses the jre21 below)" if jpath else ""))
+    print()
+    print("== five commands (repo root) ==")
+    print("  python tools/mlog.py check  Logic/foo.mlog --cost")
+    print("  python tools/mlog.py ir     Logic/foo.mlog")
+    print("  python tools/mlog.py values Logic/foo.mlog")
+    print("  python tools/mlog.py gen    --source Logic/foo.mlog --name foo")
+    print("  python tools/mlogsim.py     Logic/foo.mlog --ticks 120 --update all")
+    print()
+    print("tips: multi-file sim -> add --daemon once, then --remote FILE;")
+    print("      sim needs Java 21 + out/_server160.jar (set MLOGSIM_JAVA/MLOGSIM_JAR);")
+    print("      docs: mindustry-blueprint/SKILL.md (start at '60 秒上手').")
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(
         prog="mlog", description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
-    sub = ap.add_subparsers(dest="cmd", required=True)
+    sub = ap.add_subparsers(dest="cmd", required=False)
+
+    p = sub.add_parser("doctor", help="environment + first-run cheat sheet (start here)")
+    p.set_defaults(fn=cmd_doctor)
 
     p = sub.add_parser("parse", help="dump a .msch blueprint")
     p.add_argument("file")
@@ -1693,7 +1738,9 @@ def main() -> int:
     p.add_argument("--description", default="")
     p.add_argument("--label", action="append", default=[])
     p.add_argument("--block", default="micro-processor")
-    p.add_argument("--at", default="0,0", help="processor center x,y")
+    p.add_argument("--at", default="0,0",
+                   help="processor center in the input frame; the emitted "
+                        "schematic is normalised to (0,0)")
     p.add_argument("--rotation", type=int, default=0)
     p.add_argument("--link", action="append", default=[],
                    help="name@dx,dy (relative to the processor)")
@@ -1859,6 +1906,8 @@ def main() -> int:
     p.set_defaults(fn=cmd_labelize)
 
     args = ap.parse_args()
+    if not getattr(args, "cmd", None):
+        return cmd_doctor(args)
     return args.fn(args)
 
 
