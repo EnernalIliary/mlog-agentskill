@@ -201,6 +201,7 @@ python tools/mlogsim.py logic.mlog --save scene.msav --units fortress:1 \
 - 单位：`--units name:count`、`--unit-pos X,Y`、`--unit-ai all`（场景原有单位按 AI 行动）。单位落在实体格会在第一次 `update()` 被 `kill()`，所以 tick 1 会跑 `PREFLIGHT:`（编译失败、单位没生成、落地即死都会直接报，不用等 1200 tick）。
 - 库存：`--core-items silicon:400,copper:200` 给核心灌料（空白世界会自动放一个 `core-shard`）；`ulocate` 找核心、`itemTake`/`itemDrop` 取放料由此可断言（距离上限 `45 world + 方块半宽`，先 `approach` 到 2 格内）。
 - 值域 / 跳转表：`python tools/mlog.py ranges logic.mlog --var unit.n`、`python tools/mlog.py jumps logic.mlog --var unit.n`（也可直接跑 `mlogrange.py`，但它不在本副本）。只从写点推区间，`sensor`/`read`/`ubind`/`ulocate` 一律 unknown；`jumps` 只展开 `op add/sub @counter`。
+- MCP：`python tools/mlog_mcp.py` 把 `mlog_check/ir/values/gen/sim` 暴露成工具；会话里能看到就直接调用（服务端保温，返回 JSON），不用拼 shell。
 - 指令级执行流：`--itrace out/it.tsv --itrace-var unit.n`，每执行一条语句一行 `tick pc vars source`；`pc` 就是当时的 `@counter`。逐指令有开销，`.msch` 暂不支持。
 - 批量 / 预热：`mlogsim.py a.mlog b.mlog --ticks 60` 只起一次 JVM，每个文件前重载世界；`--daemon` 后台预热、`--remote x.mlog --ticks 60` 投任务（单文件约 0.6 s，冷启动约 3.7 s）。预处理阶段可以先起 daemon，检查跑完再 remote。
 - 链接：裸 `.mlog` 没有链接表；`--links auto`（默认）会找出读而不赋值的链接名（`cell1`、`bank1`、`message1`、`dome1`）自动放同类方块并接线（同队、10 格内），`--links off` 才是 `null`。`.msch` 用自己的链接表。没放成/超 10 格会在预检报 `PREFLIGHT: link 'x' did not bind`。

@@ -22,9 +22,33 @@
 | 整批存档里的逻辑 | `python tools/mlog.py map <存档目录>` |
 | 规则逐条审计 | `python tools/review.py md` |
 | 本地知识库（向量+重排） | `python tools/kb.py search "read @this 怎么写" -k 6` |
+| MCP 服务（模型直接调用工具） | `python tools/mlog_mcp.py`（stdio，见下节） |
 | 自检工具链 | `python tools/mlog.py selftest`；`python tests/run_tests.py` |
 
 `mlog.py --help` 是子命令总表；`tools/mlogsim.py --help` 是模拟器参数（世界、单位、战斗 tick、trace/assert）。
+
+## MCP 服务（`mlog_mcp.py`）
+
+把检查器和模拟器直接暴露成工具，模型不用记路径、不用拼 PowerShell：
+
+```bash
+python tools/mlog_mcp.py          # stdio JSON-RPC，供 DSH / Claude Desktop 连接
+```
+
+工具：`mlog_doctor`、`mlog_check{path,cost}`、`mlog_ir{path}`、`mlog_values{path}`、
+`mlog_gen{source|logic,name,links,blocks,out}`、`mlog_sim{path|logic,ticks,units,save,...}`。
+模拟器在服务进程内保温，首次约 3.7 s，之后约 0.6 s。DSH 侧配置片段：
+
+```yaml
+- insert:
+    - id: mcp-mlog
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: mlog
+        transport: stdio
+        command: '<python.exe>'
+        args: ['<repo>/tools/mlog_mcp.py']
+```
 
 ## 本地知识库（`kb.py`）
 
@@ -47,7 +71,7 @@ python tools/kb.py serve
 ```json
 {"mcpServers": {"mlog-kb": {
   "command": "python",
-  "args": ["<repo>/tools/kb.py", "serve"],
+  "args": ["F:/OneDrive/桌面/AtomicStates/tools/kb.py", "serve"],
   "env": {"HF_ENDPOINT": "https://hf-mirror.com"}
 }}}
 ```

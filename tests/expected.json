@@ -447,6 +447,28 @@
       "first_line": "write 42 cell1 0"
     }
   },
+  "tool/mcp": {
+    "kind": "mcp",
+    "case": null,
+    "digest": {
+      "server": "mlog-toolkit",
+      "tools": [
+        "mlog_doctor",
+        "mlog_check",
+        "mlog_ir",
+        "mlog_values",
+        "mlog_gen",
+        "mlog_sim"
+      ],
+      "check": {
+        "ERR": 0,
+        "SUSPECT": 0,
+        "WARN": 0,
+        "INFO": 0
+      },
+      "has_sim": true
+    }
+  },
   "cross/unit-verdicts": {
     "kind": "cross",
     "case": null,

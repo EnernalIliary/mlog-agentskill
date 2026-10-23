@@ -254,6 +254,7 @@ SUITE: list[tuple[str, str, str | None]] = [
     ("check/declared-by-mention", "check", "declared-by-mention.mlog"),
     ("tool/aigenerated",       "aigenerated", None),
     ("gen/normalized",         "gen",     None),
+    ("tool/mcp",               "mcp",     None),
     ("cross/unit-verdicts",    "cross",   None),
     ("values/cross-fold",     "crossvalues", None),
 ]
@@ -363,6 +364,36 @@ def digest_gen() -> dict:
     return out
 
 
+def digest_mcp() -> dict:
+    """The MCP server must hand out the tool list and serve real results."""
+    out: dict = {}
+    server = HERE.parent / "tools" / "mlog_mcp.py"
+    p = subprocess.Popen([sys.executable, str(server)], stdin=subprocess.PIPE,
+                         stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                         text=True, encoding="utf-8", errors="replace")
+
+    def rpc(obj):
+        p.stdin.write(json.dumps(obj, ensure_ascii=False) + "\n")
+        p.stdin.flush()
+        return json.loads(p.stdout.readline())
+
+    try:
+        hello = rpc({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}})
+        out["server"] = hello["result"]["serverInfo"]["name"]
+        tools = rpc({"jsonrpc": "2.0", "id": 2, "method": "tools/list"})["result"]["tools"]
+        out["tools"] = [t["name"] for t in tools]
+        chk = rpc({"jsonrpc": "2.0", "id": 3, "method": "tools/call",
+                   "params": {"name": "mlog_check",
+                              "arguments": {"path": str(CASES / "link-hyphen-ok.mlog")}}})
+        out["check"] = json.loads(chk["result"]["content"][0]["text"])[0]["counts"]
+        out["has_sim"] = "mlog_sim" in out["tools"]
+    finally:
+        p.stdin.close()
+        p.terminate()
+        p.wait(timeout=10)
+    return out
+
+
 DIGESTS = {
     "gate": digest_gate, "check": digest_check, "check_msg": digest_check_msg,
     "ir": digest_ir, "values": digest_values, "pack": digest_pack,
@@ -370,6 +401,7 @@ DIGESTS = {
     "crossvalues": lambda _f: digest_cross_values(),
     "aigenerated": lambda _f: digest_aigenerated(),
     "gen": lambda _f: digest_gen(),
+    "mcp": lambda _f: digest_mcp(),
     "odd": lambda _f: digest_odd(),
 }
 

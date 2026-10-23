@@ -20,6 +20,7 @@ python tools/mlog.py doctor
 - 输出已经是 UTF-8：直接读工具结果，**不要** `> tmp\out.txt` 再 `read`（多两次调用就多两轮）。
 - 看一个逻辑：`check --cost` + `ir` + `values` 三条足够，不要 parse/text/gen 逐个试探。
 - 跑真实行为：`python tools/mlogsim.py FILE --ticks 120 --update all`；多文件先 `--daemon`。
+- 如果会话里能看到 `mlog_check` / `mlog_ir` / `mlog_values` / `mlog_sim` / `mlog_gen` 这些 MCP 工具，**优先直接调用它们**（服务端已保温、返回 JSON），不要退回 shell 拼路径；没有再用上面的命令。
 - 记不清指令：`python tools/mlog.py cmd <名字>` / `explain <名字>`，比翻源码快。
 
 ## 目录
