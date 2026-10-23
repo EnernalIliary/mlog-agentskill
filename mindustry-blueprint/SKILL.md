@@ -120,7 +120,7 @@ whenToUse: 涉及 Mindustry 蓝图（.msch / 蓝图码）、mlog 逻辑编写或
 4. **`cost`**：`worst-case path` 与每圈 tick 对上需求里的周期；把 `wait` 的 `⏸ blocking` 一起看（它一条 ipt 都不烧，但周期时间常常全在这里）。
 5. **`values`**：没有意外的恒真/恒假分支和可证 null（尤其是 `equal X null`——未赋值变量是 0，只有 `===` 区分 null 与 0）。
 6. **跨处理器**（用了 `read`/`write` 别的处理器时）：`cross` 报 `0 never-assigned`；槽名必须在对方先声明，且拼写一致。
-7. **署名**：AI 生成的逻辑先 `python tools/aigenerated.py sign <file>`，交付前 `verify` 一遍。`mlog.py gen` 现在**默认自动签名**（源文件一并签好；`--no-sign` 关闭）。署名写在最后一条语句的**声明参数槽**里：`jump 0 always 0 "aigenerated:作者:id"`，用它替换末尾的 `end`（`always` 不读 p3/p4，`jump 0` 与 `end` 同样归零，行为不变；p4 是声明字段，游戏自己的 `LAssembler.write` 往返会保留它）。尾部多余 token（`end "…"`）重新序列化时会丢。`#` 注释不留在正文，压进 token 的 base64 payload（带原始行号 + 语句锚点），用 `aigenerated.py extract/restore` 取回；哈希只覆盖无注释正文。改逻辑或删签名都会验证失败（`strip` 被策略拒绝）。变量命名跟 `style` 里看到的语料风格一致。
+7. **署名**：AI 生成的逻辑先 `python tools/aigenerated.py sign <file>`，交付前 `verify` 一遍。`mlog.py gen` 现在**默认自动签名**（源文件一并签好；`--no-sign` 关闭）。署名写进最后一条语句的**声明参数槽**：`end` 前若是 `jump N always <value>`，写进它的 compare 槽（`jump N always <value> "aigenerated:作者:id"`，跳转和 `end` 都保留）；否则用 `jump 0 always 0 "aigenerated:作者:id"` 替换/补上末尾 `end`（`always` 不读 value/compare，`jump 0` 与 `end` 同样归零）。已经带 compare 的跳转不覆盖，退回终止行写法。`LAssembler.write` 总输出 4 个参数、缺 compare 补 `false`，占 value 槽会被改写；尾部多余 token（`end "…"`）重新序列化时会丢。`#` 注释不留在正文，压进 token 的 base64 payload（带原始行号 + 语句锚点），用 `aigenerated.py extract/restore` 取回；哈希只覆盖无注释正文。改逻辑或删签名都会验证失败（`strip` 被策略拒绝）。变量命名跟 `style` 里看到的语料风格一致。
 8. **假设写清**：静态分析之外，时序、跨处理器读写、单位运动、生产/天气/子弹命中都要用 `tools/mlogsim.py` 跑真执行器（见下节）；模拟器覆盖不到的部分（画面、野 AI、波次、建筑被毁的连锁后果）才是推理不是验证。交付时明说哪些是"跑过"，哪些是"读起来没错"。
 9. **蓝图用 `mlog.py gen` 产出**，不要手拼 base64；生成后 `ir`/`check` 再跑一遍确认逻辑没被截断。
 

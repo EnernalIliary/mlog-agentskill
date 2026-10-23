@@ -284,6 +284,19 @@ def digest_aigenerated() -> dict:
         out["verify_forced"], _ = run("verify", str(p))
         out["strip"], _ = run("strip", str(p))
 
+        # placement: reuse the compare slot of an existing unconditional jump
+        j = Path(d) / "slot.mlog"
+        j.write_text("set x 1\njump 27 always 0\nend\n", "utf-8", newline="\n")
+        out["slot_sign"], _ = run("sign", str(j))
+        sl = j.read_text(encoding="utf-8").splitlines()
+        out["slot_line"] = sl[-2]
+        out["slot_end_kept"] = sl[-1].strip() == "end"
+        # placement: no end -> append terminal jump 0
+        t = Path(d) / "term.mlog"
+        t.write_text("set x 1\nprint x\n", "utf-8", newline="\n")
+        out["terminal_sign"], _ = run("sign", str(t))
+        out["terminal_line"] = t.read_text(encoding="utf-8").splitlines()[-1]
+
         # comments travel inside the signature payload, with original lines
         c = Path(d) / "c.mlog"
         c.write_text("# head\nset x 1\n# mid\nprint \"hi\"\nend\n",

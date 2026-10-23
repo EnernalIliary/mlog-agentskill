@@ -6,17 +6,23 @@
 
 Where the mark lives
 --------------------
-The last `end` of the program is replaced by
+Preferred: if the program's last real statement is an unconditional
+`jump <n> always <x>`, the token replaces its unused `compare` slot (the
+fourth and last operand; `always` never reads it):
+
+    jump 27 always 0 "aigenerated:猪猪鱼:1f02465d9e75"
+
+Otherwise the closing `end` becomes
 
     jump 0 always 0 "aigenerated:猪猪鱼:1f02465d9e75"
 
 `end` means "next instruction reads 0"; `jump 0 always` does the same thing, so
-the program behaves identically.  The token sits in `JumpStatement`'s declared
-p4 operand — the one `always` never looks at — so the game's own
-`LAssembler.read` / `LAssembler.write` round-trip re-emits it verbatim.  A
-surplus token after `end` is *not* used: `LogicIO.write` drops everything past
-the declared arity, and statements after an `end` are lost too (measured on
-v160.7, see mlog工作笔记).
+the program behaves identically.  The token sits in a declared `JumpStatement`
+operand that `always` never reads, so the game's own `LAssembler.read` /
+`LAssembler.write` round-trip re-emits it verbatim.  A surplus token after
+`end`, `set` or `op` is *not* used: `LogicIO.write` drops everything past the
+declared arity (measured on v160.7, see mlog工作笔记).  A program with no `end`
+gets one appended by the canonical form, then the same replacement applies.
 
 Why not a comment?
 -----------------
@@ -45,9 +51,11 @@ from pathlib import Path
 
 DEFAULT_AUTHOR = "猪猪鱼"
 SIG_LINE = 'jump 0 always 0 "aigenerated:{author}:{pid}{payload}"'
+# addr/value are not captured: author/id/payload stay at groups 1/2/3
 SIG_RE = re.compile(
-    r'^jump\s+0\s+always\s+0\s+"aigenerated:([^":]+):([0-9a-f]{12})'
+    r'^jump\s+\S+\s+always\s+\S+\s+"aigenerated:([^":]+):([0-9a-f]{12})'
     r'(?::([A-Za-z0-9_-]+))?"\s*$')
+SIG_PARTS_RE = re.compile(r'^jump\s+(\S+)\s+always\s+(\S+)\s+"aigenerated:')
 # older releases used a comment header + unreachable set; drop those on re-sign
 OLD_MARK_RE = re.compile(
     r"^(?:# @aigenerated(?:-end)?\b.*|set aigenerated\.[0-9a-f]{12}\b.*)$")
@@ -76,7 +84,13 @@ def _clean(text: str) -> list[str]:
     for line in text.split("\n"):
         if line.strip().startswith("#"):
             continue
-        if SIG_RE.match(line.strip()) or OLD_MARK_RE.match(line):
+        if SIG_RE.match(line.strip()):
+            m = SIG_PARTS_RE.match(line.strip())
+            if m and m.group(1) != "0":
+                # signature sat in an existing jump's compare slot
+                out.append(f"jump {m.group(1)} always {m.group(2)}")
+            continue
+        if OLD_MARK_RE.match(line):
             continue
         if OLD_TAIL_RE.match(line.strip()):
             out.append("end")
@@ -102,6 +116,10 @@ def _canonical(lines: list[str]) -> str:
     head = lines[:last + 1]
     if head[last].strip() == "end":
         head = head[:last]
+    # a trailing `jump 0 always ...` is exactly an `end`; normalise it away so
+    # signing in its value slot keeps the id stable
+    while head and re.match(r'^jump\s+0\s+always(?:\s+\S+)?\s*$', head[-1].strip()):
+        head.pop()
     return "\n".join(head + trailing + ["end"]) + "\n"
 
 
@@ -200,8 +218,19 @@ def sign_text(text: str, author: str = DEFAULT_AUTHOR, force: bool = False,
             cs = old
     enc = encode_comments(cs)
     payload = f":{enc}" if enc else ""
+    sig = f'"aigenerated:{author}:{pid}{payload}"'
     lines = body.rstrip("\n").split("\n")
-    lines[-1] = SIG_LINE.format(author=author, pid=pid, payload=payload)
+    # the body always ends with `end`; if the statement just before it is an
+    # unconditional jump, put the token in that jump's compare slot instead
+    idx = len(lines) - 2
+    while idx >= 0 and (not lines[idx].strip() or lines[idx].strip().startswith("#")):
+        idx -= 1
+    m = (re.match(r'^(jump\s+(\S+)\s+always)\s+(\S+)\s*$', lines[idx].strip())
+         if idx >= 0 else None)
+    if m and m.group(2) != "0":
+        lines[idx] = f"{m.group(1)} {m.group(3)} {sig}"
+    else:
+        lines[-1] = f"jump 0 always 0 {sig}"
     return "\n".join(lines) + "\n", pid
 
 
