@@ -443,12 +443,25 @@ def selftest(schem_dir: str | None = None) -> int:
                               [Link(l.name, l.x - t.x, l.y - t.y)
                                for l in t.logic.links])
             back = msch.parse_bytes(lbp.build())
-            a = [(t.block, t.x, t.y, t.rotation, t.logic.code,
-                  [(l.name, l.x, l.y) for l in t.logic.links])
-                 for t in sch.logic_tiles()]
-            b = [(t.block, t.x, t.y, t.rotation, t.logic.code,
-                  [(l.name, l.x, l.y) for l in t.logic.links])
-                 for t in back.logic_tiles()]
+
+            # compare *relative layout*: a rebuilt blueprint is normalized to
+            # (0,0), so pure translation must not count as a mismatch (the old
+            # absolute compare scored 176/430 for exactly this reason).
+            def _norm(items):
+                if not items:
+                    return items
+                ox = min(i[1] for i in items)
+                oy = min(i[2] for i in items)
+                return [(blk, x - ox, y - oy, rot, code,
+                         [(n, lx - ox, ly - oy) for (n, lx, ly) in links])
+                        for (blk, x, y, rot, code, links) in items]
+
+            a = _norm([(t.block, t.x, t.y, t.rotation, t.logic.code,
+                        [(l.name, l.x, l.y) for l in t.logic.links])
+                       for t in sch.logic_tiles()])
+            b = _norm([(t.block, t.x, t.y, t.rotation, t.logic.code,
+                        [(l.name, l.x, l.y) for l in t.logic.links])
+                       for t in back.logic_tiles()])
             if a == b:
                 logic_ok += 1
             else:
