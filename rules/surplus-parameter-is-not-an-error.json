@@ -1,4 +1,4 @@
-﻿{
+{
   "id": "surplus-parameter-is-not-an-error",
   "kind": "semantics",
   "severity": "WARN",
@@ -21,6 +21,6 @@
     "hits": 575,
     "programs": 68,
     "share": 0.0029,
-    "dir": "<local saves>"
+    "dir": "C:\\Users\\<you>\\AppData\\Roaming\\Mindustry\\saves"
   }
 }

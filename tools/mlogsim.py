@@ -967,6 +967,7 @@ LINK_ALIASES = {
     "junction": "junction",
     "spectre": "spectre",
     "furnace": "silicon-arc-furnace",
+    "pad": "landing-pad",
 }
 
 

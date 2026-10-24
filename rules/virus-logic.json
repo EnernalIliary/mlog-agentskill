@@ -1,4 +1,4 @@
-﻿{
+{
   "id": "virus-logic",
   "kind": "semantics",
   "severity": "INFO",
@@ -22,6 +22,6 @@
     "hits": 5,
     "programs": 5,
     "share": 0.0,
-    "dir": "<local saves>"
+    "dir": "C:\\Users\\<you>\\AppData\\Roaming\\Mindustry\\saves"
   }
 }

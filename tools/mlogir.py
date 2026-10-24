@@ -262,6 +262,11 @@ class Stmt:
     # never reaches defs/uses. Keep the names separately for the checker.
     addr_reads: set[str] = field(default_factory=set)
     addr_writes: set[str] = field(default_factory=set)
+    # Names that this statement *creates* without assigning anything. The
+    # assembler's readVar() calls vars.get(name, true), so the first mention of
+    # a name anywhere declares it (initial value null) -- it does not have to be
+    # a `set`. `draw triangle a b c d e f` is the dense form: six in one line.
+    declares: set[str] = field(default_factory=set)
     unknown: bool = False           # mnemonic not in the semantics table
 
     def arg(self, i: int) -> Tok | None:
@@ -395,6 +400,13 @@ def build_stmt(index: int, line_no: int, raw: str, table: dict) -> Stmt:
     known = mnemonic in table
     addr_reads: set[str] = set()
     addr_writes: set[str] = set()
+    declares: set[str] = set()
+    # `draw triangle a b c d e f` is the dense declaration form: the executor
+    # reads the six names (null -> 0) and the assembler creates each one on
+    # first mention. It is used as a compact variable table, so surface them as
+    # declarations rather than only reads.
+    if mnemonic == "draw" and args and args[0].text == "triangle":
+        declares = {t.text for t in args[1:] if t.kind == KIND_VAR}
     # `read out target address` / `write value target address`: a *string*
     # address on @this names a processor variable. The name is data, not a
     # variable token, so record it separately for the checker.
@@ -412,6 +424,7 @@ def build_stmt(index: int, line_no: int, raw: str, table: dict) -> Stmt:
         uses=vars_at(uses_idx),
         addr_reads=addr_reads,
         addr_writes=addr_writes,
+        declares=declares,
         unknown=not known,
     )
 
@@ -523,6 +536,22 @@ class Program:
         content id (质驱T4 大超.msch), of which 584 statements looked dead.
         """
         return any("@counter" in s.defs for s in self.stmts)
+
+    @property
+    def declared(self) -> set[str]:
+        """Every name the program creates, in any statement.
+
+        The assembler's readVar() does ``vars.get(name, true)``: the first
+        mention of a name *anywhere* declares it (initial value null), so
+        declaration does not require a ``set``. This is why
+        ``draw triangle a b c d e f`` can be used as a six-slot table, and why
+        "never mentioned" -- not "never assigned" -- is the only true
+        undefined-variable condition.
+        """
+        names: set[str] = set()
+        for s in self.stmts:
+            names |= s.defs | s.uses | s.declares | s.addr_reads | s.addr_writes
+        return names
 
     def def_use_map(self) -> dict[str, list[tuple[int, str]]]:
         """variable -> [(stmt index, 'def'|'use'), ...] in program order."""

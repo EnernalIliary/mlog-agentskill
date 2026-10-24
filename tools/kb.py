@@ -2,13 +2,14 @@
 """Build and query a local knowledge base over this repository's docs and tools.
 
 Retrieval is hybrid: dense embeddings (bge-small-zh-v1.5, ONNX) + SQLite FTS5
-trigram BM25, fused with reciprocal-rank fusion, then reranked with a
-cross-encoder (bge-reranker-base). Everything runs locally through
+trigram BM25, fused with reciprocal-rank fusion, and optionally reranked with a
+cross-encoder (bge-reranker-base; off by default — it is weak on short
+Chinese keyword queries). Everything runs locally through
 ``fastembed``/onnxruntime; no network is needed after the models are cached.
 
     python tools/kb.py build                 # index docs + tool sources
     python tools/kb.py search "jump 标签" -k 6
-    python tools/kb.py search "read @this" --kind doc --no-rerank
+    python tools/kb.py search "read @this" --kind doc
     python tools/kb.py serve                 # MCP server on stdio
     python tools/kb.py stats
 
@@ -52,8 +53,10 @@ DOC_FILES = [
     "tools/README.md",
     "dsh-preset-mlog/README.md",
     "rules/README.md",
+    "docs/本地知识库.md",
 ]
 CODE_GLOBS = ["tools/*.py", "tests/run_tests.py"]
+DOC_GLOBS = ["docs/游戏速查/*.md"]
 EXCLUDE_DIRS = {"__pycache__", "out", ".git", "assetsraw", "Mindustry-Source", "Arc-Source"}
 _EMB = None
 _RR = None
@@ -156,6 +159,10 @@ def _corpus() -> list[tuple[Path, str]]:
         for p in sorted(ROOT.glob(pattern)):
             if p.is_file() and not any(part in EXCLUDE_DIRS for part in p.parts):
                 files.append((p, "code"))
+    for pattern in DOC_GLOBS:
+        for p in sorted(ROOT.glob(pattern)):
+            if p.is_file() and not any(part in EXCLUDE_DIRS for part in p.parts):
+                files.append((p, "doc"))
     return files
 
 
@@ -226,7 +233,7 @@ def _fts_query(q: str) -> str:
 
 
 def search(query: str, k: int = 6, kind: str | None = None,
-           rerank: bool = True, candidates: int = 30) -> list[dict]:
+           rerank: bool = False, candidates: int = 30) -> list[dict]:
     import numpy as np
     conn = _open()
     where = " WHERE kind = ?" if kind else ""
@@ -310,7 +317,7 @@ def serve() -> None:
             elif method == "tools/list":
                 result = {"tools": [{
                     "name": "kb_search",
-                    "description": "Search this repo's mlog docs and tool sources (hybrid dense+BM25, reranked).",
+                    "description": "Search this repo's mlog docs and tool sources (hybrid dense+BM25; optional cross-encoder rerank).",
                     "inputSchema": {"type": "object", "properties": {
                         "query": {"type": "string"},
                         "k": {"type": "integer", "default": 6},
@@ -322,7 +329,7 @@ def serve() -> None:
                     raise ValueError(f"unknown tool: {params.get('name')}")
                 args = params.get("arguments", {})
                 res = search(str(args.get("query", "")), int(args.get("k", 6)),
-                             args.get("kind"), rerank=True)
+                             args.get("kind"), rerank=bool(args.get("rerank", False)))
                 result = {"content": [{"type": "text", "text": _format(res)}],
                           "isError": False}
             elif method in ("notifications/initialized", "notifications/cancelled"):
@@ -351,7 +358,8 @@ def main(argv: list[str] | None = None) -> int:
     sp.add_argument("query")
     sp.add_argument("-k", type=int, default=6)
     sp.add_argument("--kind", choices=["doc", "code"])
-    sp.add_argument("--no-rerank", action="store_true")
+    sp.add_argument("--rerank", action="store_true",
+                    help="cross-encoder rerank (off by default: bge-reranker-base is weak on short Chinese queries)")
     sub.add_parser("serve")
     sub.add_parser("stats")
     args = ap.parse_args(argv)
@@ -371,7 +379,7 @@ def main(argv: list[str] | None = None) -> int:
             files = cx.execute("select count(distinct path) from chunks").fetchone()[0]
         print(json.dumps({"chunks": n, "files": files}, ensure_ascii=False))
         return 0
-    res = search(args.query, args.k, args.kind, rerank=not args.no_rerank)
+    res = search(args.query, args.k, args.kind, rerank=args.rerank)
     print(_format(res))
     return 0
 

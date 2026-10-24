@@ -1,4 +1,4 @@
-﻿{
+{
   "id": "cross-processor-slot-undeclared",
   "kind": "semantics",
   "severity": "WARN",
@@ -21,6 +21,6 @@
     "hits": 0,
     "programs": 0,
     "share": 0.0,
-    "dir": "<local saves>"
+    "dir": "C:\\Users\\<you>\\AppData\\Roaming\\Mindustry\\saves"
   }
 }

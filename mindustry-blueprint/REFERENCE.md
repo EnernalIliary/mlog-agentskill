@@ -1,6 +1,6 @@
-﻿# mlog 工作笔记(持续更新)
+# mlog 工作笔记(持续更新)
 
-> 为 **Iliary艾铭** 的游戏环境编写 mlog 时积累的规则、参数、模式和踩过的坑。
+> 为 **Iliary作者** 的游戏环境编写 mlog 时积累的规则、参数、模式和踩过的坑。
 > **每次交流后追加一节**,不覆盖旧内容;如果旧结论被推翻,在原处标注 `【修正】` 并写清依据。
 >
 > 源码依据:workspace 内 `Mindustry-Source`(游戏版本 **159.1**)+ `Logic-Docs-v1.1.0`。
@@ -27,7 +27,7 @@
 - 游戏里"够不够用"是**实测**出来的,不是算出来的
 
 > **这条是明确的教训**:我曾用往返时间推出"单个星辉跑不了 100 格",
-> 但示例逻辑实测就是能跑 100 格。**我的前提(必须留缓冲)本身就不成立。**
+> 但鱼冰无线超实测就是能跑 100 格。**我的前提(必须留缓冲)本身就不成立。**
 
 ### 0.3 优先找标准答案
 
@@ -35,11 +35,11 @@
 
 | 题型 | 标准答案 |
 |---|---|
-| 示例逻辑(单星辉搬运) | `最小示例.msch` |
-| 示例逻辑(带单位避让+信息板) | `示例(单位避让版).msch` |
+| 无线超(单星辉搬运) | `最简鱼冰无线超.msch` |
+| 无线超(带单位避让+信息板) | `鱼冰无线超(单位避让版).msch` |
 | 单位归属判定 | `GetBlock点阵钍反替换防炸房逻辑1.2.msch` L0–L7 |
 | 多控槽位搬运 | `多单位搬运物品至核心.msch` |
-| 蜂群无 flag 分配 | `示例蓝图.msch` |
+| 蜂群无 flag 分配 | `反病毒.msch` |
 | 世界处理器工程 | `MCV.msch` |
 
 ### 0.4 遇到不确定的机制,翻源码而不是猜
@@ -78,7 +78,7 @@ sensor d @unit @dead
 
 **两个要点**:
 
-1. **`ubind` 不需要单位空闲**,环形推进,所以**循环里每轮绑一次是标准做法**(`最简示例逻辑` 就是这么写的)
+1. **`ubind` 不需要单位空闲**,环形推进,所以**循环里每轮绑一次是标准做法**(`最简鱼冰无线超` 就是这么写的)
 2. `ubind` 是 `@unit = 下一个同类单位`,单单位场景下每次都是它
 
 **推广到所有"我以为自动就有"的东西**:
@@ -186,7 +186,7 @@ ucontrol itemDrop core 999 0 0 0           # 用这个变量投料
 > (丢弃建筑引用),然后直接用 `core` 当建筑用。**结果 `core` 是个未定义变量(等于 0),
 > `itemTake`/`itemDrop` 的目标无效,静默失败。**
 
-**标准答案的完整写法**(`最小示例.msch` 与"单位避让版"都是这个模式):
+**标准答案的完整写法**(`最简鱼冰无线超.msch` 与"单位避让版"都是这个模式):
 
 ```mlog
 ulocate building core 0 @copper bx by 0 core      # ← 核心引用存进 core
@@ -481,7 +481,7 @@ ucontrol move cx cy 10 0 0       # ❌ 停在 10 格外,可能够不到;而且 m
 
 投料可以 `move` 直飞中心 —— `itemDrop` 判定半径(≥6 格)远大于 `move` 的停止精度(1 格),飞中心必然进范围。
 
-> **原版 `示例(单位避让版)` 里的 `ucontrol move bx by 3 0 0` / 最简版 `5`,那两个数字在 `move` 下都是无效占位,不是半径。**
+> **原版 `鱼冰无线超(单位避让版)` 里的 `ucontrol move bx by 3 0 0` / 最简版 `5`,那两个数字在 `move` 下都是无效占位,不是半径。**
 
 ### 6.5 `uradar` 不刷新控制计时器(补)
 
@@ -861,7 +861,7 @@ python tools/mschgen.py --selftest
 python tools/mlogcheck.py 逻辑.mlog
 
 # 查蓝图(会从蓝图里读出链接名,不会误报 dome1/message1)
-python tools/mlogcheck.py --blueprint out/示例逻辑.msch
+python tools/mlogcheck.py --blueprint out/无线超.msch
 ```
 
 | 等级 | 含义 |
@@ -1222,7 +1222,7 @@ loop_cost(h) = min( bound(h) × (循环体内最坏前向路径), 1000 )
 | 输入 | 手算 | 工具 |
 |---|---|---|
 | `out\other-ai.mlog`(159 行,3 个 ×80 循环) | ~2494 | **2001** |
-| `out\示例2.mlog`(32 行,无内循环) | 32 | **27** |
+| `out\无线超2.mlog`(32 行,无内循环) | 32 | **27** |
 | 简单单循环 ×80 测试 | ~480 | **481** |
 | 嵌套 ×4/×5 测试 | ~50 | **51** |
 
@@ -1230,7 +1230,7 @@ loop_cost(h) = min( bound(h) × (循环体内最坏前向路径), 1000 )
 
 #### 用它审出来的真实问题
 
-**审我自己的 `out\示例2.mlog` 报了 6 条 UNREACHABLE**:
+**审我自己的 `out\无线超2.mlog` 报了 6 条 UNREACHABLE**:
 
 ```
 L26 sensor bx dome1 @x
@@ -1426,6 +1426,8 @@ mindustry-blueprint/
 ├── SKILL.md                 规范:铁律 + 标准流程 + 坐标约定(agent 读这个)
 ├── README.md                安装与用法
 ├── REFERENCE.md             完整知识库(本文件的副本)
+├── PATTERNS.md              逻辑模式库
+├── BLUEPRINT-ANALYSIS.md    蓝图层逐类精讲
 ├── .gitignore
 └── tools/
     ├── mlog.py              ⭐ 统一 CLI 入口
@@ -1533,6 +1535,6 @@ python tools/mlog.py selftest                 # 429 个蓝图往返校验
 | 第 10 次整理 | 抓到**官方 wiki 的完整方块 ID 表**(§15.6):`mindustrygame.github.io/wiki/` 的内容页 slug 带 ID,从 mkdocs 搜索索引一次抓全 → [tools/wiki_block_ids.json](tools/wiki_block_ids.json),422 个方块、ID 1–446,**`overdrive-dome` = 248**。同时确认该表**混入了 MindustryX 内容**(`world-cell` 等),故只对"同款环境"有效;MDT 中文 wiki([mdtwiki.top](https://mdtwiki.top/),v159.7)指向的 MindustryX 飞书文档**需登录抓不到**;MindustryX 源码([TinyLake/MindustryX](https://github.com/TinyLake/MindustryX))是 81 个补丁,`0046-UI-ARC-logic-Support` 经查是**编辑器 UI 增强、非语法扩展**。新增 **§15.7:编号体系不止一套**——`Content.id`=248 vs 建筑分类序号=#38,**别混用** |
 | 第 11 次整理 | **修正 §15.8「方块坐标是中心格」**:Iliary 实测抓出"穹顶与逻辑空一格"。双重验证 —— 源码 `Tile.setBlock()` 的 `offset = -(block.size-1)/2`;**624 个真实蓝图里按"角"解释产生 11 处重叠、按"中心"解释 0 处**。生成器 `bounds()` / `link_report()` 同步修正。**方法论:坐标语义这类约定,用全量语料做"哪种假设不产生矛盾"的统计验证最可靠。** |
 | 第 12 次整理 | **把工具+规范+数据打包成 DSH skill** `mindustry-blueprint/`(§17),统一 CLI `mlog.py`(parse/gen/check/id/cmd/selftest),`gen` 内置自验证(解析回来不一致就拒绝输出);**去掉全部硬编码路径**(schematics 目录自动发现);安装到**项目专有 skill 库 `.dsh/skills/`**(§17.4 记了各 agent 的路径表;`~/.dsh/skills` 是 junction,**写全局会随 profile 失效**);新增位置无关的 [tools/fix_skill_links.py](../tools/fix_skill_links.py)(向上找 `Mindustry-Source` 定根,§17.5 —— 我按固定层数改了三轮才全对) |
-| 第 13 次整理 | **新增 `check --cost` 成本分析**(§15.11):可达性(死代码)+ 循环圈数推定 + 最坏指令数与三档处理器耗时。实现中踩了 6 个坑,其中三个是**同一份代码连续三次算错**(78 → 643686 → 2001):只在回边乘圈数会让循环体只算 1 次;全局松弛会**重复计费嵌套循环**;**`float('inf')` 当哨兵会让比较静默返回 False、所有程序都报 1**。最终用"按 head 降序、内层先解、每循环只定价一次 + clamp 1000"解决。**实测校准**:另一 AI 的 159 行程序手算 ~2494 → 工具 2001;**批量 4151 个真实逻辑块 0 失败**;并用它审出我自己的 `out\示例2.mlog` 有 6 条 `end` 之后的死代码(教训进 §16 与 SKILL 铁律 12) |
+| 第 13 次整理 | **新增 `check --cost` 成本分析**(§15.11):可达性(死代码)+ 循环圈数推定 + 最坏指令数与三档处理器耗时。实现中踩了 6 个坑,其中三个是**同一份代码连续三次算错**(78 → 643686 → 2001):只在回边乘圈数会让循环体只算 1 次;全局松弛会**重复计费嵌套循环**;**`float('inf')` 当哨兵会让比较静默返回 False、所有程序都报 1**。最终用"按 head 降序、内层先解、每循环只定价一次 + clamp 1000"解决。**实测校准**:另一 AI 的 159 行程序手算 ~2494 → 工具 2001;**批量 4151 个真实逻辑块 0 失败**;并用它审出我自己的 `out\无线超2.mlog` 有 6 条 `end` 之后的死代码(教训进 §16 与 SKILL 铁律 12) |
 | 第 15 次整理 | **答「`jump` 占不占 ipt」并落成 §15.12 指令预算**:`runOnce()` 里 `counter` **先自增再执行、不看指令类型**(`LExecutor.java:111-121`)⇒ **`jump` 和 `op`/`print` 一样就是 1 条,不额外花钱;真正的成本是"实际执行到几条语句"**(循环圈数才是钱)。补全每 tick 预算机制:`LogicBlock.java:45` `maxInstructionScale = 5`、`:564-578` 的 accumulator 循环与 **`yield` 提前 break**(只有 `wait`/`stop`/`printflush @wait` 有);四张卡 ipt 表(**微型 2 / 逻辑 8 / 超级 25 / 世界 8**,`Blocks.java:6849/6856/6867/6954`,世界卡 `maxInstructionsPerTick = 1000`);`setrate` 是唯一能改 ipt 的指令且上限是 `maxInstructionsPerTick`(逻辑卡 **40**,`LogicBlock.java:48`),**`@ipt` 立即变但本 tick 循环边界已固定** |
 | 第 14 次整理 | 评完那份 159 行「flag 位域租约」程序:**四路单位选择器是正确的**(我一度误判为死代码,根因是把跳转目标当成下一行执行)。真实缺陷:① `jump 28 always` 无条件回跳使 `end` 前的 `control enabled resetSwitch 0` 永不执行(复位开关卡死);② 缺 `@unit` 判空;③ 硬编码扫描上限 80 与"`ubind` 计数器按单位类型推进"语义不匹配;④ 每 10 秒全体同时换代;⑤ 每轮重复写 flag 使单位永不自然脱控。**用户结论:"工程上标准,但是不适合游戏"** —— 错不在工程化,而在**把通用协议当起点而非终点**。值得留的三个想法:让 `0` 天然表示空闲(ID 加 1)、用容器坐标派生模块 ID(不依赖 `@thisx/@thisy`)、租约容忍一代重叠 |

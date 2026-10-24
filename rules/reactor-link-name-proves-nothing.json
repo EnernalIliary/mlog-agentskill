@@ -1,4 +1,4 @@
-﻿{
+{
   "id": "reactor-link-name-proves-nothing",
   "kind": "semantics",
   "severity": "INFO",
@@ -23,6 +23,6 @@
     "hits": 11,
     "programs": 9,
     "share": 0.0001,
-    "dir": "<local saves>"
+    "dir": "C:\\Users\\<you>\\AppData\\Roaming\\Mindustry\\saves"
   }
 }

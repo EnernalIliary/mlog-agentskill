@@ -1,4 +1,4 @@
-﻿{
+{
   "id": "arity-is-not-effective-params",
   "kind": "semantics",
   "severity": "INFO",
@@ -23,6 +23,6 @@
     "hits": 0,
     "programs": 0,
     "share": 0.0,
-    "dir": "<local saves>"
+    "dir": "C:\\Users\\<you>\\AppData\\Roaming\\Mindustry\\saves"
   }
 }

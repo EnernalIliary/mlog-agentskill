@@ -1,4 +1,4 @@
-﻿{
+{
  "id": "fetch-count-index-is-unused",
  "kind": "semantics",
  "severity": "SUPPRESSED",

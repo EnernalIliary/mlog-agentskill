@@ -1,4 +1,4 @@
-﻿{
+{
   "id": "unknown-op",
   "kind": "semantics",
   "severity": "ERR",
@@ -22,6 +22,6 @@
     "hits": 2,
     "programs": 2,
     "share": 0.0,
-    "dir": "<local saves>"
+    "dir": "C:\\Users\\<you>\\AppData\\Roaming\\Mindustry\\saves"
   }
 }

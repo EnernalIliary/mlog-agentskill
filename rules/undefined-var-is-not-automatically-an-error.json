@@ -1,4 +1,4 @@
-﻿{
+{
   "id": "undefined-var-is-not-automatically-an-error",
   "kind": "semantics",
   "severity": "INFO",
@@ -24,6 +24,6 @@
     "hits": 18670,
     "programs": 927,
     "share": 0.0942,
-    "dir": "<local saves>"
+    "dir": "C:\\Users\\<you>\\AppData\\Roaming\\Mindustry\\saves"
   }
 }

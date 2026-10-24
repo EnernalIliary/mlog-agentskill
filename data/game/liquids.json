@@ -1,0 +1,57 @@
+[
+ {
+  "id": 0,
+  "name": "water",
+  "color": "596ab8ff"
+ },
+ {
+  "id": 1,
+  "name": "slag",
+  "color": "ffa166ff"
+ },
+ {
+  "id": 2,
+  "name": "oil",
+  "color": "313131ff"
+ },
+ {
+  "id": 3,
+  "name": "cryofluid",
+  "color": "6ecdecff"
+ },
+ {
+  "id": 4,
+  "name": "neoplasm",
+  "color": "c33e2bff"
+ },
+ {
+  "id": 5,
+  "name": "arkycite",
+  "color": "84a94bff"
+ },
+ {
+  "id": 6,
+  "name": "gallium",
+  "color": "9a9dbfff"
+ },
+ {
+  "id": 7,
+  "name": "ozone",
+  "color": "fc81dd99"
+ },
+ {
+  "id": 8,
+  "name": "hydrogen",
+  "color": "9eabf799"
+ },
+ {
+  "id": 9,
+  "name": "nitrogen",
+  "color": "efe3ff99"
+ },
+ {
+  "id": 10,
+  "name": "cyanogen",
+  "color": "89e8b699"
+ }
+]

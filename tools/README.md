@@ -21,7 +21,7 @@
 | 这个程序需要哪些世界符号 | `python tools/mlog_needs.py 图.msch` |
 | 整批存档里的逻辑 | `python tools/mlog.py map <存档目录>` |
 | 规则逐条审计 | `python tools/review.py md` |
-| 本地知识库（向量+重排） | `python tools/kb.py search "read @this 怎么写" -k 6` |
+| 本地知识库（向量+可选重排） | `python tools/kb.py search "read @this 怎么写" -k 6` |
 | MCP 服务（模型直接调用工具） | `python tools/mlog_mcp.py`（stdio，见下节） |
 | 自检工具链 | `python tools/mlog.py selftest`；`python tests/run_tests.py` |
 
@@ -52,14 +52,14 @@ python tools/mlog_mcp.py          # stdio JSON-RPC，供 DSH / Claude Desktop �
 
 ## 本地知识库（`kb.py`）
 
-把仓库里的公开文档与工具源码切成块，存进 SQLite，检索走“向量召回 + FTS 召回 → RRF 融合 → cross-encoder 重排”。模型与索引都在本机，不进仓库。
+把仓库里的公开文档与工具源码切成块，存进 SQLite，检索走“向量召回 + FTS 召回 → RRF 融合”，加 `--rerank` 再走 cross-encoder。模型与索引都在本机，不进仓库。
 
 ```bash
 # 首次：下载模型并建索引（约 1 分钟）
 python tools/kb.py build
-# 查询：默认向量+FTS+重排
+# 查询：默认向量+FTS+RRF（重排需显式 --rerank）
 python tools/kb.py search "模拟器战斗 tick 怎么开" -k 6
-python tools/kb.py search "ulocate" -k 4 --kind code --no-rerank
+python tools/kb.py search "ulocate" -k 4 --kind code --rerank
 # MCP stdio 服务（给 DSH / Claude Desktop 之类用）
 python tools/kb.py serve
 ```
@@ -71,7 +71,7 @@ python tools/kb.py serve
 ```json
 {"mcpServers": {"mlog-kb": {
   "command": "python",
-  "args": ["F:/OneDrive/桌面/AtomicStates/tools/kb.py", "serve"],
+  "args": ["<repo>/tools/kb.py", "serve"],
   "env": {"HF_ENDPOINT": "https://hf-mirror.com"}
 }}}
 ```

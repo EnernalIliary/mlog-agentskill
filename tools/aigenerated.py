@@ -1,6 +1,6 @@
 """Hidden @aigenerated signature for AI-written mlog.
 
-    python tools/aigenerated.py sign   Logic/foo.mlog [--author 猪猪鱼] [--force]
+    python tools/aigenerated.py sign   Logic/foo.mlog [--author mlog] [--force]
     python tools/aigenerated.py verify Logic/foo.mlog
     python tools/aigenerated.py strip  Logic/foo.mlog   # always refused
 
@@ -10,11 +10,11 @@ Preferred: if the program's last real statement is an unconditional
 `jump <n> always <x>`, the token replaces its unused `compare` slot (the
 fourth and last operand; `always` never reads it):
 
-    jump 27 always 0 "aigenerated:猪猪鱼:1f02465d9e75"
+    jump 27 always 0 "aigenerated:mlog:1f02465d9e75"
 
 Otherwise the closing `end` becomes
 
-    jump 0 always 0 "aigenerated:猪猪鱼:1f02465d9e75"
+    jump 0 always 0 "aigenerated:mlog:1f02465d9e75"
 
 `end` means "next instruction reads 0"; `jump 0 always` does the same thing, so
 the program behaves identically.  The token sits in a declared `JumpStatement`
@@ -49,7 +49,7 @@ import sys
 import zlib
 from pathlib import Path
 
-DEFAULT_AUTHOR = "猪猪鱼"
+DEFAULT_AUTHOR = "mlog"
 SIG_LINE = 'jump 0 always 0 "aigenerated:{author}:{pid}{payload}"'
 # addr/value are not captured: author/id/payload stay at groups 1/2/3
 SIG_RE = re.compile(

@@ -40,8 +40,10 @@ Examples
   python mlog.py parse "schem/无线超.msch"
 
   # emit a paste-ready blueprint code, with the target block placed
-  python mlog.py gen logic.mlog --name "无线超" \
-      --link dome1@3,1 --with-block overdrive-dome@4,2=248
+  # (coordinates are offsets from the processor; copy straight from the map
+  #  and add --abs instead)
+  python mlog.py gen logic.mlog --name "示例" \
+      --link dome1@2,1 --with-block overdrive-dome@2,1=248
 
   # check logic before generating
   python mlog.py check logic.mlog
@@ -244,6 +246,25 @@ def cmd_gen(args) -> int:
         print(str(e), file=sys.stderr)
         return 2
 
+    def _to_rel(dx: int, dy: int) -> tuple[int, int]:
+        # Absolute map tiles (the frame --at uses) vs offsets from the
+        # processor. Copying coordinates straight out of a blueprint or the
+        # map gives absolute tiles, which used to be read as offsets and
+        # pushed the block #dx tiles too far.
+        return (dx - px, dy - py) if args.abs else (dx, dy)
+
+    # A quiet trap: with --at 3,0 and --with-block overdrive-dome@5,1 a user
+    # means the tile at (5,1) on the map, but relative offsets would be (2,1).
+    if not args.abs and (px or py):
+        look_abs = [(l.name, l.dx, l.dy) for l in links
+                    if l.dx >= px and l.dy >= py and (l.dx, l.dy) != (0, 0)]
+        if look_abs:
+            print(f"# note: {look_abs[0][0]}@{look_abs[0][1]},{look_abs[0][2]} "
+                  f"looks absolute (>= --at {px},{py}); pass --abs to use map tiles",
+                  file=sys.stderr)
+
+    links = [_gen.Link(l.name, *_to_rel(l.dx, l.dy)) for l in links]
+
     bp = _gen.Blueprint(args.name, args.description, args.label)
     bp.add_logic(code, px, py, args.block, args.rotation, links)
 
@@ -254,8 +275,13 @@ def cmd_gen(args) -> int:
         except ValueError as e:
             print(str(e), file=sys.stderr)
             return 2
-        bp.add_block(blk, px + dx, py + dy, 0, None, cid)
-        placed.append(f"{blk} center@({px+dx},{py+dy})"
+        if not args.abs and (px or py) and dx >= px and dy >= py:
+            print(f"# note: {blk}@{dx},{dy} looks absolute "
+                  f"(>= --at {px},{py}); pass --abs to use map tiles",
+                  file=sys.stderr)
+        rdx, rdy = _to_rel(dx, dy)
+        bp.add_block(blk, px + rdx, py + rdy, 0, None, cid)
+        placed.append(f"{blk} center@({px+rdx},{py+rdy})"
                       + (f" id={cid}" if cid is not None else ""))
 
     data = bp.build()
@@ -1741,6 +1767,9 @@ def main() -> int:
     p.add_argument("--at", default="0,0",
                    help="processor center in the input frame; the emitted "
                         "schematic is normalised to (0,0)")
+    p.add_argument("--abs", action="store_true",
+                   help="--link/--with-block coordinates are absolute map tiles "
+                        "(same frame as --at), not offsets from the processor")
     p.add_argument("--rotation", type=int, default=0)
     p.add_argument("--link", action="append", default=[],
                    help="name@dx,dy (relative to the processor)")
@@ -1753,7 +1782,7 @@ def main() -> int:
     p.add_argument("--no-sign", action="store_true",
                    help="do not auto-attach the @aigenerated signature")
     p.add_argument("--author", default=_sig.DEFAULT_AUTHOR,
-                   help="signature author (default: 猪猪鱼)")
+                   help="signature author (default: mlog)")
     p.add_argument("--out", help="write the paste code (base64) to this file")
     p.add_argument("--binary", help="write a .msch binary to this path")
     p.add_argument("--quiet", action="store_true", help="do not print the paste code")

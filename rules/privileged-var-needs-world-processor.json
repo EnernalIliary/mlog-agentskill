@@ -1,4 +1,4 @@
-﻿{
+{
   "id": "privileged-var-needs-world-processor",
   "kind": "semantics",
   "severity": "INFO",

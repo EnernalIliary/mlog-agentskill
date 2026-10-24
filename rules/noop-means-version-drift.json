@@ -1,4 +1,4 @@
-﻿{
+{
   "id": "noop-means-version-drift",
   "kind": "semantics",
   "severity": "ERR",
@@ -22,6 +22,6 @@
     "hits": 29,
     "programs": 7,
     "share": 0.0001,
-    "dir": "<local saves>"
+    "dir": "C:\\Users\\<you>\\AppData\\Roaming\\Mindustry\\saves"
   }
 }

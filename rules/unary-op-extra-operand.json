@@ -1,4 +1,4 @@
-﻿{
+{
  "id": "unary-op-extra-operand",
  "kind": "heuristic",
  "severity": "INFO",

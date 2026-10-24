@@ -1,0 +1,112 @@
+[
+ {
+  "id": 0,
+  "name": "copper",
+  "color": "d99d73ff"
+ },
+ {
+  "id": 1,
+  "name": "lead",
+  "color": "8c7fa9ff"
+ },
+ {
+  "id": 2,
+  "name": "metaglass",
+  "color": "ebeef5ff"
+ },
+ {
+  "id": 3,
+  "name": "graphite",
+  "color": "b2c6d2ff"
+ },
+ {
+  "id": 4,
+  "name": "sand",
+  "color": "f7cba4ff"
+ },
+ {
+  "id": 5,
+  "name": "coal",
+  "color": "272727ff"
+ },
+ {
+  "id": 6,
+  "name": "titanium",
+  "color": "8da1e3ff"
+ },
+ {
+  "id": 7,
+  "name": "thorium",
+  "color": "f9a3c7ff"
+ },
+ {
+  "id": 8,
+  "name": "scrap",
+  "color": "777777ff"
+ },
+ {
+  "id": 9,
+  "name": "silicon",
+  "color": "53565cff"
+ },
+ {
+  "id": 10,
+  "name": "plastanium",
+  "color": "cbd97fff"
+ },
+ {
+  "id": 11,
+  "name": "phase-fabric",
+  "color": "f4ba6eff"
+ },
+ {
+  "id": 12,
+  "name": "surge-alloy",
+  "color": "f3e979ff"
+ },
+ {
+  "id": 13,
+  "name": "spore-pod",
+  "color": "7457ceff"
+ },
+ {
+  "id": 14,
+  "name": "blast-compound",
+  "color": "ff795eff"
+ },
+ {
+  "id": 15,
+  "name": "pyratite",
+  "color": "ffaa5fff"
+ },
+ {
+  "id": 16,
+  "name": "beryllium",
+  "color": "3a8f64ff"
+ },
+ {
+  "id": 17,
+  "name": "tungsten",
+  "color": "768a9aff"
+ },
+ {
+  "id": 18,
+  "name": "oxide",
+  "color": "e4ffd6ff"
+ },
+ {
+  "id": 19,
+  "name": "carbide",
+  "color": "89769aff"
+ },
+ {
+  "id": 20,
+  "name": "fissile-matter",
+  "color": "5e988dff"
+ },
+ {
+  "id": 21,
+  "name": "dormant-cyst",
+  "color": "df824dff"
+ }
+]

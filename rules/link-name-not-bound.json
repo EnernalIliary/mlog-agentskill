@@ -1,4 +1,4 @@
-﻿{
+{
   "id": "link-name-not-bound",
   "kind": "semantics",
   "severity": "WARN",
@@ -21,6 +21,6 @@
     "hits": 3854,
     "programs": 350,
     "share": 0.0194,
-    "dir": "<local saves>"
+    "dir": "C:\\Users\\<you>\\AppData\\Roaming\\Mindustry\\saves"
   }
 }

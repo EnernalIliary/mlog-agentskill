@@ -1,4 +1,4 @@
-﻿{
+{
   "id": "dead-polarity",
   "kind": "semantics",
   "severity": "SUSPECT",
@@ -19,7 +19,7 @@
     "hits": 0,
     "programs": 0,
     "share": 0.0,
-    "dir": "<local saves>"
+    "dir": "C:\\Users\\<you>\\AppData\\Roaming\\Mindustry\\saves"
   },
   "state": "silent -- no longer reported"
 }

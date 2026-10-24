@@ -1,0 +1,9564 @@
+[
+ {
+  "id": 0,
+  "name": "air",
+  "size": 1,
+  "health": -1,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 1,
+  "name": "spawn",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 2,
+  "name": "remove-wall",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 3,
+  "name": "remove-ore",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 4,
+  "name": "cliff",
+  "size": 11,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 5,
+  "name": "build1",
+  "size": 1,
+  "health": 10,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 6,
+  "name": "build2",
+  "size": 2,
+  "health": 10,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 7,
+  "name": "build3",
+  "size": 3,
+  "health": 10,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 8,
+  "name": "build4",
+  "size": 4,
+  "health": 10,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 9,
+  "name": "build5",
+  "size": 5,
+  "health": 10,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 10,
+  "name": "build6",
+  "size": 6,
+  "health": 10,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 11,
+  "name": "build7",
+  "size": 7,
+  "health": 10,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 12,
+  "name": "build8",
+  "size": 8,
+  "health": 10,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 13,
+  "name": "build9",
+  "size": 9,
+  "health": 10,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 14,
+  "name": "build10",
+  "size": 10,
+  "health": 10,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 15,
+  "name": "build11",
+  "size": 11,
+  "health": 10,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 16,
+  "name": "build12",
+  "size": 12,
+  "health": 10,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 17,
+  "name": "build13",
+  "size": 13,
+  "health": 10,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 18,
+  "name": "build14",
+  "size": 14,
+  "health": 10,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 19,
+  "name": "build15",
+  "size": 15,
+  "health": 10,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 20,
+  "name": "build16",
+  "size": 16,
+  "health": 10,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 21,
+  "name": "deep-water",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 22,
+  "name": "shallow-water",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 23,
+  "name": "tainted-water",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 24,
+  "name": "deep-tainted-water",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 25,
+  "name": "darksand-tainted-water",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 26,
+  "name": "sand-water",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 27,
+  "name": "darksand-water",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 28,
+  "name": "tar",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 29,
+  "name": "pooled-cryofluid",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 30,
+  "name": "molten-slag",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 31,
+  "name": "space",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 32,
+  "name": "empty",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 33,
+  "name": "stone",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 34,
+  "name": "crater-stone",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 35,
+  "name": "char",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 36,
+  "name": "basalt",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 37,
+  "name": "hotrock",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 38,
+  "name": "magmarock",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 39,
+  "name": "sand-floor",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 40,
+  "name": "darksand",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 41,
+  "name": "dirt",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 42,
+  "name": "mud",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 43,
+  "name": "dacite",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 44,
+  "name": "rhyolite",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 45,
+  "name": "rhyolite-crater",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 46,
+  "name": "rough-rhyolite",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 47,
+  "name": "regolith",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 48,
+  "name": "yellow-stone",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 49,
+  "name": "carbon-stone",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 50,
+  "name": "ferric-stone",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 51,
+  "name": "ferric-craters",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 52,
+  "name": "beryllic-stone",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 53,
+  "name": "crystalline-stone",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 54,
+  "name": "crystal-floor",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 55,
+  "name": "yellow-stone-plates",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 56,
+  "name": "red-stone",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 57,
+  "name": "dense-red-stone",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 58,
+  "name": "red-ice",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 59,
+  "name": "arkycite-floor",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 60,
+  "name": "arkyic-stone",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 61,
+  "name": "rhyolite-vent",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 62,
+  "name": "carbon-vent",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 63,
+  "name": "arkyic-vent",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 64,
+  "name": "yellow-stone-vent",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 65,
+  "name": "red-stone-vent",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 66,
+  "name": "crystalline-vent",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 67,
+  "name": "stone-vent",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 68,
+  "name": "basalt-vent",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 69,
+  "name": "redmat",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 70,
+  "name": "bluemat",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 71,
+  "name": "grass",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 72,
+  "name": "salt",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 73,
+  "name": "snow",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 74,
+  "name": "ice",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 75,
+  "name": "ice-snow",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 76,
+  "name": "shale",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 77,
+  "name": "moss",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 78,
+  "name": "core-zone",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 79,
+  "name": "spore-moss",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 80,
+  "name": "stone-wall",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 81,
+  "name": "spore-wall",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 82,
+  "name": "dirt-wall",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 83,
+  "name": "dacite-wall",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 84,
+  "name": "ice-wall",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 85,
+  "name": "snow-wall",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 86,
+  "name": "dune-wall",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 87,
+  "name": "regolith-wall",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 88,
+  "name": "yellow-stone-wall",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 89,
+  "name": "rhyolite-wall",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 90,
+  "name": "carbon-wall",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 91,
+  "name": "ferric-stone-wall",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 92,
+  "name": "beryllic-stone-wall",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 93,
+  "name": "arkyic-wall",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 94,
+  "name": "crystalline-stone-wall",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 95,
+  "name": "red-ice-wall",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 96,
+  "name": "red-stone-wall",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 97,
+  "name": "red-diamond-wall",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 98,
+  "name": "sand-wall",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 99,
+  "name": "salt-wall",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 100,
+  "name": "shrubs",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 101,
+  "name": "shale-wall",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 102,
+  "name": "spore-pine",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 103,
+  "name": "snow-pine",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 104,
+  "name": "pine",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 105,
+  "name": "white-tree-dead",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 106,
+  "name": "white-tree",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 107,
+  "name": "spore-cluster",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 108,
+  "name": "redweed",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 109,
+  "name": "pur-bush",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 110,
+  "name": "yellowcoral",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 111,
+  "name": "boulder",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 112,
+  "name": "snow-boulder",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 113,
+  "name": "shale-boulder",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 114,
+  "name": "sand-boulder",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 115,
+  "name": "dacite-boulder",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 116,
+  "name": "basalt-boulder",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 117,
+  "name": "carbon-boulder",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 118,
+  "name": "ferric-boulder",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 119,
+  "name": "beryllic-boulder",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 120,
+  "name": "yellow-stone-boulder",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 121,
+  "name": "arkyic-boulder",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 122,
+  "name": "crystal-cluster",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 123,
+  "name": "vibrant-crystal-cluster",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 124,
+  "name": "crystal-blocks",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 125,
+  "name": "crystal-orbs",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 126,
+  "name": "crystalline-boulder",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 127,
+  "name": "red-ice-boulder",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 128,
+  "name": "rhyolite-boulder",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 129,
+  "name": "red-stone-boulder",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 130,
+  "name": "metal-floor",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 131,
+  "name": "metal-floor-damaged",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 132,
+  "name": "metal-floor-2",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 133,
+  "name": "metal-floor-3",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 134,
+  "name": "metal-floor-4",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 135,
+  "name": "metal-floor-5",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 136,
+  "name": "dark-panel-1",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 137,
+  "name": "dark-panel-2",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 138,
+  "name": "dark-panel-3",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 139,
+  "name": "dark-panel-4",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 140,
+  "name": "dark-panel-5",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 141,
+  "name": "dark-panel-6",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 142,
+  "name": "dark-metal",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 143,
+  "name": "metal-tiles-1",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 144,
+  "name": "metal-tiles-2",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 145,
+  "name": "metal-tiles-3",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 146,
+  "name": "metal-tiles-4",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 147,
+  "name": "metal-tiles-5",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 148,
+  "name": "metal-tiles-6",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 149,
+  "name": "metal-tiles-7",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 150,
+  "name": "metal-tiles-8",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 151,
+  "name": "metal-tiles-9",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 152,
+  "name": "metal-tiles-10",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 153,
+  "name": "metal-tiles-11",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 154,
+  "name": "metal-tiles-12",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 155,
+  "name": "metal-tiles-13",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 156,
+  "name": "metal-wall-1",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 157,
+  "name": "metal-wall-2",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 158,
+  "name": "metal-wall-3",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 159,
+  "name": "colored-floor",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 160,
+  "name": "colored-wall",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 161,
+  "name": "character-overlay",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 162,
+  "name": "character-overlay-white",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 163,
+  "name": "rune-overlay",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 164,
+  "name": "rune-overlay-crux",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 165,
+  "name": "pebbles",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 166,
+  "name": "tendrils",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 167,
+  "name": "ore-copper",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 168,
+  "name": "ore-lead",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 169,
+  "name": "ore-scrap",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 170,
+  "name": "ore-coal",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 171,
+  "name": "ore-titanium",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 172,
+  "name": "ore-thorium",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 173,
+  "name": "ore-beryllium",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 174,
+  "name": "ore-tungsten",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 175,
+  "name": "ore-crystal-thorium",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 176,
+  "name": "ore-wall-thorium",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 177,
+  "name": "ore-wall-beryllium",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 178,
+  "name": "graphitic-wall",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 179,
+  "name": "ore-wall-graphite",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 180,
+  "name": "ore-wall-tungsten",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 181,
+  "name": "graphite-press",
+  "size": 2,
+  "health": 160,
+  "category": "crafting",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 75.0
+   },
+   {
+    "name": "lead",
+    "amount": 30.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "item",
+    "name": "coal",
+    "amount": 2.0
+   }
+  ],
+  "outputs": [
+   {
+    "name": "graphite",
+    "amount": 1.0
+   }
+  ],
+  "craftTime": -1.0
+ },
+ {
+  "id": 182,
+  "name": "multi-press",
+  "size": 3,
+  "health": 360,
+  "category": "crafting",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 100.0
+   },
+   {
+    "name": "graphite",
+    "amount": 50.0
+   },
+   {
+    "name": "titanium",
+    "amount": 100.0
+   },
+   {
+    "name": "silicon",
+    "amount": 25.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 1.7999999523162842
+   },
+   {
+    "kind": "item",
+    "name": "coal",
+    "amount": 3.0
+   }
+  ],
+  "outputs": [
+   {
+    "name": "graphite",
+    "amount": 2.0
+   }
+  ],
+  "craftTime": -1.0
+ },
+ {
+  "id": 183,
+  "name": "silicon-smelter",
+  "size": 2,
+  "health": 160,
+  "category": "crafting",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 30.0
+   },
+   {
+    "name": "lead",
+    "amount": 25.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "item",
+    "name": "coal",
+    "amount": 1.0
+   },
+   {
+    "kind": "item",
+    "name": "sand",
+    "amount": 2.0
+   },
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 0.5
+   }
+  ],
+  "outputs": [
+   {
+    "name": "silicon",
+    "amount": 1.0
+   }
+  ],
+  "craftTime": -1.0
+ },
+ {
+  "id": 184,
+  "name": "silicon-crucible",
+  "size": 3,
+  "health": 395,
+  "category": "crafting",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "metaglass",
+    "amount": 80.0
+   },
+   {
+    "name": "titanium",
+    "amount": 120.0
+   },
+   {
+    "name": "silicon",
+    "amount": 60.0
+   },
+   {
+    "name": "plastanium",
+    "amount": 35.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "item",
+    "name": "coal",
+    "amount": 4.0
+   },
+   {
+    "kind": "item",
+    "name": "sand",
+    "amount": 6.0
+   },
+   {
+    "kind": "item",
+    "name": "pyratite",
+    "amount": 1.0
+   },
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 4.0
+   }
+  ],
+  "outputs": [
+   {
+    "name": "silicon",
+    "amount": 8.0
+   }
+  ],
+  "craftTime": -1.0
+ },
+ {
+  "id": 185,
+  "name": "kiln",
+  "size": 2,
+  "health": 160,
+  "category": "crafting",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 60.0
+   },
+   {
+    "name": "lead",
+    "amount": 30.0
+   },
+   {
+    "name": "graphite",
+    "amount": 30.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "item",
+    "name": "lead",
+    "amount": 1.0
+   },
+   {
+    "kind": "item",
+    "name": "sand",
+    "amount": 1.0
+   },
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 0.6000000238418579
+   }
+  ],
+  "outputs": [
+   {
+    "name": "metaglass",
+    "amount": 1.0
+   }
+  ],
+  "craftTime": -1.0
+ },
+ {
+  "id": 186,
+  "name": "plastanium-compressor",
+  "size": 2,
+  "health": 320,
+  "category": "crafting",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 115.0
+   },
+   {
+    "name": "graphite",
+    "amount": 60.0
+   },
+   {
+    "name": "titanium",
+    "amount": 80.0
+   },
+   {
+    "name": "silicon",
+    "amount": 80.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 3.0
+   },
+   {
+    "kind": "item",
+    "name": "titanium",
+    "amount": 2.0
+   }
+  ],
+  "outputs": [
+   {
+    "name": "plastanium",
+    "amount": 1.0
+   }
+  ],
+  "craftTime": -1.0
+ },
+ {
+  "id": 187,
+  "name": "phase-weaver",
+  "size": 2,
+  "health": 190,
+  "category": "crafting",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 120.0
+   },
+   {
+    "name": "thorium",
+    "amount": 75.0
+   },
+   {
+    "name": "silicon",
+    "amount": 130.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "item",
+    "name": "thorium",
+    "amount": 4.0
+   },
+   {
+    "kind": "item",
+    "name": "sand",
+    "amount": 10.0
+   },
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 5.0
+   }
+  ],
+  "outputs": [
+   {
+    "name": "phase-fabric",
+    "amount": 1.0
+   }
+  ],
+  "craftTime": -1.0
+ },
+ {
+  "id": 188,
+  "name": "surge-smelter",
+  "size": 3,
+  "health": 430,
+  "category": "crafting",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 80.0
+   },
+   {
+    "name": "thorium",
+    "amount": 70.0
+   },
+   {
+    "name": "silicon",
+    "amount": 80.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 4.0
+   },
+   {
+    "kind": "item",
+    "name": "copper",
+    "amount": 3.0
+   },
+   {
+    "kind": "item",
+    "name": "lead",
+    "amount": 4.0
+   },
+   {
+    "kind": "item",
+    "name": "titanium",
+    "amount": 2.0
+   },
+   {
+    "kind": "item",
+    "name": "silicon",
+    "amount": 3.0
+   }
+  ],
+  "outputs": [
+   {
+    "name": "surge-alloy",
+    "amount": 1.0
+   }
+  ],
+  "craftTime": -1.0
+ },
+ {
+  "id": 189,
+  "name": "cryofluid-mixer",
+  "size": 2,
+  "health": 160,
+  "category": "crafting",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 65.0
+   },
+   {
+    "name": "titanium",
+    "amount": 60.0
+   },
+   {
+    "name": "silicon",
+    "amount": 40.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 1.0
+   },
+   {
+    "kind": "item",
+    "name": "titanium",
+    "amount": 1.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 190,
+  "name": "pyratite-mixer",
+  "size": 2,
+  "health": 160,
+  "category": "crafting",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 50.0
+   },
+   {
+    "name": "lead",
+    "amount": 25.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 0.20000000298023224
+   },
+   {
+    "kind": "item",
+    "name": "coal",
+    "amount": 1.0
+   },
+   {
+    "kind": "item",
+    "name": "lead",
+    "amount": 2.0
+   },
+   {
+    "kind": "item",
+    "name": "sand",
+    "amount": 2.0
+   }
+  ],
+  "outputs": [
+   {
+    "name": "pyratite",
+    "amount": 1.0
+   }
+  ],
+  "craftTime": -1.0
+ },
+ {
+  "id": 191,
+  "name": "blast-mixer",
+  "size": 2,
+  "health": 160,
+  "category": "crafting",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 30.0
+   },
+   {
+    "name": "titanium",
+    "amount": 20.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "item",
+    "name": "pyratite",
+    "amount": 1.0
+   },
+   {
+    "kind": "item",
+    "name": "spore-pod",
+    "amount": 1.0
+   },
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 0.4000000059604645
+   }
+  ],
+  "outputs": [
+   {
+    "name": "blast-compound",
+    "amount": 1.0
+   }
+  ],
+  "craftTime": -1.0
+ },
+ {
+  "id": 192,
+  "name": "melter",
+  "size": 1,
+  "health": 200,
+  "category": "crafting",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 30.0
+   },
+   {
+    "name": "lead",
+    "amount": 35.0
+   },
+   {
+    "name": "graphite",
+    "amount": 45.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 1.0
+   },
+   {
+    "kind": "item",
+    "name": "scrap",
+    "amount": 1.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 193,
+  "name": "separator",
+  "size": 2,
+  "health": 160,
+  "category": "crafting",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 30.0
+   },
+   {
+    "name": "titanium",
+    "amount": 25.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 1.100000023841858
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 194,
+  "name": "disassembler",
+  "size": 3,
+  "health": 465,
+  "category": "crafting",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "titanium",
+    "amount": 100.0
+   },
+   {
+    "name": "thorium",
+    "amount": 80.0
+   },
+   {
+    "name": "silicon",
+    "amount": 150.0
+   },
+   {
+    "name": "plastanium",
+    "amount": 40.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 4.0
+   },
+   {
+    "kind": "item",
+    "name": "scrap",
+    "amount": 1.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 195,
+  "name": "spore-press",
+  "size": 2,
+  "health": 320,
+  "category": "crafting",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 35.0
+   },
+   {
+    "name": "silicon",
+    "amount": 30.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "item",
+    "name": "spore-pod",
+    "amount": 1.0
+   },
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 0.699999988079071
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 196,
+  "name": "pulverizer",
+  "size": 1,
+  "health": 40,
+  "category": "crafting",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 30.0
+   },
+   {
+    "name": "lead",
+    "amount": 25.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "item",
+    "name": "scrap",
+    "amount": 1.0
+   },
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 0.5
+   }
+  ],
+  "outputs": [
+   {
+    "name": "sand",
+    "amount": 1.0
+   }
+  ],
+  "craftTime": -1.0
+ },
+ {
+  "id": 197,
+  "name": "coal-centrifuge",
+  "size": 2,
+  "health": 160,
+  "category": "crafting",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 30.0
+   },
+   {
+    "name": "graphite",
+    "amount": 40.0
+   },
+   {
+    "name": "titanium",
+    "amount": 20.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 0.699999988079071
+   }
+  ],
+  "outputs": [
+   {
+    "name": "coal",
+    "amount": 1.0
+   }
+  ],
+  "craftTime": -1.0
+ },
+ {
+  "id": 198,
+  "name": "incinerator",
+  "size": 1,
+  "health": 90,
+  "category": "crafting",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 15.0
+   },
+   {
+    "name": "graphite",
+    "amount": 5.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 0.5
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 199,
+  "name": "silicon-arc-furnace",
+  "size": 3,
+  "health": 575,
+  "category": "crafting",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 80.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 70.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "item",
+    "name": "graphite",
+    "amount": 1.0
+   },
+   {
+    "kind": "item",
+    "name": "sand",
+    "amount": 4.0
+   },
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 5.0
+   }
+  ],
+  "outputs": [
+   {
+    "name": "silicon",
+    "amount": 4.0
+   }
+  ],
+  "craftTime": -1.0
+ },
+ {
+  "id": 200,
+  "name": "electrolyzer",
+  "size": 3,
+  "health": 860,
+  "category": "crafting",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 40.0
+   },
+   {
+    "name": "silicon",
+    "amount": 50.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 130.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 80.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 1.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 201,
+  "name": "atmospheric-concentrator",
+  "size": 3,
+  "health": 755,
+  "category": "crafting",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "silicon",
+    "amount": 150.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 180.0
+   },
+   {
+    "name": "oxide",
+    "amount": 60.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 2.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 202,
+  "name": "oxidation-chamber",
+  "size": 3,
+  "health": 860,
+  "category": "crafting",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 80.0
+   },
+   {
+    "name": "silicon",
+    "amount": 100.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 120.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 120.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "item",
+    "name": "beryllium",
+    "amount": 1.0
+   },
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 0.5
+   }
+  ],
+  "outputs": [
+   {
+    "name": "oxide",
+    "amount": 1.0
+   }
+  ],
+  "craftTime": -1.0
+ },
+ {
+  "id": 203,
+  "name": "electric-heater",
+  "size": 2,
+  "health": 460,
+  "category": "crafting",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "beryllium",
+    "amount": 30.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 30.0
+   },
+   {
+    "name": "oxide",
+    "amount": 30.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 1.6666666269302368
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 204,
+  "name": "slag-heater",
+  "size": 3,
+  "health": 1040,
+  "category": "crafting",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "beryllium",
+    "amount": 20.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 50.0
+   },
+   {
+    "name": "oxide",
+    "amount": 20.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 205,
+  "name": "phase-heater",
+  "size": 2,
+  "health": 510,
+  "category": "crafting",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "beryllium",
+    "amount": 30.0
+   },
+   {
+    "name": "oxide",
+    "amount": 30.0
+   },
+   {
+    "name": "carbide",
+    "amount": 30.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "item",
+    "name": "phase-fabric",
+    "amount": 1.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 206,
+  "name": "heat-redirector",
+  "size": 3,
+  "health": 645,
+  "category": "crafting",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 10.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 10.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 207,
+  "name": "small-heat-redirector",
+  "size": 2,
+  "health": 200,
+  "category": "crafting",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 8.0
+   },
+   {
+    "name": "surge-alloy",
+    "amount": 3.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 208,
+  "name": "heat-router",
+  "size": 3,
+  "health": 645,
+  "category": "crafting",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 10.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 15.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 209,
+  "name": "slag-incinerator",
+  "size": 1,
+  "health": 70,
+  "category": "crafting",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "tungsten",
+    "amount": 15.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 210,
+  "name": "carbide-crucible",
+  "size": 3,
+  "health": 900,
+  "category": "crafting",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "thorium",
+    "amount": 150.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 110.0
+   },
+   {
+    "name": "oxide",
+    "amount": 60.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "item",
+    "name": "tungsten",
+    "amount": 2.0
+   },
+   {
+    "kind": "item",
+    "name": "graphite",
+    "amount": 3.0
+   },
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 2.0
+   }
+  ],
+  "outputs": [
+   {
+    "name": "carbide",
+    "amount": 1.0
+   }
+  ],
+  "craftTime": -1.0
+ },
+ {
+  "id": 211,
+  "name": "slag-centrifuge",
+  "size": 3,
+  "health": 935,
+  "category": "crafting",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 60.0
+   },
+   {
+    "name": "silicon",
+    "amount": 40.0
+   },
+   {
+    "name": "oxide",
+    "amount": 40.0
+   },
+   {
+    "name": "carbide",
+    "amount": 70.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 0.03333333507180214
+   },
+   {
+    "kind": "item",
+    "name": "sand",
+    "amount": 1.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 212,
+  "name": "surge-crucible",
+  "size": 3,
+  "health": 825,
+  "category": "crafting",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 80.0
+   },
+   {
+    "name": "silicon",
+    "amount": 100.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 80.0
+   },
+   {
+    "name": "oxide",
+    "amount": 80.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "item",
+    "name": "silicon",
+    "amount": 3.0
+   },
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 1.5
+   }
+  ],
+  "outputs": [
+   {
+    "name": "surge-alloy",
+    "amount": 1.0
+   }
+  ],
+  "craftTime": -1.0
+ },
+ {
+  "id": 213,
+  "name": "cyanogen-synthesizer",
+  "size": 3,
+  "health": 1150,
+  "category": "crafting",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "silicon",
+    "amount": 120.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 140.0
+   },
+   {
+    "name": "oxide",
+    "amount": 40.0
+   },
+   {
+    "name": "carbide",
+    "amount": 80.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "item",
+    "name": "graphite",
+    "amount": 1.0
+   },
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 2.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 214,
+  "name": "phase-synthesizer",
+  "size": 3,
+  "health": 1115,
+  "category": "crafting",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "thorium",
+    "amount": 100.0
+   },
+   {
+    "name": "silicon",
+    "amount": 100.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 200.0
+   },
+   {
+    "name": "carbide",
+    "amount": 90.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "item",
+    "name": "thorium",
+    "amount": 2.0
+   },
+   {
+    "kind": "item",
+    "name": "sand",
+    "amount": 6.0
+   },
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 8.0
+   }
+  ],
+  "outputs": [
+   {
+    "name": "phase-fabric",
+    "amount": 1.0
+   }
+  ],
+  "craftTime": -1.0
+ },
+ {
+  "id": 215,
+  "name": "heat-reactor",
+  "size": 3,
+  "health": 1005,
+  "category": "crafting",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 20.0
+   },
+   {
+    "name": "thorium",
+    "amount": 80.0
+   },
+   {
+    "name": "oxide",
+    "amount": 70.0
+   },
+   {
+    "name": "carbide",
+    "amount": 10.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "item",
+    "name": "thorium",
+    "amount": 3.0
+   }
+  ],
+  "outputs": [
+   {
+    "name": "fissile-matter",
+    "amount": 1.0
+   }
+  ],
+  "craftTime": -1.0
+ },
+ {
+  "id": 216,
+  "name": "copper-wall",
+  "size": 1,
+  "health": 320,
+  "category": "defense",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 6.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 217,
+  "name": "copper-wall-large",
+  "size": 2,
+  "health": 1280,
+  "category": "defense",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 24.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 218,
+  "name": "titanium-wall",
+  "size": 1,
+  "health": 440,
+  "category": "defense",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "titanium",
+    "amount": 6.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 219,
+  "name": "titanium-wall-large",
+  "size": 2,
+  "health": 1760,
+  "category": "defense",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "titanium",
+    "amount": 24.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 220,
+  "name": "plastanium-wall",
+  "size": 1,
+  "health": 500,
+  "category": "defense",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "metaglass",
+    "amount": 2.0
+   },
+   {
+    "name": "plastanium",
+    "amount": 5.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 221,
+  "name": "plastanium-wall-large",
+  "size": 2,
+  "health": 2000,
+  "category": "defense",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "metaglass",
+    "amount": 8.0
+   },
+   {
+    "name": "plastanium",
+    "amount": 20.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 222,
+  "name": "thorium-wall",
+  "size": 1,
+  "health": 800,
+  "category": "defense",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "thorium",
+    "amount": 6.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 223,
+  "name": "thorium-wall-large",
+  "size": 2,
+  "health": 3200,
+  "category": "defense",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "thorium",
+    "amount": 24.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 224,
+  "name": "phase-wall",
+  "size": 1,
+  "health": 600,
+  "category": "defense",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "phase-fabric",
+    "amount": 6.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 225,
+  "name": "phase-wall-large",
+  "size": 2,
+  "health": 2400,
+  "category": "defense",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "phase-fabric",
+    "amount": 24.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 226,
+  "name": "surge-wall",
+  "size": 1,
+  "health": 920,
+  "category": "defense",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "surge-alloy",
+    "amount": 6.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 227,
+  "name": "surge-wall-large",
+  "size": 2,
+  "health": 3680,
+  "category": "defense",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "surge-alloy",
+    "amount": 24.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 228,
+  "name": "door",
+  "size": 1,
+  "health": 400,
+  "category": "defense",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "titanium",
+    "amount": 6.0
+   },
+   {
+    "name": "silicon",
+    "amount": 4.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 229,
+  "name": "door-large",
+  "size": 2,
+  "health": 1600,
+  "category": "defense",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "titanium",
+    "amount": 24.0
+   },
+   {
+    "name": "silicon",
+    "amount": 16.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 230,
+  "name": "scrap-wall",
+  "size": 1,
+  "health": 240,
+  "category": "defense",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "scrap",
+    "amount": 6.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 231,
+  "name": "scrap-wall-large",
+  "size": 2,
+  "health": 960,
+  "category": "defense",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "scrap",
+    "amount": 24.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 232,
+  "name": "scrap-wall-huge",
+  "size": 3,
+  "health": 2160,
+  "category": "defense",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "scrap",
+    "amount": 54.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 233,
+  "name": "scrap-wall-gigantic",
+  "size": 4,
+  "health": 3840,
+  "category": "defense",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "scrap",
+    "amount": 96.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 234,
+  "name": "thruster",
+  "size": 4,
+  "health": 3520,
+  "category": "defense",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "scrap",
+    "amount": 96.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 235,
+  "name": "beryllium-wall",
+  "size": 1,
+  "health": 520,
+  "category": "defense",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "beryllium",
+    "amount": 6.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 236,
+  "name": "beryllium-wall-large",
+  "size": 2,
+  "health": 2080,
+  "category": "defense",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "beryllium",
+    "amount": 24.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 237,
+  "name": "tungsten-wall",
+  "size": 1,
+  "health": 720,
+  "category": "defense",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "tungsten",
+    "amount": 6.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 238,
+  "name": "tungsten-wall-large",
+  "size": 2,
+  "health": 2880,
+  "category": "defense",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "tungsten",
+    "amount": 24.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 239,
+  "name": "blast-door",
+  "size": 2,
+  "health": 2800,
+  "category": "defense",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "silicon",
+    "amount": 24.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 24.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 240,
+  "name": "reinforced-surge-wall",
+  "size": 1,
+  "health": 1000,
+  "category": "defense",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "surge-alloy",
+    "amount": 6.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 2.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 241,
+  "name": "reinforced-surge-wall-large",
+  "size": 2,
+  "health": 4000,
+  "category": "defense",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "surge-alloy",
+    "amount": 24.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 8.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 242,
+  "name": "carbide-wall",
+  "size": 1,
+  "health": 1080,
+  "category": "defense",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "thorium",
+    "amount": 6.0
+   },
+   {
+    "name": "carbide",
+    "amount": 6.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 243,
+  "name": "carbide-wall-large",
+  "size": 2,
+  "health": 4320,
+  "category": "defense",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "thorium",
+    "amount": 24.0
+   },
+   {
+    "name": "carbide",
+    "amount": 24.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 244,
+  "name": "shielded-wall",
+  "size": 2,
+  "health": 4160,
+  "category": "defense",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "phase-fabric",
+    "amount": 20.0
+   },
+   {
+    "name": "surge-alloy",
+    "amount": 12.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 12.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 0.05000000074505806
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 245,
+  "name": "mender",
+  "size": 1,
+  "health": 80,
+  "category": "effect",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 25.0
+   },
+   {
+    "name": "lead",
+    "amount": 30.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 0.30000001192092896
+   },
+   {
+    "kind": "item",
+    "name": "silicon",
+    "amount": 1.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 246,
+  "name": "mend-projector",
+  "size": 2,
+  "health": 320,
+  "category": "effect",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 50.0
+   },
+   {
+    "name": "lead",
+    "amount": 100.0
+   },
+   {
+    "name": "titanium",
+    "amount": 25.0
+   },
+   {
+    "name": "silicon",
+    "amount": 40.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 1.5
+   },
+   {
+    "kind": "item",
+    "name": "phase-fabric",
+    "amount": 1.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 247,
+  "name": "overdrive-projector",
+  "size": 2,
+  "health": 175,
+  "category": "effect",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 100.0
+   },
+   {
+    "name": "titanium",
+    "amount": 75.0
+   },
+   {
+    "name": "silicon",
+    "amount": 75.0
+   },
+   {
+    "name": "plastanium",
+    "amount": 30.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 3.5
+   },
+   {
+    "kind": "item",
+    "name": "phase-fabric",
+    "amount": 1.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 248,
+  "name": "overdrive-dome",
+  "size": 3,
+  "health": 485,
+  "category": "effect",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 200.0
+   },
+   {
+    "name": "titanium",
+    "amount": 130.0
+   },
+   {
+    "name": "silicon",
+    "amount": 130.0
+   },
+   {
+    "name": "plastanium",
+    "amount": 80.0
+   },
+   {
+    "name": "surge-alloy",
+    "amount": 120.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 10.0
+   },
+   {
+    "kind": "item",
+    "name": "phase-fabric",
+    "amount": 1.0
+   },
+   {
+    "kind": "item",
+    "name": "silicon",
+    "amount": 1.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 249,
+  "name": "force-projector",
+  "size": 3,
+  "health": 360,
+  "category": "effect",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 100.0
+   },
+   {
+    "name": "titanium",
+    "amount": 75.0
+   },
+   {
+    "name": "silicon",
+    "amount": 125.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "item",
+    "name": "phase-fabric",
+    "amount": 1.0
+   },
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 4.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 250,
+  "name": "shock-mine",
+  "size": 1,
+  "health": 50,
+  "category": "effect",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 25.0
+   },
+   {
+    "name": "silicon",
+    "amount": 12.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 251,
+  "name": "radar",
+  "size": 1,
+  "health": 60,
+  "category": "effect",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 50.0
+   },
+   {
+    "name": "silicon",
+    "amount": 60.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 10.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 0.6000000238418579
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 252,
+  "name": "build-tower",
+  "size": 3,
+  "health": 610,
+  "category": "effect",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "thorium",
+    "amount": 60.0
+   },
+   {
+    "name": "silicon",
+    "amount": 150.0
+   },
+   {
+    "name": "oxide",
+    "amount": 40.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 3.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 253,
+  "name": "regen-projector",
+  "size": 3,
+  "health": 1040,
+  "category": "effect",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "silicon",
+    "amount": 80.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 80.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 60.0
+   },
+   {
+    "name": "oxide",
+    "amount": 40.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 1.0
+   },
+   {
+    "kind": "item",
+    "name": "phase-fabric",
+    "amount": 1.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 254,
+  "name": "shockwave-tower",
+  "size": 3,
+  "health": 915,
+  "category": "effect",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "silicon",
+    "amount": 150.0
+   },
+   {
+    "name": "surge-alloy",
+    "amount": 50.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 100.0
+   },
+   {
+    "name": "oxide",
+    "amount": 30.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "liquid",
+    "name": "cyanogen",
+    "amount": 0.02500000037252903
+   },
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 1.6666666269302368
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 255,
+  "name": "shield-projector",
+  "size": 3,
+  "health": 360,
+  "category": "effect",
+  "hasPower": true,
+  "requirements": [],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 5.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 256,
+  "name": "large-shield-projector",
+  "size": 4,
+  "health": 640,
+  "category": "effect",
+  "hasPower": true,
+  "requirements": [],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 5.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 257,
+  "name": "conveyor",
+  "size": 1,
+  "health": 45,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 1.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 258,
+  "name": "titanium-conveyor",
+  "size": 1,
+  "health": 65,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 1.0
+   },
+   {
+    "name": "lead",
+    "amount": 1.0
+   },
+   {
+    "name": "titanium",
+    "amount": 1.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 259,
+  "name": "plastanium-conveyor",
+  "size": 1,
+  "health": 90,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 1.0
+   },
+   {
+    "name": "silicon",
+    "amount": 1.0
+   },
+   {
+    "name": "plastanium",
+    "amount": 1.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 260,
+  "name": "armored-conveyor",
+  "size": 1,
+  "health": 280,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "metaglass",
+    "amount": 1.0
+   },
+   {
+    "name": "thorium",
+    "amount": 1.0
+   },
+   {
+    "name": "plastanium",
+    "amount": 1.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 261,
+  "name": "junction",
+  "size": 1,
+  "health": 30,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 3.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 262,
+  "name": "bridge-conveyor",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 6.0
+   },
+   {
+    "name": "lead",
+    "amount": 6.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 263,
+  "name": "phase-conveyor",
+  "size": 1,
+  "health": 50,
+  "category": "distribution",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 10.0
+   },
+   {
+    "name": "graphite",
+    "amount": 10.0
+   },
+   {
+    "name": "silicon",
+    "amount": 7.0
+   },
+   {
+    "name": "phase-fabric",
+    "amount": 5.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 0.30000001192092896
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 264,
+  "name": "sorter",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 2.0
+   },
+   {
+    "name": "lead",
+    "amount": 2.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 265,
+  "name": "inverted-sorter",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 2.0
+   },
+   {
+    "name": "lead",
+    "amount": 2.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 266,
+  "name": "router",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 3.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 267,
+  "name": "distributor",
+  "size": 2,
+  "health": 160,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 4.0
+   },
+   {
+    "name": "lead",
+    "amount": 4.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 268,
+  "name": "overflow-gate",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 4.0
+   },
+   {
+    "name": "lead",
+    "amount": 2.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 269,
+  "name": "underflow-gate",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 4.0
+   },
+   {
+    "name": "lead",
+    "amount": 2.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 270,
+  "name": "unloader",
+  "size": 1,
+  "health": 70,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "titanium",
+    "amount": 25.0
+   },
+   {
+    "name": "silicon",
+    "amount": 30.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 271,
+  "name": "mass-driver",
+  "size": 3,
+  "health": 430,
+  "category": "distribution",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 125.0
+   },
+   {
+    "name": "titanium",
+    "amount": 125.0
+   },
+   {
+    "name": "thorium",
+    "amount": 50.0
+   },
+   {
+    "name": "silicon",
+    "amount": 75.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 1.75
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 272,
+  "name": "duct",
+  "size": 1,
+  "health": 90,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "beryllium",
+    "amount": 1.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 273,
+  "name": "armored-duct",
+  "size": 1,
+  "health": 140,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "beryllium",
+    "amount": 2.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 1.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 274,
+  "name": "duct-router",
+  "size": 1,
+  "health": 90,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "beryllium",
+    "amount": 10.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 275,
+  "name": "overflow-duct",
+  "size": 1,
+  "health": 90,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 8.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 8.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 276,
+  "name": "underflow-duct",
+  "size": 1,
+  "health": 90,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 8.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 8.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 277,
+  "name": "duct-bridge",
+  "size": 1,
+  "health": 90,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "beryllium",
+    "amount": 15.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 278,
+  "name": "duct-unloader",
+  "size": 1,
+  "health": 120,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 20.0
+   },
+   {
+    "name": "silicon",
+    "amount": 20.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 10.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 279,
+  "name": "surge-conveyor",
+  "size": 1,
+  "health": 130,
+  "category": "distribution",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "surge-alloy",
+    "amount": 1.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 1.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 0.01666666753590107
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 280,
+  "name": "surge-router",
+  "size": 1,
+  "health": 130,
+  "category": "distribution",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "surge-alloy",
+    "amount": 5.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 1.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 0.05000000074505806
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 281,
+  "name": "unit-cargo-loader",
+  "size": 3,
+  "health": 630,
+  "category": "distribution",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "silicon",
+    "amount": 80.0
+   },
+   {
+    "name": "surge-alloy",
+    "amount": 50.0
+   },
+   {
+    "name": "oxide",
+    "amount": 20.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 0.13333334028720856
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 282,
+  "name": "unit-cargo-unload-point",
+  "size": 2,
+  "health": 285,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "silicon",
+    "amount": 60.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 60.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 283,
+  "name": "mechanical-pump",
+  "size": 1,
+  "health": 40,
+  "category": "liquid",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 15.0
+   },
+   {
+    "name": "metaglass",
+    "amount": 10.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 284,
+  "name": "rotary-pump",
+  "size": 2,
+  "health": 160,
+  "category": "liquid",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 70.0
+   },
+   {
+    "name": "metaglass",
+    "amount": 50.0
+   },
+   {
+    "name": "titanium",
+    "amount": 35.0
+   },
+   {
+    "name": "silicon",
+    "amount": 20.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 0.30000001192092896
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 285,
+  "name": "impulse-pump",
+  "size": 3,
+  "health": 430,
+  "category": "liquid",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 80.0
+   },
+   {
+    "name": "metaglass",
+    "amount": 90.0
+   },
+   {
+    "name": "titanium",
+    "amount": 40.0
+   },
+   {
+    "name": "thorium",
+    "amount": 35.0
+   },
+   {
+    "name": "silicon",
+    "amount": 30.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 1.2999999523162842
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 286,
+  "name": "conduit",
+  "size": 1,
+  "health": 45,
+  "category": "liquid",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "metaglass",
+    "amount": 1.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 287,
+  "name": "pulse-conduit",
+  "size": 1,
+  "health": 90,
+  "category": "liquid",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "metaglass",
+    "amount": 1.0
+   },
+   {
+    "name": "titanium",
+    "amount": 2.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 288,
+  "name": "plated-conduit",
+  "size": 1,
+  "health": 220,
+  "category": "liquid",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "metaglass",
+    "amount": 1.0
+   },
+   {
+    "name": "thorium",
+    "amount": 2.0
+   },
+   {
+    "name": "plastanium",
+    "amount": 1.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 289,
+  "name": "liquid-router",
+  "size": 1,
+  "health": 40,
+  "category": "liquid",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "metaglass",
+    "amount": 2.0
+   },
+   {
+    "name": "graphite",
+    "amount": 4.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 290,
+  "name": "liquid-container",
+  "size": 2,
+  "health": 160,
+  "category": "liquid",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "metaglass",
+    "amount": 15.0
+   },
+   {
+    "name": "titanium",
+    "amount": 10.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 291,
+  "name": "liquid-tank",
+  "size": 3,
+  "health": 500,
+  "category": "liquid",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "metaglass",
+    "amount": 40.0
+   },
+   {
+    "name": "titanium",
+    "amount": 30.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 292,
+  "name": "liquid-junction",
+  "size": 1,
+  "health": 40,
+  "category": "liquid",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "metaglass",
+    "amount": 8.0
+   },
+   {
+    "name": "graphite",
+    "amount": 4.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 293,
+  "name": "bridge-conduit",
+  "size": 1,
+  "health": 40,
+  "category": "liquid",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "metaglass",
+    "amount": 8.0
+   },
+   {
+    "name": "graphite",
+    "amount": 4.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 294,
+  "name": "phase-conduit",
+  "size": 1,
+  "health": 50,
+  "category": "liquid",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "metaglass",
+    "amount": 20.0
+   },
+   {
+    "name": "titanium",
+    "amount": 10.0
+   },
+   {
+    "name": "silicon",
+    "amount": 7.0
+   },
+   {
+    "name": "phase-fabric",
+    "amount": 5.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 0.30000001192092896
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 295,
+  "name": "reinforced-pump",
+  "size": 2,
+  "health": 380,
+  "category": "liquid",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "silicon",
+    "amount": 20.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 40.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 30.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 296,
+  "name": "reinforced-conduit",
+  "size": 1,
+  "health": 250,
+  "category": "liquid",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "beryllium",
+    "amount": 2.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 297,
+  "name": "reinforced-liquid-junction",
+  "size": 1,
+  "health": 250,
+  "category": "liquid",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 4.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 8.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 298,
+  "name": "reinforced-bridge-conduit",
+  "size": 1,
+  "health": 250,
+  "category": "liquid",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 8.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 20.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 299,
+  "name": "reinforced-liquid-router",
+  "size": 1,
+  "health": 250,
+  "category": "liquid",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 8.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 4.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 300,
+  "name": "reinforced-liquid-container",
+  "size": 2,
+  "health": 400,
+  "category": "liquid",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "beryllium",
+    "amount": 16.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 10.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 301,
+  "name": "reinforced-liquid-tank",
+  "size": 3,
+  "health": 900,
+  "category": "liquid",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "beryllium",
+    "amount": 50.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 40.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 302,
+  "name": "power-node",
+  "size": 1,
+  "health": 40,
+  "category": "power",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 2.0
+   },
+   {
+    "name": "lead",
+    "amount": 6.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 303,
+  "name": "power-node-large",
+  "size": 2,
+  "health": 160,
+  "category": "power",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 10.0
+   },
+   {
+    "name": "titanium",
+    "amount": 5.0
+   },
+   {
+    "name": "silicon",
+    "amount": 3.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 304,
+  "name": "surge-tower",
+  "size": 2,
+  "health": 200,
+  "category": "power",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 10.0
+   },
+   {
+    "name": "titanium",
+    "amount": 7.0
+   },
+   {
+    "name": "silicon",
+    "amount": 15.0
+   },
+   {
+    "name": "surge-alloy",
+    "amount": 15.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 305,
+  "name": "diode",
+  "size": 1,
+  "health": 40,
+  "category": "power",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "metaglass",
+    "amount": 10.0
+   },
+   {
+    "name": "silicon",
+    "amount": 10.0
+   },
+   {
+    "name": "plastanium",
+    "amount": 5.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 306,
+  "name": "battery",
+  "size": 1,
+  "health": 40,
+  "category": "power",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 5.0
+   },
+   {
+    "name": "lead",
+    "amount": 20.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 0.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 307,
+  "name": "battery-large",
+  "size": 3,
+  "health": 360,
+  "category": "power",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 50.0
+   },
+   {
+    "name": "titanium",
+    "amount": 20.0
+   },
+   {
+    "name": "silicon",
+    "amount": 30.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 0.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 308,
+  "name": "combustion-generator",
+  "size": 1,
+  "health": 40,
+  "category": "power",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 25.0
+   },
+   {
+    "name": "lead",
+    "amount": 15.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 309,
+  "name": "thermal-generator",
+  "size": 2,
+  "health": 160,
+  "category": "power",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 40.0
+   },
+   {
+    "name": "lead",
+    "amount": 50.0
+   },
+   {
+    "name": "metaglass",
+    "amount": 40.0
+   },
+   {
+    "name": "graphite",
+    "amount": 35.0
+   },
+   {
+    "name": "silicon",
+    "amount": 35.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 310,
+  "name": "steam-generator",
+  "size": 2,
+  "health": 160,
+  "category": "power",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 35.0
+   },
+   {
+    "name": "lead",
+    "amount": 40.0
+   },
+   {
+    "name": "graphite",
+    "amount": 25.0
+   },
+   {
+    "name": "silicon",
+    "amount": 30.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 311,
+  "name": "differential-generator",
+  "size": 3,
+  "health": 360,
+  "category": "power",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 70.0
+   },
+   {
+    "name": "lead",
+    "amount": 100.0
+   },
+   {
+    "name": "metaglass",
+    "amount": 50.0
+   },
+   {
+    "name": "titanium",
+    "amount": 50.0
+   },
+   {
+    "name": "silicon",
+    "amount": 65.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "item",
+    "name": "pyratite",
+    "amount": 1.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 312,
+  "name": "rtg-generator",
+  "size": 2,
+  "health": 245,
+  "category": "power",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 100.0
+   },
+   {
+    "name": "thorium",
+    "amount": 50.0
+   },
+   {
+    "name": "silicon",
+    "amount": 75.0
+   },
+   {
+    "name": "plastanium",
+    "amount": 75.0
+   },
+   {
+    "name": "phase-fabric",
+    "amount": 25.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 313,
+  "name": "solar-panel",
+  "size": 1,
+  "health": 40,
+  "category": "power",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 10.0
+   },
+   {
+    "name": "silicon",
+    "amount": 8.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 314,
+  "name": "solar-panel-large",
+  "size": 3,
+  "health": 450,
+  "category": "power",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 60.0
+   },
+   {
+    "name": "silicon",
+    "amount": 70.0
+   },
+   {
+    "name": "phase-fabric",
+    "amount": 15.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 315,
+  "name": "thorium-reactor",
+  "size": 3,
+  "health": 1400,
+  "category": "power",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 300.0
+   },
+   {
+    "name": "metaglass",
+    "amount": 50.0
+   },
+   {
+    "name": "graphite",
+    "amount": 150.0
+   },
+   {
+    "name": "thorium",
+    "amount": 150.0
+   },
+   {
+    "name": "silicon",
+    "amount": 200.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "item",
+    "name": "thorium",
+    "amount": 1.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 316,
+  "name": "impact-reactor",
+  "size": 4,
+  "health": 900,
+  "category": "power",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 500.0
+   },
+   {
+    "name": "metaglass",
+    "amount": 250.0
+   },
+   {
+    "name": "graphite",
+    "amount": 400.0
+   },
+   {
+    "name": "thorium",
+    "amount": 100.0
+   },
+   {
+    "name": "silicon",
+    "amount": 300.0
+   },
+   {
+    "name": "surge-alloy",
+    "amount": 250.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 25.0
+   },
+   {
+    "kind": "item",
+    "name": "blast-compound",
+    "amount": 1.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 317,
+  "name": "beam-node",
+  "size": 1,
+  "health": 90,
+  "category": "power",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "beryllium",
+    "amount": 8.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 0.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 318,
+  "name": "beam-tower",
+  "size": 3,
+  "health": 810,
+  "category": "power",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "silicon",
+    "amount": 10.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 30.0
+   },
+   {
+    "name": "oxide",
+    "amount": 10.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 0.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 319,
+  "name": "beam-link",
+  "size": 3,
+  "health": 1170,
+  "category": "power",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "silicon",
+    "amount": 250.0
+   },
+   {
+    "name": "phase-fabric",
+    "amount": 75.0
+   },
+   {
+    "name": "surge-alloy",
+    "amount": 75.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 250.0
+   },
+   {
+    "name": "oxide",
+    "amount": 150.0
+   },
+   {
+    "name": "carbide",
+    "amount": 75.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 320,
+  "name": "turbine-condenser",
+  "size": 3,
+  "health": 575,
+  "category": "power",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "beryllium",
+    "amount": 60.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 321,
+  "name": "chemical-combustion-chamber",
+  "size": 3,
+  "health": 825,
+  "category": "power",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 40.0
+   },
+   {
+    "name": "silicon",
+    "amount": 30.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 20.0
+   },
+   {
+    "name": "oxide",
+    "amount": 40.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "liquid",
+    "name": "ozone",
+    "amount": 0.03333333507180214
+   },
+   {
+    "kind": "liquid",
+    "name": "arkycite",
+    "amount": 0.6666666865348816
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 322,
+  "name": "pyrolysis-generator",
+  "size": 3,
+  "health": 935,
+  "category": "power",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 100.0
+   },
+   {
+    "name": "silicon",
+    "amount": 100.0
+   },
+   {
+    "name": "oxide",
+    "amount": 60.0
+   },
+   {
+    "name": "carbide",
+    "amount": 60.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "liquid",
+    "name": "slag",
+    "amount": 0.3333333432674408
+   },
+   {
+    "kind": "liquid",
+    "name": "arkycite",
+    "amount": 0.6666666865348816
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 323,
+  "name": "flux-reactor",
+  "size": 5,
+  "health": 2850,
+  "category": "power",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 240.0
+   },
+   {
+    "name": "silicon",
+    "amount": 480.0
+   },
+   {
+    "name": "surge-alloy",
+    "amount": 120.0
+   },
+   {
+    "name": "oxide",
+    "amount": 80.0
+   },
+   {
+    "name": "carbide",
+    "amount": 60.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 324,
+  "name": "neoplasia-reactor",
+  "size": 5,
+  "health": 3900,
+  "category": "power",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "silicon",
+    "amount": 500.0
+   },
+   {
+    "name": "phase-fabric",
+    "amount": 150.0
+   },
+   {
+    "name": "surge-alloy",
+    "amount": 200.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 750.0
+   },
+   {
+    "name": "oxide",
+    "amount": 150.0
+   },
+   {
+    "name": "carbide",
+    "amount": 300.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "item",
+    "name": "phase-fabric",
+    "amount": 1.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 325,
+  "name": "mechanical-drill",
+  "size": 2,
+  "health": 160,
+  "category": "production",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 12.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 326,
+  "name": "pneumatic-drill",
+  "size": 2,
+  "health": 160,
+  "category": "production",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 18.0
+   },
+   {
+    "name": "graphite",
+    "amount": 10.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 327,
+  "name": "laser-drill",
+  "size": 3,
+  "health": 360,
+  "category": "production",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 35.0
+   },
+   {
+    "name": "graphite",
+    "amount": 30.0
+   },
+   {
+    "name": "titanium",
+    "amount": 20.0
+   },
+   {
+    "name": "silicon",
+    "amount": 30.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 1.100000023841858
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 328,
+  "name": "blast-drill",
+  "size": 4,
+  "health": 765,
+  "category": "production",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 65.0
+   },
+   {
+    "name": "titanium",
+    "amount": 50.0
+   },
+   {
+    "name": "thorium",
+    "amount": 75.0
+   },
+   {
+    "name": "silicon",
+    "amount": 60.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 3.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 329,
+  "name": "water-extractor",
+  "size": 2,
+  "health": 160,
+  "category": "production",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 30.0
+   },
+   {
+    "name": "lead",
+    "amount": 30.0
+   },
+   {
+    "name": "metaglass",
+    "amount": 30.0
+   },
+   {
+    "name": "graphite",
+    "amount": 30.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 1.5
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 330,
+  "name": "cultivator",
+  "size": 2,
+  "health": 160,
+  "category": "production",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 25.0
+   },
+   {
+    "name": "lead",
+    "amount": 25.0
+   },
+   {
+    "name": "silicon",
+    "amount": 10.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 1.3333333730697632
+   }
+  ],
+  "outputs": [
+   {
+    "name": "spore-pod",
+    "amount": 1.0
+   }
+  ],
+  "craftTime": -1.0
+ },
+ {
+  "id": 331,
+  "name": "oil-extractor",
+  "size": 3,
+  "health": 430,
+  "category": "production",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 150.0
+   },
+   {
+    "name": "lead",
+    "amount": 115.0
+   },
+   {
+    "name": "graphite",
+    "amount": 175.0
+   },
+   {
+    "name": "thorium",
+    "amount": 115.0
+   },
+   {
+    "name": "silicon",
+    "amount": 75.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "item",
+    "name": "sand",
+    "amount": 1.0
+   },
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 3.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 332,
+  "name": "vent-condenser",
+  "size": 3,
+  "health": 575,
+  "category": "production",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 20.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 60.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 0.5
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 333,
+  "name": "cliff-crusher",
+  "size": 2,
+  "health": 255,
+  "category": "production",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 25.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 20.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 0.18333333730697632
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 334,
+  "name": "large-cliff-crusher",
+  "size": 3,
+  "health": 950,
+  "category": "production",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "silicon",
+    "amount": 80.0
+   },
+   {
+    "name": "surge-alloy",
+    "amount": 15.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 100.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 50.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 1.0
+   },
+   {
+    "kind": "item",
+    "name": "graphite",
+    "amount": 1.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 335,
+  "name": "plasma-bore",
+  "size": 2,
+  "health": 255,
+  "category": "production",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "beryllium",
+    "amount": 40.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 0.15000000596046448
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 336,
+  "name": "large-plasma-bore",
+  "size": 3,
+  "health": 1040,
+  "category": "production",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "silicon",
+    "amount": 100.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 100.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 70.0
+   },
+   {
+    "name": "oxide",
+    "amount": 25.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 0.800000011920929
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 337,
+  "name": "impact-drill",
+  "size": 4,
+  "health": 1020,
+  "category": "production",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 60.0
+   },
+   {
+    "name": "silicon",
+    "amount": 70.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 90.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 2.6666667461395264
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 338,
+  "name": "eruption-drill",
+  "size": 5,
+  "health": 2500,
+  "category": "production",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "thorium",
+    "amount": 150.0
+   },
+   {
+    "name": "silicon",
+    "amount": 300.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 250.0
+   },
+   {
+    "name": "oxide",
+    "amount": 20.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 6.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 339,
+  "name": "core-shard",
+  "size": 3,
+  "health": 1100,
+  "category": "effect",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 1000.0
+   },
+   {
+    "name": "lead",
+    "amount": 800.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 340,
+  "name": "core-foundation",
+  "size": 4,
+  "health": 3500,
+  "category": "effect",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 3000.0
+   },
+   {
+    "name": "lead",
+    "amount": 3000.0
+   },
+   {
+    "name": "silicon",
+    "amount": 2000.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 341,
+  "name": "core-nucleus",
+  "size": 5,
+  "health": 6000,
+  "category": "effect",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 8000.0
+   },
+   {
+    "name": "lead",
+    "amount": 8000.0
+   },
+   {
+    "name": "thorium",
+    "amount": 4000.0
+   },
+   {
+    "name": "silicon",
+    "amount": 5000.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 342,
+  "name": "core-bastion",
+  "size": 4,
+  "health": 4500,
+  "category": "effect",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 1000.0
+   },
+   {
+    "name": "silicon",
+    "amount": 1000.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 800.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 343,
+  "name": "core-citadel",
+  "size": 5,
+  "health": 16000,
+  "category": "effect",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "silicon",
+    "amount": 4000.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 4000.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 3000.0
+   },
+   {
+    "name": "oxide",
+    "amount": 1000.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 344,
+  "name": "core-acropolis",
+  "size": 6,
+  "health": 30000,
+  "category": "effect",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "silicon",
+    "amount": 5000.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 6000.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 5000.0
+   },
+   {
+    "name": "oxide",
+    "amount": 3000.0
+   },
+   {
+    "name": "carbide",
+    "amount": 3000.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 345,
+  "name": "container",
+  "size": 2,
+  "health": 220,
+  "category": "effect",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "titanium",
+    "amount": 100.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 346,
+  "name": "vault",
+  "size": 3,
+  "health": 495,
+  "category": "effect",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "titanium",
+    "amount": 250.0
+   },
+   {
+    "name": "thorium",
+    "amount": 125.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 347,
+  "name": "reinforced-container",
+  "size": 2,
+  "health": 480,
+  "category": "effect",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 40.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 30.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 348,
+  "name": "reinforced-vault",
+  "size": 3,
+  "health": 1080,
+  "category": "effect",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "thorium",
+    "amount": 70.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 100.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 125.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 349,
+  "name": "duo",
+  "size": 1,
+  "health": 250,
+  "category": "turret",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 35.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 350,
+  "name": "scatter",
+  "size": 2,
+  "health": 800,
+  "category": "turret",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 85.0
+   },
+   {
+    "name": "lead",
+    "amount": 45.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 351,
+  "name": "scorch",
+  "size": 1,
+  "health": 400,
+  "category": "turret",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 25.0
+   },
+   {
+    "name": "graphite",
+    "amount": 22.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 352,
+  "name": "hail",
+  "size": 1,
+  "health": 260,
+  "category": "turret",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 40.0
+   },
+   {
+    "name": "graphite",
+    "amount": 17.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 353,
+  "name": "wave",
+  "size": 2,
+  "health": 1000,
+  "category": "turret",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 25.0
+   },
+   {
+    "name": "lead",
+    "amount": 75.0
+   },
+   {
+    "name": "metaglass",
+    "amount": 45.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 354,
+  "name": "lancer",
+  "size": 2,
+  "health": 1120,
+  "category": "turret",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 60.0
+   },
+   {
+    "name": "lead",
+    "amount": 70.0
+   },
+   {
+    "name": "titanium",
+    "amount": 30.0
+   },
+   {
+    "name": "silicon",
+    "amount": 60.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 6.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 355,
+  "name": "arc",
+  "size": 1,
+  "health": 260,
+  "category": "turret",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 50.0
+   },
+   {
+    "name": "lead",
+    "amount": 50.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 3.299999952316284
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 356,
+  "name": "parallax",
+  "size": 2,
+  "health": 640,
+  "category": "turret",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 50.0
+   },
+   {
+    "name": "titanium",
+    "amount": 110.0
+   },
+   {
+    "name": "silicon",
+    "amount": 160.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 3.299999952316284
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 357,
+  "name": "swarmer",
+  "size": 2,
+  "health": 1200,
+  "category": "turret",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 35.0
+   },
+   {
+    "name": "titanium",
+    "amount": 35.0
+   },
+   {
+    "name": "silicon",
+    "amount": 30.0
+   },
+   {
+    "name": "plastanium",
+    "amount": 45.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 358,
+  "name": "salvo",
+  "size": 2,
+  "health": 960,
+  "category": "turret",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 100.0
+   },
+   {
+    "name": "graphite",
+    "amount": 80.0
+   },
+   {
+    "name": "titanium",
+    "amount": 50.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 359,
+  "name": "segment",
+  "size": 2,
+  "health": 1000,
+  "category": "turret",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "titanium",
+    "amount": 40.0
+   },
+   {
+    "name": "thorium",
+    "amount": 80.0
+   },
+   {
+    "name": "silicon",
+    "amount": 130.0
+   },
+   {
+    "name": "phase-fabric",
+    "amount": 40.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 8.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 360,
+  "name": "tsunami",
+  "size": 3,
+  "health": 2250,
+  "category": "turret",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 400.0
+   },
+   {
+    "name": "metaglass",
+    "amount": 100.0
+   },
+   {
+    "name": "titanium",
+    "amount": 250.0
+   },
+   {
+    "name": "thorium",
+    "amount": 100.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 361,
+  "name": "fuse",
+  "size": 3,
+  "health": 1980,
+  "category": "turret",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 225.0
+   },
+   {
+    "name": "graphite",
+    "amount": 225.0
+   },
+   {
+    "name": "thorium",
+    "amount": 100.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 362,
+  "name": "ripple",
+  "size": 3,
+  "health": 1170,
+  "category": "turret",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 150.0
+   },
+   {
+    "name": "graphite",
+    "amount": 135.0
+   },
+   {
+    "name": "titanium",
+    "amount": 60.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 363,
+  "name": "cyclone",
+  "size": 3,
+  "health": 1305,
+  "category": "turret",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 200.0
+   },
+   {
+    "name": "titanium",
+    "amount": 125.0
+   },
+   {
+    "name": "plastanium",
+    "amount": 80.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 364,
+  "name": "foreshadow",
+  "size": 4,
+  "health": 2400,
+  "category": "turret",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 1000.0
+   },
+   {
+    "name": "metaglass",
+    "amount": 600.0
+   },
+   {
+    "name": "silicon",
+    "amount": 600.0
+   },
+   {
+    "name": "plastanium",
+    "amount": 200.0
+   },
+   {
+    "name": "surge-alloy",
+    "amount": 300.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 10.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 365,
+  "name": "spectre",
+  "size": 4,
+  "health": 2560,
+  "category": "turret",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 900.0
+   },
+   {
+    "name": "graphite",
+    "amount": 300.0
+   },
+   {
+    "name": "thorium",
+    "amount": 250.0
+   },
+   {
+    "name": "plastanium",
+    "amount": 175.0
+   },
+   {
+    "name": "surge-alloy",
+    "amount": 250.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 366,
+  "name": "meltdown",
+  "size": 4,
+  "health": 3200,
+  "category": "turret",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 1200.0
+   },
+   {
+    "name": "lead",
+    "amount": 350.0
+   },
+   {
+    "name": "graphite",
+    "amount": 300.0
+   },
+   {
+    "name": "silicon",
+    "amount": 325.0
+   },
+   {
+    "name": "surge-alloy",
+    "amount": 325.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 17.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 367,
+  "name": "breach",
+  "size": 3,
+  "health": 1620,
+  "category": "turret",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 125.0
+   },
+   {
+    "name": "silicon",
+    "amount": 150.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 150.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 368,
+  "name": "diffuse",
+  "size": 3,
+  "health": 1890,
+  "category": "turret",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 200.0
+   },
+   {
+    "name": "silicon",
+    "amount": 200.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 150.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 50.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 369,
+  "name": "sublimate",
+  "size": 3,
+  "health": 1890,
+  "category": "turret",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "silicon",
+    "amount": 200.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 400.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 150.0
+   },
+   {
+    "name": "oxide",
+    "amount": 40.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 370,
+  "name": "titan",
+  "size": 4,
+  "health": 4000,
+  "category": "turret",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "thorium",
+    "amount": 400.0
+   },
+   {
+    "name": "silicon",
+    "amount": 300.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 250.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 371,
+  "name": "disperse",
+  "size": 4,
+  "health": 4480,
+  "category": "turret",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "thorium",
+    "amount": 50.0
+   },
+   {
+    "name": "silicon",
+    "amount": 200.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 350.0
+   },
+   {
+    "name": "oxide",
+    "amount": 50.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 372,
+  "name": "afflict",
+  "size": 4,
+  "health": 3520,
+  "category": "turret",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 250.0
+   },
+   {
+    "name": "silicon",
+    "amount": 200.0
+   },
+   {
+    "name": "surge-alloy",
+    "amount": 100.0
+   },
+   {
+    "name": "oxide",
+    "amount": 40.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 5.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 373,
+  "name": "lustre",
+  "size": 4,
+  "health": 3360,
+  "category": "turret",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 200.0
+   },
+   {
+    "name": "silicon",
+    "amount": 250.0
+   },
+   {
+    "name": "oxide",
+    "amount": 50.0
+   },
+   {
+    "name": "carbide",
+    "amount": 90.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 3.3333332538604736
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 374,
+  "name": "scathe",
+  "size": 4,
+  "health": 3520,
+  "category": "turret",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 400.0
+   },
+   {
+    "name": "silicon",
+    "amount": 450.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 500.0
+   },
+   {
+    "name": "oxide",
+    "amount": 100.0
+   },
+   {
+    "name": "carbide",
+    "amount": 200.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 375,
+  "name": "smite",
+  "size": 5,
+  "health": 8750,
+  "category": "turret",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "silicon",
+    "amount": 800.0
+   },
+   {
+    "name": "phase-fabric",
+    "amount": 300.0
+   },
+   {
+    "name": "surge-alloy",
+    "amount": 400.0
+   },
+   {
+    "name": "oxide",
+    "amount": 200.0
+   },
+   {
+    "name": "carbide",
+    "amount": 500.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 376,
+  "name": "malign",
+  "size": 5,
+  "health": 9250,
+  "category": "turret",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 500.0
+   },
+   {
+    "name": "silicon",
+    "amount": 500.0
+   },
+   {
+    "name": "phase-fabric",
+    "amount": 200.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 1000.0
+   },
+   {
+    "name": "carbide",
+    "amount": 200.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 40.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 377,
+  "name": "ground-factory",
+  "size": 3,
+  "health": 360,
+  "category": "units",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 50.0
+   },
+   {
+    "name": "lead",
+    "amount": 120.0
+   },
+   {
+    "name": "silicon",
+    "amount": 80.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 1.2000000476837158
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 378,
+  "name": "air-factory",
+  "size": 3,
+  "health": 360,
+  "category": "units",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 60.0
+   },
+   {
+    "name": "lead",
+    "amount": 70.0
+   },
+   {
+    "name": "silicon",
+    "amount": 60.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 1.2000000476837158
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 379,
+  "name": "naval-factory",
+  "size": 3,
+  "health": 360,
+  "category": "units",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 150.0
+   },
+   {
+    "name": "lead",
+    "amount": 130.0
+   },
+   {
+    "name": "metaglass",
+    "amount": 120.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 1.2000000476837158
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 380,
+  "name": "additive-reconstructor",
+  "size": 3,
+  "health": 360,
+  "category": "units",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 200.0
+   },
+   {
+    "name": "lead",
+    "amount": 120.0
+   },
+   {
+    "name": "silicon",
+    "amount": 90.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 3.0
+   },
+   {
+    "kind": "item",
+    "name": "silicon",
+    "amount": 40.0
+   },
+   {
+    "kind": "item",
+    "name": "graphite",
+    "amount": 40.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 381,
+  "name": "multiplicative-reconstructor",
+  "size": 5,
+  "health": 1200,
+  "category": "units",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 650.0
+   },
+   {
+    "name": "titanium",
+    "amount": 350.0
+   },
+   {
+    "name": "thorium",
+    "amount": 650.0
+   },
+   {
+    "name": "silicon",
+    "amount": 450.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 6.0
+   },
+   {
+    "kind": "item",
+    "name": "silicon",
+    "amount": 130.0
+   },
+   {
+    "kind": "item",
+    "name": "titanium",
+    "amount": 80.0
+   },
+   {
+    "kind": "item",
+    "name": "metaglass",
+    "amount": 40.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 382,
+  "name": "exponential-reconstructor",
+  "size": 7,
+  "health": 3035,
+  "category": "units",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 2000.0
+   },
+   {
+    "name": "titanium",
+    "amount": 2000.0
+   },
+   {
+    "name": "thorium",
+    "amount": 750.0
+   },
+   {
+    "name": "silicon",
+    "amount": 1000.0
+   },
+   {
+    "name": "plastanium",
+    "amount": 450.0
+   },
+   {
+    "name": "phase-fabric",
+    "amount": 600.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 13.0
+   },
+   {
+    "kind": "item",
+    "name": "silicon",
+    "amount": 850.0
+   },
+   {
+    "kind": "item",
+    "name": "titanium",
+    "amount": 750.0
+   },
+   {
+    "kind": "item",
+    "name": "plastanium",
+    "amount": 650.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 383,
+  "name": "tetrative-reconstructor",
+  "size": 9,
+  "health": 5830,
+  "category": "units",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 4000.0
+   },
+   {
+    "name": "thorium",
+    "amount": 1000.0
+   },
+   {
+    "name": "silicon",
+    "amount": 3000.0
+   },
+   {
+    "name": "plastanium",
+    "amount": 600.0
+   },
+   {
+    "name": "phase-fabric",
+    "amount": 600.0
+   },
+   {
+    "name": "surge-alloy",
+    "amount": 800.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 25.0
+   },
+   {
+    "kind": "item",
+    "name": "silicon",
+    "amount": 1000.0
+   },
+   {
+    "kind": "item",
+    "name": "plastanium",
+    "amount": 600.0
+   },
+   {
+    "kind": "item",
+    "name": "surge-alloy",
+    "amount": 500.0
+   },
+   {
+    "kind": "item",
+    "name": "phase-fabric",
+    "amount": 350.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 384,
+  "name": "repair-point",
+  "size": 1,
+  "health": 40,
+  "category": "units",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 30.0
+   },
+   {
+    "name": "lead",
+    "amount": 30.0
+   },
+   {
+    "name": "silicon",
+    "amount": 20.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 1.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 385,
+  "name": "repair-turret",
+  "size": 2,
+  "health": 205,
+  "category": "units",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "thorium",
+    "amount": 80.0
+   },
+   {
+    "name": "silicon",
+    "amount": 90.0
+   },
+   {
+    "name": "plastanium",
+    "amount": 60.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 5.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 386,
+  "name": "tank-fabricator",
+  "size": 3,
+  "health": 575,
+  "category": "units",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "silicon",
+    "amount": 200.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 150.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 1.5
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 387,
+  "name": "ship-fabricator",
+  "size": 3,
+  "health": 575,
+  "category": "units",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "silicon",
+    "amount": 250.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 200.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 1.5
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 388,
+  "name": "mech-fabricator",
+  "size": 3,
+  "health": 860,
+  "category": "units",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "silicon",
+    "amount": 200.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 250.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 10.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 1.5
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 389,
+  "name": "tank-refabricator",
+  "size": 3,
+  "health": 860,
+  "category": "units",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "silicon",
+    "amount": 100.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 200.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 80.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 3.0
+   },
+   {
+    "kind": "item",
+    "name": "silicon",
+    "amount": 40.0
+   },
+   {
+    "kind": "item",
+    "name": "tungsten",
+    "amount": 30.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 390,
+  "name": "ship-refabricator",
+  "size": 3,
+  "health": 1040,
+  "category": "units",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "silicon",
+    "amount": 150.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 250.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 120.0
+   },
+   {
+    "name": "oxide",
+    "amount": 15.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 2.5
+   },
+   {
+    "kind": "item",
+    "name": "silicon",
+    "amount": 60.0
+   },
+   {
+    "kind": "item",
+    "name": "tungsten",
+    "amount": 40.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 391,
+  "name": "mech-refabricator",
+  "size": 3,
+  "health": 860,
+  "category": "units",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "silicon",
+    "amount": 150.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 250.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 175.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 2.5
+   },
+   {
+    "kind": "item",
+    "name": "silicon",
+    "amount": 50.0
+   },
+   {
+    "kind": "item",
+    "name": "tungsten",
+    "amount": 40.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 392,
+  "name": "prime-refabricator",
+  "size": 5,
+  "health": 2500,
+  "category": "units",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "thorium",
+    "amount": 250.0
+   },
+   {
+    "name": "silicon",
+    "amount": 400.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 200.0
+   },
+   {
+    "name": "oxide",
+    "amount": 200.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 4.5
+   },
+   {
+    "kind": "item",
+    "name": "thorium",
+    "amount": 80.0
+   },
+   {
+    "kind": "item",
+    "name": "silicon",
+    "amount": 100.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 393,
+  "name": "tank-assembler",
+  "size": 5,
+  "health": 2800,
+  "category": "units",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "thorium",
+    "amount": 500.0
+   },
+   {
+    "name": "silicon",
+    "amount": 650.0
+   },
+   {
+    "name": "oxide",
+    "amount": 150.0
+   },
+   {
+    "name": "carbide",
+    "amount": 80.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 2.5
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 394,
+  "name": "ship-assembler",
+  "size": 5,
+  "health": 3600,
+  "category": "units",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "thorium",
+    "amount": 400.0
+   },
+   {
+    "name": "silicon",
+    "amount": 900.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 550.0
+   },
+   {
+    "name": "oxide",
+    "amount": 200.0
+   },
+   {
+    "name": "carbide",
+    "amount": 100.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 2.5
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 395,
+  "name": "mech-assembler",
+  "size": 5,
+  "health": 3600,
+  "category": "units",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "thorium",
+    "amount": 600.0
+   },
+   {
+    "name": "silicon",
+    "amount": 1000.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 550.0
+   },
+   {
+    "name": "oxide",
+    "amount": 200.0
+   },
+   {
+    "name": "carbide",
+    "amount": 200.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 3.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 396,
+  "name": "basic-assembler-module",
+  "size": 5,
+  "health": 3050,
+  "category": "units",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "thorium",
+    "amount": 500.0
+   },
+   {
+    "name": "phase-fabric",
+    "amount": 400.0
+   },
+   {
+    "name": "oxide",
+    "amount": 250.0
+   },
+   {
+    "name": "carbide",
+    "amount": 300.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 3.5
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 397,
+  "name": "unit-repair-tower",
+  "size": 2,
+  "health": 285,
+  "category": "units",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 90.0
+   },
+   {
+    "name": "silicon",
+    "amount": 90.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 80.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 1.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 398,
+  "name": "payload-conveyor",
+  "size": 3,
+  "health": 360,
+  "category": "units",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 10.0
+   },
+   {
+    "name": "graphite",
+    "amount": 10.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 399,
+  "name": "payload-router",
+  "size": 3,
+  "health": 360,
+  "category": "units",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 10.0
+   },
+   {
+    "name": "graphite",
+    "amount": 15.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 400,
+  "name": "reinforced-payload-conveyor",
+  "size": 3,
+  "health": 800,
+  "category": "units",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "tungsten",
+    "amount": 10.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 401,
+  "name": "reinforced-payload-router",
+  "size": 3,
+  "health": 800,
+  "category": "units",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "tungsten",
+    "amount": 15.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 402,
+  "name": "payload-mass-driver",
+  "size": 3,
+  "health": 645,
+  "category": "units",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 20.0
+   },
+   {
+    "name": "silicon",
+    "amount": 50.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 40.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 0.5
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 403,
+  "name": "large-payload-mass-driver",
+  "size": 5,
+  "health": 2550,
+  "category": "units",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 60.0
+   },
+   {
+    "name": "silicon",
+    "amount": 150.0
+   },
+   {
+    "name": "phase-fabric",
+    "amount": 10.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 120.0
+   },
+   {
+    "name": "oxide",
+    "amount": 30.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 3.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 404,
+  "name": "small-deconstructor",
+  "size": 3,
+  "health": 755,
+  "category": "units",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 50.0
+   },
+   {
+    "name": "silicon",
+    "amount": 70.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 70.0
+   },
+   {
+    "name": "oxide",
+    "amount": 25.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 1.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 405,
+  "name": "deconstructor",
+  "size": 5,
+  "health": 3195,
+  "category": "units",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "silicon",
+    "amount": 250.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 250.0
+   },
+   {
+    "name": "oxide",
+    "amount": 100.0
+   },
+   {
+    "name": "carbide",
+    "amount": 50.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 3.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 406,
+  "name": "constructor",
+  "size": 3,
+  "health": 860,
+  "category": "units",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "silicon",
+    "amount": 50.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 75.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 40.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 2.5
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 407,
+  "name": "large-constructor",
+  "size": 5,
+  "health": 2500,
+  "category": "units",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "thorium",
+    "amount": 80.0
+   },
+   {
+    "name": "silicon",
+    "amount": 150.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 200.0
+   },
+   {
+    "name": "oxide",
+    "amount": 100.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 5.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 408,
+  "name": "payload-loader",
+  "size": 3,
+  "health": 645,
+  "category": "units",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 80.0
+   },
+   {
+    "name": "silicon",
+    "amount": 160.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 90.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 0.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 409,
+  "name": "payload-unloader",
+  "size": 3,
+  "health": 645,
+  "category": "units",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 140.0
+   },
+   {
+    "name": "silicon",
+    "amount": 220.0
+   },
+   {
+    "name": "tungsten",
+    "amount": 180.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 2.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 410,
+  "name": "power-source",
+  "size": 1,
+  "health": 40,
+  "category": "power",
+  "hasPower": true,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 411,
+  "name": "power-void",
+  "size": 1,
+  "health": 40,
+  "category": "power",
+  "hasPower": true,
+  "requirements": [],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 3.4028234663852886e+38
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 412,
+  "name": "item-source",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 413,
+  "name": "item-void",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 414,
+  "name": "liquid-source",
+  "size": 1,
+  "health": 40,
+  "category": "liquid",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 415,
+  "name": "liquid-void",
+  "size": 1,
+  "health": 40,
+  "category": "liquid",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 416,
+  "name": "payload-source",
+  "size": 5,
+  "health": 1000,
+  "category": "units",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 417,
+  "name": "payload-void",
+  "size": 5,
+  "health": 1000,
+  "category": "units",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 418,
+  "name": "heat-source",
+  "size": 1,
+  "health": 40,
+  "category": "crafting",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 419,
+  "name": "target-dummy",
+  "size": 2,
+  "health": 160,
+  "category": "defense",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 420,
+  "name": "illuminator",
+  "size": 1,
+  "health": 40,
+  "category": "effect",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 8.0
+   },
+   {
+    "name": "graphite",
+    "amount": 12.0
+   },
+   {
+    "name": "silicon",
+    "amount": 8.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 0.05000000074505806
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 421,
+  "name": "legacy-mech-pad",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": true,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 422,
+  "name": "legacy-unit-factory",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": true,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 423,
+  "name": "legacy-unit-factory-air",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": true,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 424,
+  "name": "legacy-unit-factory-ground",
+  "size": 1,
+  "health": 40,
+  "category": "distribution",
+  "hasPower": true,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 425,
+  "name": "command-center",
+  "size": 2,
+  "health": 160,
+  "category": "distribution",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 426,
+  "name": "launch-pad",
+  "size": 3,
+  "health": 360,
+  "category": "effect",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 350.0
+   },
+   {
+    "name": "lead",
+    "amount": 200.0
+   },
+   {
+    "name": "titanium",
+    "amount": 150.0
+   },
+   {
+    "name": "silicon",
+    "amount": 140.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 4.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 427,
+  "name": "advanced-launch-pad",
+  "size": 4,
+  "health": 640,
+  "category": "effect",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 350.0
+   },
+   {
+    "name": "lead",
+    "amount": 300.0
+   },
+   {
+    "name": "titanium",
+    "amount": 200.0
+   },
+   {
+    "name": "silicon",
+    "amount": 250.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 8.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 428,
+  "name": "landing-pad",
+  "size": 4,
+  "health": 640,
+  "category": "effect",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 200.0
+   },
+   {
+    "name": "graphite",
+    "amount": 100.0
+   },
+   {
+    "name": "titanium",
+    "amount": 100.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 429,
+  "name": "interplanetary-accelerator",
+  "size": 7,
+  "health": 3920,
+  "category": "effect",
+  "hasPower": true,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 16000.0
+   },
+   {
+    "name": "titanium",
+    "amount": 12000.0
+   },
+   {
+    "name": "thorium",
+    "amount": 13000.0
+   },
+   {
+    "name": "silicon",
+    "amount": 11000.0
+   },
+   {
+    "name": "phase-fabric",
+    "amount": 5000.0
+   },
+   {
+    "name": "surge-alloy",
+    "amount": 6000.0
+   }
+  ],
+  "consumers": [
+   {
+    "kind": "power",
+    "name": "",
+    "amount": 10.0
+   },
+   {
+    "kind": "item",
+    "name": "copper",
+    "amount": 8000.0
+   },
+   {
+    "kind": "item",
+    "name": "lead",
+    "amount": 8000.0
+   },
+   {
+    "kind": "item",
+    "name": "thorium",
+    "amount": 4000.0
+   },
+   {
+    "kind": "item",
+    "name": "silicon",
+    "amount": 5000.0
+   }
+  ],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 430,
+  "name": "message",
+  "size": 1,
+  "health": 40,
+  "category": "logic",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 5.0
+   },
+   {
+    "name": "graphite",
+    "amount": 5.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 431,
+  "name": "switch",
+  "size": 1,
+  "health": 40,
+  "category": "logic",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 5.0
+   },
+   {
+    "name": "graphite",
+    "amount": 5.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 432,
+  "name": "micro-processor",
+  "size": 1,
+  "health": 40,
+  "category": "logic",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 90.0
+   },
+   {
+    "name": "lead",
+    "amount": 50.0
+   },
+   {
+    "name": "silicon",
+    "amount": 50.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 433,
+  "name": "logic-processor",
+  "size": 2,
+  "health": 190,
+  "category": "logic",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 320.0
+   },
+   {
+    "name": "graphite",
+    "amount": 60.0
+   },
+   {
+    "name": "thorium",
+    "amount": 50.0
+   },
+   {
+    "name": "silicon",
+    "amount": 80.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 434,
+  "name": "hyper-processor",
+  "size": 3,
+  "health": 520,
+  "category": "logic",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 450.0
+   },
+   {
+    "name": "thorium",
+    "amount": 75.0
+   },
+   {
+    "name": "silicon",
+    "amount": 150.0
+   },
+   {
+    "name": "surge-alloy",
+    "amount": 50.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 435,
+  "name": "memory-cell",
+  "size": 1,
+  "health": 40,
+  "category": "logic",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 30.0
+   },
+   {
+    "name": "graphite",
+    "amount": 30.0
+   },
+   {
+    "name": "silicon",
+    "amount": 30.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 436,
+  "name": "memory-bank",
+  "size": 2,
+  "health": 200,
+  "category": "logic",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "copper",
+    "amount": 30.0
+   },
+   {
+    "name": "graphite",
+    "amount": 80.0
+   },
+   {
+    "name": "silicon",
+    "amount": 80.0
+   },
+   {
+    "name": "phase-fabric",
+    "amount": 30.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 437,
+  "name": "logic-display",
+  "size": 3,
+  "health": 360,
+  "category": "logic",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 100.0
+   },
+   {
+    "name": "metaglass",
+    "amount": 50.0
+   },
+   {
+    "name": "silicon",
+    "amount": 50.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 438,
+  "name": "large-logic-display",
+  "size": 6,
+  "health": 1800,
+  "category": "logic",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 200.0
+   },
+   {
+    "name": "metaglass",
+    "amount": 100.0
+   },
+   {
+    "name": "silicon",
+    "amount": 150.0
+   },
+   {
+    "name": "phase-fabric",
+    "amount": 75.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 439,
+  "name": "tile-logic-display",
+  "size": 1,
+  "health": 50,
+  "category": "logic",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "lead",
+    "amount": 8.0
+   },
+   {
+    "name": "metaglass",
+    "amount": 8.0
+   },
+   {
+    "name": "silicon",
+    "amount": 8.0
+   },
+   {
+    "name": "phase-fabric",
+    "amount": 3.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 440,
+  "name": "canvas",
+  "size": 2,
+  "health": 255,
+  "category": "logic",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "silicon",
+    "amount": 10.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 10.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 441,
+  "name": "large-canvas",
+  "size": 3,
+  "health": 665,
+  "category": "logic",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "silicon",
+    "amount": 15.0
+   },
+   {
+    "name": "surge-alloy",
+    "amount": 5.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 15.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 442,
+  "name": "reinforced-message",
+  "size": 1,
+  "health": 100,
+  "category": "logic",
+  "hasPower": false,
+  "requirements": [
+   {
+    "name": "graphite",
+    "amount": 10.0
+   },
+   {
+    "name": "beryllium",
+    "amount": 5.0
+   }
+  ],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 443,
+  "name": "world-processor",
+  "size": 1,
+  "health": 40,
+  "category": "logic",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 444,
+  "name": "world-cell",
+  "size": 1,
+  "health": 40,
+  "category": "logic",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 445,
+  "name": "world-message",
+  "size": 1,
+  "health": 40,
+  "category": "logic",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ },
+ {
+  "id": 446,
+  "name": "world-switch",
+  "size": 1,
+  "health": 40,
+  "category": "logic",
+  "hasPower": false,
+  "requirements": [],
+  "consumers": [],
+  "outputs": [],
+  "craftTime": -1.0
+ }
+]

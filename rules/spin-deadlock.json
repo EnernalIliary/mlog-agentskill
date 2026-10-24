@@ -1,4 +1,4 @@
-﻿{
+{
   "id": "spin-deadlock",
   "kind": "semantics",
   "severity": "ERR",
@@ -21,6 +21,6 @@
     "hits": 36,
     "programs": 32,
     "share": 0.0002,
-    "dir": "<local saves>"
+    "dir": "C:\\Users\\<you>\\AppData\\Roaming\\Mindustry\\saves"
   }
 }

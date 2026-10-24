@@ -1,0 +1,1442 @@
+[
+ {
+  "id": 0,
+  "name": "dagger",
+  "health": 150.0,
+  "armor": 0.0,
+  "speed": 0.5,
+  "flying": false,
+  "hitSize": 8.0,
+  "maxRange": 146.0,
+  "weapons": [
+   {
+    "name": "large-weapon",
+    "damage": 9.0,
+    "bulletSpeed": 2.5,
+    "bulletRange": 150.0,
+    "reload": 26.0
+   }
+  ]
+ },
+ {
+  "id": 1,
+  "name": "mace",
+  "health": 550.0,
+  "armor": 4.0,
+  "speed": 0.5,
+  "flying": false,
+  "hitSize": 10.0,
+  "maxRange": 50.599998474121094,
+  "weapons": [
+   {
+    "name": "flamethrower",
+    "damage": 74.0,
+    "bulletSpeed": 4.199999809265137,
+    "bulletRange": 54.59999752044678,
+    "reload": 44.0
+   }
+  ]
+ },
+ {
+  "id": 2,
+  "name": "fortress",
+  "health": 900.0,
+  "armor": 9.0,
+  "speed": 0.4300000071525574,
+  "flying": false,
+  "hitSize": 13.0,
+  "maxRange": 236.0,
+  "weapons": [
+   {
+    "name": "artillery",
+    "damage": 20.0,
+    "bulletSpeed": 2.0,
+    "bulletRange": 240.0,
+    "reload": 120.0
+   }
+  ]
+ },
+ {
+  "id": 3,
+  "name": "scepter",
+  "health": 9000.0,
+  "armor": 20.0,
+  "speed": 0.36000001430511475,
+  "flying": false,
+  "hitSize": 22.0,
+  "maxRange": 212.0,
+  "weapons": [
+   {
+    "name": "scepter-weapon",
+    "damage": 70.0,
+    "bulletSpeed": 8.0,
+    "bulletRange": 216.0,
+    "reload": 90.0
+   },
+   {
+    "name": "scepter-mount",
+    "damage": 20.0,
+    "bulletSpeed": 12.0,
+    "bulletRange": 208.00000762939453,
+    "reload": 24.0
+   },
+   {
+    "name": "scepter-mount",
+    "damage": 20.0,
+    "bulletSpeed": 12.0,
+    "bulletRange": 208.00000762939453,
+    "reload": 30.0
+   }
+  ]
+ },
+ {
+  "id": 4,
+  "name": "reign",
+  "health": 24000.0,
+  "armor": 30.0,
+  "speed": 0.4000000059604645,
+  "flying": false,
+  "hitSize": 30.0,
+  "maxRange": 191.0,
+  "weapons": [
+   {
+    "name": "reign-weapon",
+    "damage": 80.0,
+    "bulletSpeed": 13.0,
+    "bulletRange": 195.0,
+    "reload": 18.0
+   }
+  ]
+ },
+ {
+  "id": 5,
+  "name": "nova",
+  "health": 200.0,
+  "armor": 1.0,
+  "speed": 0.550000011920929,
+  "flying": false,
+  "hitSize": 8.0,
+  "maxRange": 152.0,
+  "weapons": [
+   {
+    "name": "heal-weapon",
+    "damage": 13.0,
+    "bulletSpeed": 5.199999809265137,
+    "bulletRange": 155.9999942779541,
+    "reload": 60.0
+   }
+  ]
+ },
+ {
+  "id": 6,
+  "name": "pulsar",
+  "health": 320.0,
+  "armor": 4.0,
+  "speed": 0.699999988079071,
+  "flying": false,
+  "hitSize": 11.0,
+  "maxRange": 65.0,
+  "weapons": [
+   {
+    "name": "heal-shotgun-weapon",
+    "damage": 15.0,
+    "bulletSpeed": 0.0,
+    "bulletRange": 0.0,
+    "reload": 72.0
+   }
+  ]
+ },
+ {
+  "id": 7,
+  "name": "quasar",
+  "health": 640.0,
+  "armor": 9.0,
+  "speed": 0.5,
+  "flying": false,
+  "hitSize": 13.0,
+  "maxRange": 146.0,
+  "weapons": [
+   {
+    "name": "beam-weapon",
+    "damage": 45.0,
+    "bulletSpeed": 0.0,
+    "bulletRange": 0.0,
+    "reload": 110.0
+   }
+  ]
+ },
+ {
+  "id": 8,
+  "name": "vela",
+  "health": 8200.0,
+  "armor": 16.0,
+  "speed": 0.4399999976158142,
+  "flying": false,
+  "hitSize": 24.0,
+  "maxRange": 176.0,
+  "weapons": [
+   {
+    "name": "vela-weapon",
+    "damage": 35.0,
+    "bulletSpeed": 0.0,
+    "bulletRange": 0.0,
+    "reload": 155.0
+   },
+   {
+    "name": "repair-beam-weapon-center-large",
+    "damage": 1.0,
+    "bulletSpeed": 1.0,
+    "bulletRange": 120.0,
+    "reload": 2.0
+   }
+  ]
+ },
+ {
+  "id": 9,
+  "name": "corvus",
+  "health": 18000.0,
+  "armor": 14.0,
+  "speed": 0.30000001192092896,
+  "flying": false,
+  "hitSize": 29.0,
+  "maxRange": 456.0,
+  "weapons": [
+   {
+    "name": "corvus-weapon",
+    "damage": 560.0,
+    "bulletSpeed": 0.0,
+    "bulletRange": 0.0,
+    "reload": 350.0
+   }
+  ]
+ },
+ {
+  "id": 10,
+  "name": "crawler",
+  "health": 150.0,
+  "armor": 0.0,
+  "speed": 1.0,
+  "flying": false,
+  "hitSize": 8.0,
+  "maxRange": 40.0,
+  "weapons": [
+   {
+    "name": "",
+    "damage": 1.0,
+    "bulletSpeed": 0.0,
+    "bulletRange": 0.0,
+    "reload": 24.0
+   }
+  ]
+ },
+ {
+  "id": 11,
+  "name": "atrax",
+  "health": 600.0,
+  "armor": 3.0,
+  "speed": 0.6000000238418579,
+  "flying": false,
+  "hitSize": 13.0,
+  "maxRange": 107.85893249511719,
+  "weapons": [
+   {
+    "name": "atrax-weapon",
+    "damage": 13.0,
+    "bulletSpeed": 2.5,
+    "bulletRange": 142.5,
+    "reload": 18.0
+   }
+  ]
+ },
+ {
+  "id": 12,
+  "name": "spiroct",
+  "health": 1000.0,
+  "armor": 9.0,
+  "speed": 0.5400000214576721,
+  "flying": false,
+  "hitSize": 15.0,
+  "maxRange": 71.0,
+  "weapons": [
+   {
+    "name": "spiroct-weapon",
+    "damage": 23.0,
+    "bulletSpeed": 0.0,
+    "bulletRange": 0.0,
+    "reload": 28.0
+   },
+   {
+    "name": "mount-purple-weapon",
+    "damage": 18.0,
+    "bulletSpeed": 0.0,
+    "bulletRange": 0.0,
+    "reload": 36.0
+   }
+  ]
+ },
+ {
+  "id": 13,
+  "name": "arkyid",
+  "health": 8000.0,
+  "armor": 14.0,
+  "speed": 0.6200000047683716,
+  "flying": false,
+  "hitSize": 23.0,
+  "maxRange": 136.0,
+  "weapons": [
+   {
+    "name": "spiroct-weapon",
+    "damage": 40.0,
+    "bulletSpeed": 0.0,
+    "bulletRange": 0.0,
+    "reload": 18.0
+   },
+   {
+    "name": "spiroct-weapon",
+    "damage": 40.0,
+    "bulletSpeed": 0.0,
+    "bulletRange": 0.0,
+    "reload": 28.0
+   },
+   {
+    "name": "spiroct-weapon",
+    "damage": 40.0,
+    "bulletSpeed": 0.0,
+    "bulletRange": 0.0,
+    "reload": 44.0
+   },
+   {
+    "name": "large-purple-mount",
+    "damage": 12.0,
+    "bulletSpeed": 2.0,
+    "bulletRange": 140.0,
+    "reload": 90.0
+   }
+  ]
+ },
+ {
+  "id": 14,
+  "name": "toxopid",
+  "health": 22000.0,
+  "armor": 22.0,
+  "speed": 0.5,
+  "flying": false,
+  "hitSize": 26.0,
+  "maxRange": 236.0,
+  "weapons": [
+   {
+    "name": "large-purple-mount",
+    "damage": 110.0,
+    "bulletSpeed": 0.0,
+    "bulletRange": 0.0,
+    "reload": 60.0
+   },
+   {
+    "name": "toxopid-cannon",
+    "damage": 50.0,
+    "bulletSpeed": 3.0,
+    "bulletRange": 240.0,
+    "reload": 210.0
+   }
+  ]
+ },
+ {
+  "id": 15,
+  "name": "flare",
+  "health": 70.0,
+  "armor": 0.0,
+  "speed": 2.700000047683716,
+  "flying": true,
+  "hitSize": 9.0,
+  "maxRange": 76.0,
+  "weapons": [
+   {
+    "name": "",
+    "damage": 9.0,
+    "bulletSpeed": 2.5,
+    "bulletRange": 80.0,
+    "reload": 80.0
+   }
+  ]
+ },
+ {
+  "id": 16,
+  "name": "horizon",
+  "health": 340.0,
+  "armor": 3.0,
+  "speed": 1.649999976158142,
+  "flying": true,
+  "hitSize": 11.0,
+  "maxRange": 140.0,
+  "weapons": [
+   {
+    "name": "",
+    "damage": 13.5,
+    "bulletSpeed": 0.699999988079071,
+    "bulletRange": 20.99999964237213,
+    "reload": 24.0
+   }
+  ]
+ },
+ {
+  "id": 17,
+  "name": "zenith",
+  "health": 700.0,
+  "armor": 5.0,
+  "speed": 1.7000000476837158,
+  "flying": true,
+  "hitSize": 20.0,
+  "maxRange": 157.57460021972656,
+  "weapons": [
+   {
+    "name": "zenith-missiles",
+    "damage": 14.0,
+    "bulletSpeed": 3.0,
+    "bulletRange": 150.0,
+    "reload": 80.0
+   }
+  ]
+ },
+ {
+  "id": 18,
+  "name": "antumbra",
+  "health": 7200.0,
+  "armor": 17.0,
+  "speed": 0.800000011920929,
+  "flying": true,
+  "hitSize": 46.0,
+  "maxRange": 171.0,
+  "weapons": [
+   {
+    "name": "missiles-mount",
+    "damage": 18.0,
+    "bulletSpeed": 2.700000047683716,
+    "bulletRange": 135.0000023841858,
+    "reload": 40.0
+   },
+   {
+    "name": "missiles-mount",
+    "damage": 18.0,
+    "bulletSpeed": 2.700000047683716,
+    "bulletRange": 135.0000023841858,
+    "reload": 70.0
+   },
+   {
+    "name": "large-bullet-mount",
+    "damage": 55.0,
+    "bulletSpeed": 7.0,
+    "bulletRange": 175.0,
+    "reload": 24.0
+   }
+  ]
+ },
+ {
+  "id": 19,
+  "name": "eclipse",
+  "health": 22000.0,
+  "armor": 22.0,
+  "speed": 0.5400000214576721,
+  "flying": true,
+  "hitSize": 58.0,
+  "maxRange": 226.0,
+  "weapons": [
+   {
+    "name": "large-laser-mount",
+    "damage": 115.0,
+    "bulletSpeed": 0.0,
+    "bulletRange": 0.0,
+    "reload": 90.0
+   },
+   {
+    "name": "large-artillery",
+    "damage": 15.0,
+    "bulletSpeed": 4.0,
+    "bulletRange": 188.0,
+    "reload": 18.0
+   },
+   {
+    "name": "large-artillery",
+    "damage": 15.0,
+    "bulletSpeed": 4.0,
+    "bulletRange": 188.0,
+    "reload": 24.0
+   }
+  ]
+ },
+ {
+  "id": 20,
+  "name": "mono",
+  "health": 100.0,
+  "armor": 0.0,
+  "speed": 1.5,
+  "flying": true,
+  "hitSize": 6.0,
+  "maxRange": 50.0,
+  "weapons": []
+ },
+ {
+  "id": 21,
+  "name": "poly",
+  "health": 400.0,
+  "armor": 0.0,
+  "speed": 2.5999999046325684,
+  "flying": true,
+  "hitSize": 9.0,
+  "maxRange": 196.0,
+  "weapons": [
+   {
+    "name": "poly-weapon",
+    "damage": 12.0,
+    "bulletSpeed": 4.0,
+    "bulletRange": 200.0,
+    "reload": 60.0
+   }
+  ]
+ },
+ {
+  "id": 22,
+  "name": "mega",
+  "health": 460.0,
+  "armor": 3.0,
+  "speed": 2.5,
+  "flying": true,
+  "hitSize": 16.049999237060547,
+  "maxRange": 178.0,
+  "weapons": [
+   {
+    "name": "heal-weapon-mount",
+    "damage": 10.0,
+    "bulletSpeed": 5.199999809265137,
+    "bulletRange": 181.99999332427979,
+    "reload": 48.0
+   },
+   {
+    "name": "heal-weapon-mount",
+    "damage": 8.0,
+    "bulletSpeed": 5.199999809265137,
+    "bulletRange": 181.99999332427979,
+    "reload": 30.0
+   }
+  ]
+ },
+ {
+  "id": 23,
+  "name": "quad",
+  "health": 6000.0,
+  "armor": 10.0,
+  "speed": 1.2000000476837158,
+  "flying": true,
+  "hitSize": 36.0,
+  "maxRange": 140.0,
+  "weapons": [
+   {
+    "name": "",
+    "damage": 154.0,
+    "bulletSpeed": 0.0,
+    "bulletRange": 30.0,
+    "reload": 55.0
+   }
+  ]
+ },
+ {
+  "id": 24,
+  "name": "oct",
+  "health": 24000.0,
+  "armor": 20.0,
+  "speed": 0.800000011920929,
+  "flying": true,
+  "hitSize": 66.0,
+  "maxRange": 70.0,
+  "weapons": []
+ },
+ {
+  "id": 25,
+  "name": "risso",
+  "health": 280.0,
+  "armor": 2.0,
+  "speed": 1.100000023841858,
+  "flying": false,
+  "hitSize": 10.0,
+  "maxRange": 189.462158203125,
+  "weapons": [
+   {
+    "name": "mount-weapon",
+    "damage": 9.0,
+    "bulletSpeed": 2.5,
+    "bulletRange": 150.0,
+    "reload": 26.0
+   },
+   {
+    "name": "missiles-mount",
+    "damage": 12.0,
+    "bulletSpeed": 2.700000047683716,
+    "bulletRange": 175.50000309944153,
+    "reload": 25.0
+   }
+  ]
+ },
+ {
+  "id": 26,
+  "name": "minke",
+  "health": 600.0,
+  "armor": 4.0,
+  "speed": 0.8999999761581421,
+  "flying": false,
+  "hitSize": 13.0,
+  "maxRange": 216.5,
+  "weapons": [
+   {
+    "name": "mount-weapon",
+    "damage": 3.0,
+    "bulletSpeed": 4.199999809265137,
+    "bulletRange": 220.49998998641968,
+    "reload": 20.0
+   },
+   {
+    "name": "artillery-mount",
+    "damage": 20.0,
+    "bulletSpeed": 3.0,
+    "bulletRange": 220.5,
+    "reload": 60.0
+   }
+  ]
+ },
+ {
+  "id": 27,
+  "name": "bryde",
+  "health": 910.0,
+  "armor": 7.0,
+  "speed": 0.8500000238418579,
+  "flying": false,
+  "hitSize": 20.0,
+  "maxRange": 264.8000183105469,
+  "weapons": [
+   {
+    "name": "large-artillery",
+    "damage": 15.0,
+    "bulletSpeed": 3.200000047683716,
+    "bulletRange": 268.80000400543213,
+    "reload": 65.0
+   },
+   {
+    "name": "missiles-mount",
+    "damage": 12.0,
+    "bulletSpeed": 2.700000047683716,
+    "bulletRange": 189.0000033378601,
+    "reload": 40.0
+   }
+  ]
+ },
+ {
+  "id": 28,
+  "name": "sei",
+  "health": 11000.0,
+  "armor": 12.0,
+  "speed": 0.7300000190734863,
+  "flying": false,
+  "hitSize": 39.0,
+  "maxRange": 281.72381591796875,
+  "weapons": [
+   {
+    "name": "sei-launcher",
+    "damage": 42.0,
+    "bulletSpeed": 4.199999809265137,
+    "bulletRange": 260.3999881744385,
+    "reload": 45.0
+   },
+   {
+    "name": "large-bullet-mount",
+    "damage": 57.0,
+    "bulletSpeed": 7.0,
+    "bulletRange": 245.0,
+    "reload": 120.0
+   }
+  ]
+ },
+ {
+  "id": 29,
+  "name": "omura",
+  "health": 22000.0,
+  "armor": 16.0,
+  "speed": 0.6200000047683716,
+  "flying": false,
+  "hitSize": 58.0,
+  "maxRange": 496.0,
+  "weapons": [
+   {
+    "name": "omura-cannon",
+    "damage": 1250.0,
+    "bulletSpeed": 0.0,
+    "bulletRange": 0.0,
+    "reload": 110.0
+   }
+  ]
+ },
+ {
+  "id": 30,
+  "name": "retusa",
+  "health": 270.0,
+  "armor": 3.0,
+  "speed": 0.8999999761581421,
+  "flying": false,
+  "hitSize": 11.0,
+  "maxRange": 152.0,
+  "weapons": [
+   {
+    "name": "repair-beam-weapon-center",
+    "damage": 1.0,
+    "bulletSpeed": 1.0,
+    "bulletRange": 120.0,
+    "reload": 1.0
+   },
+   {
+    "name": "retusa-weapon",
+    "damage": 12.0,
+    "bulletSpeed": 5.199999809265137,
+    "bulletRange": 155.9999942779541,
+    "reload": 44.0
+   },
+   {
+    "name": "",
+    "damage": 1.0,
+    "bulletSpeed": 0.699999988079071,
+    "bulletRange": 50.0,
+    "reload": 90.0
+   }
+  ]
+ },
+ {
+  "id": 31,
+  "name": "oxynoe",
+  "health": 560.0,
+  "armor": 4.0,
+  "speed": 0.8299999833106995,
+  "flying": false,
+  "hitSize": 14.0,
+  "maxRange": 57.20000076293945,
+  "weapons": [
+   {
+    "name": "plasma-mount-weapon",
+    "damage": 23.0,
+    "bulletSpeed": 3.4000000953674316,
+    "bulletRange": 61.20000171661377,
+    "reload": 10.0
+   },
+   {
+    "name": "point-defense-mount",
+    "damage": 17.0,
+    "bulletSpeed": 1.0,
+    "bulletRange": 100.0,
+    "reload": 9.0
+   }
+  ]
+ },
+ {
+  "id": 32,
+  "name": "cyerce",
+  "health": 870.0,
+  "armor": 6.0,
+  "speed": 0.8600000143051147,
+  "flying": false,
+  "hitSize": 20.0,
+  "maxRange": 221.6621856689453,
+  "weapons": [
+   {
+    "name": "repair-beam-weapon-center",
+    "damage": 1.0,
+    "bulletSpeed": 1.0,
+    "bulletRange": 130.0,
+    "reload": 2.0
+   },
+   {
+    "name": "plasma-missile-mount",
+    "damage": 25.0,
+    "bulletSpeed": 2.5,
+    "bulletRange": 200.0,
+    "reload": 120.0
+   }
+  ]
+ },
+ {
+  "id": 33,
+  "name": "aegires",
+  "health": 12000.0,
+  "armor": 12.0,
+  "speed": 0.699999988079071,
+  "flying": false,
+  "hitSize": 44.0,
+  "maxRange": 180.0,
+  "weapons": [
+   {
+    "name": "point-defense-mount",
+    "damage": 30.0,
+    "bulletSpeed": 1.0,
+    "bulletRange": 180.0,
+    "reload": 8.0
+   }
+  ]
+ },
+ {
+  "id": 34,
+  "name": "navanax",
+  "health": 20000.0,
+  "armor": 20.0,
+  "speed": 0.6499999761581421,
+  "flying": false,
+  "hitSize": 58.0,
+  "maxRange": 296.0,
+  "weapons": [
+   {
+    "name": "emp-cannon-mount",
+    "damage": 110.0,
+    "bulletSpeed": 5.0,
+    "bulletRange": 300.0,
+    "reload": 130.0
+   },
+   {
+    "name": "plasma-laser-mount",
+    "damage": 27.0,
+    "bulletSpeed": 0.0,
+    "bulletRange": 90.0,
+    "reload": 170.0
+   }
+  ]
+ },
+ {
+  "id": 35,
+  "name": "alpha",
+  "health": 150.0,
+  "armor": 0.0,
+  "speed": 3.0,
+  "flying": true,
+  "hitSize": 8.0,
+  "maxRange": 146.0,
+  "weapons": [
+   {
+    "name": "small-basic-weapon",
+    "damage": 11.0,
+    "bulletSpeed": 2.5,
+    "bulletRange": 150.0,
+    "reload": 34.0
+   }
+  ]
+ },
+ {
+  "id": 36,
+  "name": "beta",
+  "health": 170.0,
+  "armor": 0.0,
+  "speed": 3.299999952316284,
+  "flying": true,
+  "hitSize": 9.0,
+  "maxRange": 176.0,
+  "weapons": [
+   {
+    "name": "small-mount-weapon",
+    "damage": 11.0,
+    "bulletSpeed": 3.0,
+    "bulletRange": 180.0,
+    "reload": 40.0
+   }
+  ]
+ },
+ {
+  "id": 37,
+  "name": "gamma",
+  "health": 220.0,
+  "armor": 0.0,
+  "speed": 3.549999952316284,
+  "flying": true,
+  "hitSize": 11.0,
+  "maxRange": 241.0,
+  "weapons": [
+   {
+    "name": "small-mount-weapon",
+    "damage": 11.0,
+    "bulletSpeed": 3.5,
+    "bulletRange": 245.0,
+    "reload": 30.0
+   }
+  ]
+ },
+ {
+  "id": 38,
+  "name": "stell",
+  "health": 850.0,
+  "armor": 6.0,
+  "speed": 0.75,
+  "flying": false,
+  "hitSize": 12.0,
+  "maxRange": 156.0,
+  "weapons": [
+   {
+    "name": "stell-weapon",
+    "damage": 30.0,
+    "bulletSpeed": 4.0,
+    "bulletRange": 160.0,
+    "reload": 50.0
+   }
+  ]
+ },
+ {
+  "id": 39,
+  "name": "locus",
+  "health": 2100.0,
+  "armor": 8.0,
+  "speed": 0.699999988079071,
+  "flying": false,
+  "hitSize": 18.0,
+  "maxRange": 156.0,
+  "weapons": [
+   {
+    "name": "locus-weapon",
+    "damage": 36.0,
+    "bulletSpeed": 0.0,
+    "bulletRange": 0.0,
+    "reload": 18.0
+   }
+  ]
+ },
+ {
+  "id": 40,
+  "name": "precept",
+  "health": 5000.0,
+  "armor": 11.0,
+  "speed": 0.6399999856948853,
+  "flying": false,
+  "hitSize": 24.0,
+  "maxRange": 192.0,
+  "weapons": [
+   {
+    "name": "precept-weapon",
+    "damage": 90.0,
+    "bulletSpeed": 7.0,
+    "bulletRange": 196.0,
+    "reload": 80.0
+   }
+  ]
+ },
+ {
+  "id": 41,
+  "name": "vanquish",
+  "health": 11000.0,
+  "armor": 20.0,
+  "speed": 0.6299999952316284,
+  "flying": false,
+  "hitSize": 28.0,
+  "maxRange": 186.0,
+  "weapons": [
+   {
+    "name": "vanquish-weapon",
+    "damage": 112.5,
+    "bulletSpeed": 8.0,
+    "bulletRange": 190.0,
+    "reload": 80.0
+   },
+   {
+    "name": "vanquish-point-weapon",
+    "damage": 37.5,
+    "bulletSpeed": 12.0,
+    "bulletRange": 180.0,
+    "reload": 44.0
+   },
+   {
+    "name": "vanquish-point-weapon",
+    "damage": 37.5,
+    "bulletSpeed": 12.0,
+    "bulletRange": 180.0,
+    "reload": 54.0
+   }
+  ]
+ },
+ {
+  "id": 42,
+  "name": "conquer",
+  "health": 22000.0,
+  "armor": 26.0,
+  "speed": 0.47999998927116394,
+  "flying": false,
+  "hitSize": 46.0,
+  "maxRange": 276.0,
+  "weapons": [
+   {
+    "name": "conquer-weapon",
+    "damage": 270.0,
+    "bulletSpeed": 8.0,
+    "bulletRange": 280.0,
+    "reload": 100.0
+   }
+  ]
+ },
+ {
+  "id": 43,
+  "name": "merui",
+  "health": 680.0,
+  "armor": 4.0,
+  "speed": 0.7200000286102295,
+  "flying": false,
+  "hitSize": 9.0,
+  "maxRange": 134.0,
+  "weapons": [
+   {
+    "name": "merui-weapon",
+    "damage": 30.0,
+    "bulletSpeed": 3.0,
+    "bulletRange": 138.0,
+    "reload": 63.0
+   }
+  ]
+ },
+ {
+  "id": 44,
+  "name": "cleroi",
+  "health": 1100.0,
+  "armor": 5.0,
+  "speed": 0.6000000238418579,
+  "flying": false,
+  "hitSize": 14.0,
+  "maxRange": 136.0,
+  "weapons": [
+   {
+    "name": "cleroi-weapon",
+    "damage": 22.5,
+    "bulletSpeed": 3.5,
+    "bulletRange": 140.0,
+    "reload": 66.0
+   },
+   {
+    "name": "cleroi-point-defense",
+    "damage": 28.5,
+    "bulletSpeed": 1.0,
+    "bulletRange": 100.0,
+    "reload": 18.0
+   }
+  ]
+ },
+ {
+  "id": 45,
+  "name": "anthicus",
+  "health": 2700.0,
+  "armor": 7.0,
+  "speed": 0.6499999761581421,
+  "flying": false,
+  "hitSize": 21.0,
+  "maxRange": 329.65997314453125,
+  "weapons": [
+   {
+    "name": "anthicus-weapon",
+    "damage": 0.75,
+    "bulletSpeed": 0.0,
+    "bulletRange": 0.0,
+    "reload": 260.0
+   }
+  ]
+ },
+ {
+  "id": 46,
+  "name": "anthicus-missile",
+  "health": 55.0,
+  "armor": 0.0,
+  "speed": 3.3499999046325684,
+  "flying": true,
+  "hitSize": 6.0,
+  "maxRange": 6.0,
+  "weapons": [
+   {
+    "name": "",
+    "damage": 1.0,
+    "bulletSpeed": 0.0,
+    "bulletRange": 0.0,
+    "reload": 1.0
+   }
+  ]
+ },
+ {
+  "id": 47,
+  "name": "tecta",
+  "health": 6500.0,
+  "armor": 5.0,
+  "speed": 0.6000000238418579,
+  "flying": false,
+  "hitSize": 30.0,
+  "maxRange": 226.99998474121094,
+  "weapons": [
+   {
+    "name": "tecta-weapon",
+    "damage": 38.25,
+    "bulletSpeed": 4.199999809265137,
+    "bulletRange": 230.99998950958252,
+    "reload": 80.0
+   }
+  ]
+ },
+ {
+  "id": 48,
+  "name": "collaris",
+  "health": 18000.0,
+  "armor": 9.0,
+  "speed": 1.100000023841858,
+  "flying": false,
+  "hitSize": 44.0,
+  "maxRange": 381.0,
+  "weapons": [
+   {
+    "name": "collaris-weapon",
+    "damage": 195.0,
+    "bulletSpeed": 5.5,
+    "bulletRange": 330.0,
+    "reload": 260.0
+   }
+  ]
+ },
+ {
+  "id": 49,
+  "name": "elude",
+  "health": 600.0,
+  "armor": 1.0,
+  "speed": 1.7999999523162842,
+  "flying": false,
+  "hitSize": 11.0,
+  "maxRange": 146.0,
+  "weapons": [
+   {
+    "name": "elude-weapon",
+    "damage": 12.0,
+    "bulletSpeed": 5.0,
+    "bulletRange": 150.0,
+    "reload": 80.0
+   }
+  ]
+ },
+ {
+  "id": 50,
+  "name": "avert",
+  "health": 1100.0,
+  "armor": 3.0,
+  "speed": 2.0,
+  "flying": true,
+  "hitSize": 12.0,
+  "maxRange": 86.0,
+  "weapons": [
+   {
+    "name": "avert-weapon",
+    "damage": 22.0,
+    "bulletSpeed": 5.0,
+    "bulletRange": 90.0,
+    "reload": 35.0
+   }
+  ]
+ },
+ {
+  "id": 51,
+  "name": "obviate",
+  "health": 2300.0,
+  "armor": 6.0,
+  "speed": 1.7999999523162842,
+  "flying": true,
+  "hitSize": 25.0,
+  "maxRange": 176.0,
+  "weapons": [
+   {
+    "name": "",
+    "damage": 56.25,
+    "bulletSpeed": 3.0,
+    "bulletRange": 180.0,
+    "reload": 140.0
+   }
+  ]
+ },
+ {
+  "id": 52,
+  "name": "quell",
+  "health": 6000.0,
+  "armor": 4.0,
+  "speed": 1.100000023841858,
+  "flying": true,
+  "hitSize": 36.0,
+  "maxRange": 361.1999816894531,
+  "weapons": [
+   {
+    "name": "quell-weapon",
+    "damage": 52.5,
+    "bulletSpeed": 4.300000190734863,
+    "bulletRange": 127.96800666046147,
+    "reload": 110.0
+   }
+  ]
+ },
+ {
+  "id": 53,
+  "name": "quell-missile",
+  "health": 45.0,
+  "armor": 0.0,
+  "speed": 4.300000190734863,
+  "flying": true,
+  "hitSize": 6.0,
+  "maxRange": 6.0,
+  "weapons": [
+   {
+    "name": "",
+    "damage": 1.0,
+    "bulletSpeed": 0.0,
+    "bulletRange": 0.0,
+    "reload": 1.0
+   }
+  ]
+ },
+ {
+  "id": 54,
+  "name": "disrupt",
+  "health": 12000.0,
+  "armor": 9.0,
+  "speed": 1.0,
+  "flying": true,
+  "hitSize": 46.0,
+  "maxRange": 465.1999816894531,
+  "weapons": [
+   {
+    "name": "disrupt-weapon",
+    "damage": 0.75,
+    "bulletSpeed": 0.0,
+    "bulletRange": 0.0,
+    "reload": 140.0
+   }
+  ]
+ },
+ {
+  "id": 55,
+  "name": "disrupt-missile",
+  "health": 70.0,
+  "armor": 0.0,
+  "speed": 4.599999904632568,
+  "flying": true,
+  "hitSize": 6.0,
+  "maxRange": 5.0,
+  "weapons": [
+   {
+    "name": "",
+    "damage": 1.0,
+    "bulletSpeed": 0.0,
+    "bulletRange": 0.0,
+    "reload": 1.0
+   }
+  ]
+ },
+ {
+  "id": 56,
+  "name": "renale",
+  "health": 500.0,
+  "armor": 2.0,
+  "speed": 1.2000000476837158,
+  "flying": false,
+  "hitSize": 9.0,
+  "maxRange": 70.0,
+  "weapons": []
+ },
+ {
+  "id": 57,
+  "name": "latum",
+  "health": 20000.0,
+  "armor": 12.0,
+  "speed": 1.0,
+  "flying": false,
+  "hitSize": 48.0,
+  "maxRange": 70.0,
+  "weapons": []
+ },
+ {
+  "id": 58,
+  "name": "evoke",
+  "health": 300.0,
+  "armor": 1.0,
+  "speed": 5.599999904632568,
+  "flying": true,
+  "hitSize": 9.0,
+  "maxRange": 60.0,
+  "weapons": [
+   {
+    "name": "",
+    "damage": 0.75,
+    "bulletSpeed": 1.0,
+    "bulletRange": 60.0,
+    "reload": 20.0
+   }
+  ]
+ },
+ {
+  "id": 59,
+  "name": "incite",
+  "health": 500.0,
+  "armor": 2.0,
+  "speed": 7.0,
+  "flying": true,
+  "hitSize": 11.0,
+  "maxRange": 60.0,
+  "weapons": [
+   {
+    "name": "",
+    "damage": 0.75,
+    "bulletSpeed": 1.0,
+    "bulletRange": 60.0,
+    "reload": 20.0
+   },
+   {
+    "name": "build-weapon",
+    "damage": 0.75,
+    "bulletSpeed": 1.0,
+    "bulletRange": 40.0,
+    "reload": 2.0
+   }
+  ]
+ },
+ {
+  "id": 60,
+  "name": "emanate",
+  "health": 700.0,
+  "armor": 3.0,
+  "speed": 7.5,
+  "flying": true,
+  "hitSize": 12.0,
+  "maxRange": 65.0,
+  "weapons": [
+   {
+    "name": "",
+    "damage": 0.75,
+    "bulletSpeed": 1.0,
+    "bulletRange": 65.0,
+    "reload": 40.0
+   }
+  ]
+ },
+ {
+  "id": 61,
+  "name": "block",
+  "health": 1.0,
+  "armor": 0.0,
+  "speed": 0.0,
+  "flying": false,
+  "hitSize": 0.0,
+  "maxRange": 70.0,
+  "weapons": []
+ },
+ {
+  "id": 62,
+  "name": "manifold",
+  "health": 200.0,
+  "armor": 0.0,
+  "speed": 3.5,
+  "flying": true,
+  "hitSize": 11.0,
+  "maxRange": 70.0,
+  "weapons": []
+ },
+ {
+  "id": 63,
+  "name": "assembly-drone",
+  "health": 90.0,
+  "armor": 0.0,
+  "speed": 1.2999999523162842,
+  "flying": true,
+  "hitSize": 6.0,
+  "maxRange": 70.0,
+  "weapons": []
+ },
+ {
+  "id": 64,
+  "name": "dummy",
+  "health": 200.0,
+  "armor": 0.0,
+  "speed": 1.100000023841858,
+  "flying": false,
+  "hitSize": 12.0,
+  "maxRange": 70.0,
+  "weapons": []
+ },
+ {
+  "id": 65,
+  "name": "scathe-missile",
+  "health": 240.0,
+  "armor": 0.0,
+  "speed": 4.599999904632568,
+  "flying": true,
+  "hitSize": 10.0,
+  "maxRange": 6.0,
+  "weapons": [
+   {
+    "name": "",
+    "damage": 1.0,
+    "bulletSpeed": 0.0,
+    "bulletRange": 0.0,
+    "reload": 1.0
+   }
+  ]
+ },
+ {
+  "id": 66,
+  "name": "scathe-missile-phase",
+  "health": 500.0,
+  "armor": 0.0,
+  "speed": 2.5,
+  "flying": true,
+  "hitSize": 10.0,
+  "maxRange": 6.0,
+  "weapons": [
+   {
+    "name": "",
+    "damage": 1.0,
+    "bulletSpeed": 0.0,
+    "bulletRange": 0.0,
+    "reload": 1.0
+   }
+  ]
+ },
+ {
+  "id": 67,
+  "name": "scathe-missile-surge",
+  "health": 300.0,
+  "armor": 0.0,
+  "speed": 4.400000095367432,
+  "flying": true,
+  "hitSize": 10.0,
+  "maxRange": 6.0,
+  "weapons": [
+   {
+    "name": "",
+    "damage": 1.0,
+    "bulletSpeed": 0.0,
+    "bulletRange": 0.0,
+    "reload": 2.0
+   }
+  ]
+ },
+ {
+  "id": 68,
+  "name": "scathe-missile-surge-split",
+  "health": 50.0,
+  "armor": 0.0,
+  "speed": 4.800000190734863,
+  "flying": true,
+  "hitSize": 6.0,
+  "maxRange": 6.0,
+  "weapons": [
+   {
+    "name": "",
+    "damage": 1.0,
+    "bulletSpeed": 0.0,
+    "bulletRange": 0.0,
+    "reload": 1.0
+   }
+  ]
+ },
+ {
+  "id": 69,
+  "name": "turret-unit-build-tower",
+  "health": 1.0,
+  "armor": 0.0,
+  "speed": 0.0,
+  "flying": false,
+  "hitSize": 0.0,
+  "maxRange": 70.0,
+  "weapons": []
+ }
+]

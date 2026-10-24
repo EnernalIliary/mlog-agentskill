@@ -41,3 +41,6 @@ out/caime_scan*.txt
 
 # 知识库的 Python 3.11 依赖副本（3.12 用 out/_kblibs）
 /out/_kblibs311/
+
+# temporary probe scripts (archived, not tracked)
+/out/_archive/
