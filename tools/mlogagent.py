@@ -246,10 +246,13 @@ def cmd_report(args) -> int:
 # --------------------------------------------------------------------------- #
 
 _DATA = ["wiki_block_ids.json", "block_sizes.json", "cmd_index.json",
-         "item_ids.json", "instr_semantics.json",
+         "item_ids.json", "instr_semantics.json", "content_names.json",
          "unit_attrs.json", "block_attrs.json", "sensor_attrs.json", "status_names.json"]
-_MODULES = ["mlog.py", "mlogcheck.py", "mlogir.py", "mlogval.py", "mlogpack.py",
-            "mlogcross.py", "msch.py", "mschgen.py", "mlogagent.py"]
+# aigenerated.py is a runtime dependency of mlog.py (:87 imports it) even
+# though nothing else here imports it; leaving it out shipped a stale copy.
+_MODULES = ["mlog.py", "aigenerated.py", "mlogcheck.py", "mlogir.py",
+            "mlogval.py", "mlogpack.py", "mlogcross.py", "msch.py",
+            "mschgen.py", "mlogagent.py"]
 
 
 def _sha(path: Path) -> str:

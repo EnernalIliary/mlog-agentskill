@@ -663,7 +663,7 @@ def cmd_id(args) -> int:
 def cmd_sensor(args) -> int:
     """List what `sensor` can read: one property per line, with what it means."""
     if not SENSOR_ATTRS:
-        print("!! sensor_attrs.json is missing; run tools/sensor_from_source.py",
+        print("!! sensor_attrs.json is missing; run tools/sensor_attrs_from_jar.py",
               file=sys.stderr)
         return 1
     pat = (args.pattern or "").lower()
@@ -680,10 +680,10 @@ def cmd_sensor(args) -> int:
     if not rows:
         print(f"no property matches {pat!r}"
               + (" (with --settable)" if args.settable else ""))
-        print("  75 properties in sensor_attrs.json; try `mlog.py sensor` with no filter")
+        print(f"  {len(SENSOR_ATTRS)} properties in sensor_attrs.json; try `mlog.py sensor` with no filter")
         return 1
     print(f"{len(rows)} propert{'y' if len(rows) == 1 else 'ies'}"
-          f"  (source: sensor_attrs.json / LAccess.java)")
+          f"  (source: sensor_attrs.json / v160.7 jar LAccess)")
     for name, e in rows:
         tag = "  [object]" if e.get("obj") else ""
         tgt = f"  ({e.get('target')})" if e.get("target") else ""

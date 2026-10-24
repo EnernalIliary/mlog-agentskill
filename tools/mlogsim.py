@@ -176,6 +176,20 @@ def _default_java() -> str:
     return STEAM_JAVA
 
 
+def _abs_path(p: str) -> str:
+    """Resolve a jar/java path against the caller's cwd; keep bare commands as-is.
+
+    Server() starts the Java child with cwd=<workdir under out/_sim> (Java must
+    not write to %TEMP%), so a relative path would be resolved *there* and fail
+    with "Unable to access jarfile". A bare name (e.g. --java java) must still
+    go through PATH, so only paths with a directory part or an existing file
+    are rewritten.
+    """
+    if os.path.dirname(p) or os.path.exists(p):
+        return os.path.abspath(p)
+    return p
+
+
 class SimError(RuntimeError):
     pass
 
@@ -183,6 +197,10 @@ class SimError(RuntimeError):
 class Server:
     def __init__(self, java: str, jar: str, world_size: int | None = 64,
                  save: str | None = None):
+        # Java runs with cwd=<workdir> below, so relative jar/java paths must be
+        # resolved against the *caller's* cwd first (same meaning as the CLI).
+        java = _abs_path(java)
+        jar = _abs_path(jar)
         # writes must stay inside the workspace: Java child processes are not
         # allowed to write under %TEMP% (sandbox denies with "access denied")
         base = os.path.join(ROOT, "out", "_sim")
@@ -613,12 +631,18 @@ var spec = %(spec)s;            /* [[name, count], ...] */
 var team = Packages.mindustry.game.Team.sharded;
 var wantx = %(wx)f, wanty = %(wy)f;
 Vars.state.rules.logicUnitControl = true;
-/* blank world has no cores, so Units.getCap() is 0 and every spawn dies at add() */
-Vars.state.rules.unitCap = 1000;
-/* Spawning on top of a solid block kills the unit on its first update(): the
- * processor is placed at the base tile, and a +16px offset can land inside the
- * core. Find a free standable tile near the requested point, skipping the base
- * tile itself (the processor goes there), and spawn at the tile center. */
+/* Two distinct failure modes, do not conflate them:
+ * (a) BLANK WORLD HAS NO CORES -> Units.getCap() == 0 -> every unit is removed
+ *     inside add() before any update() runs. This is what "spawned and died
+ *     instantly" looked like historically; raising the cap is what makes the
+ *     spawn possible at all.
+ * (b) SPAWNING ON A SOLID TILE was believed to kill the unit on its first
+ *     update(). NOT reproduced on v160.7: a dagger placed on stone-wall or on a
+ *     micro-processor tile stayed alive for 5 updated ticks
+ *     (out/takeover-20261024/07-assert-runs.md, assertion L2-07 overturned).
+ * freeSpot() is therefore kept only to get a clean landing spot: the processor
+ * is placed at the base tile, and a +16px offset can land inside a multi-tile
+ * core. It skips the base tile itself and spawns at the tile center. */
 function freeSpot(cx, cy){
     var bw = Math.floor(cx / 8), bh = Math.floor(cy / 8);
     for(var r = 1; r < 16; r++){

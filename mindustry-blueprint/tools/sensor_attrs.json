@@ -1,6 +1,13 @@
 {
-  "source": "Mindustry v159.3 (git 5811844), core/src/mindustry/logic/LAccess.java",
-  "note": "descriptions are hand-written from the source behaviour; the game documents only the names. `params` non-empty = readable AND settable through `control`.",
+  "source": "Mindustry v160.7 (_server160.jar -> mindustry/logic/LAccess.class, 77 ACC_ENUM constants)",
+  "legacy_source": "Mindustry v159.3 (git 5811844), core/src/mindustry/logic/LAccess.java -- the original 75-entry table; descriptions were written against it",
+  "version": "v160.7",
+  "note": "descriptions are hand-written from the source behaviour; the game documents only the names. params non-empty = readable AND settable through control. Names come from the shipped jar: GlobalVars.java:146-148 registers exactly @ + LAccess.name(), so there are no aliases.",
+  "added_2026_10_25": [
+    "enabled",
+    "color"
+  ],
+  "note_added": "enabled/color are in the v160.7 jar but were missing from the v159.3 checkout the old table was built from; they caused 253 false sensor-not-a-property WARNs.",
   "access": {
     "totalItems": {
       "name": "totalItems",
@@ -506,6 +513,16 @@
       "target": "unit",
       "desc": "age of the unit's last bullet"
     },
+    "enabled": {
+      "name": "enabled",
+      "obj": false,
+      "params": [
+        "to"
+      ],
+      "target": "building",
+      "desc": "whether the block is enabled (writable via control)",
+      "source": "_server160.jar!mindustry/logic/LAccess.class (ACC_ENUM field 73/77, v160.7) + Mindustry-Source/core/src/mindustry/logic/LAccess.java (obj/params)"
+    },
     "shoot": {
       "name": "shoot",
       "obj": false,
@@ -535,6 +552,16 @@
       ],
       "target": "building",
       "desc": "block config (object; writable via control config)"
+    },
+    "color": {
+      "name": "color",
+      "obj": false,
+      "params": [
+        "to"
+      ],
+      "target": "building",
+      "desc": "block colour (writable)",
+      "source": "_server160.jar!mindustry/logic/LAccess.class (ACC_ENUM field 77/77, v160.7) + Mindustry-Source/core/src/mindustry/logic/LAccess.java (obj/params)"
     }
   }
 }

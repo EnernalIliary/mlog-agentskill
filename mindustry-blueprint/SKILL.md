@@ -700,7 +700,7 @@ python mindustry-blueprint\tools\parallel.py --items 1421   # 先看它会开几
 | `read`/`write` 只认对方**已声明**的变量，`write` 到未声明名字不建槽 | **双实现确认**（蓝图级探针 `A=7 B=null C=null`） |
 | `ubind` 后 `@controller == @this` | 真执行器实测（v159.3 / v160.7，`mlogsim`；mindcode 模拟器不支持 `ubind`） |
 
-复跑方法与探针文件见 `EMULATOR-CROSSCHECK.md`（需要 JDK 22 与 `mindcode.jar`）。平时不需要 mindcode：`tools/mlogsim.py` 本身就是真执行器，`out/probes/p1..p8` 已在 v159.3 与 v160.7 上复跑通过；`tests/run_tests.py` 是 24 条 golden，不依赖 Java。
+复跑方法与探针文件见 `EMULATOR-CROSSCHECK.md`（需要 JDK 22 与 `mindcode.jar`）。平时不需要 mindcode：`tools/mlogsim.py` 本身就是真执行器，`out/probes/p1..p8` 已在 v159.3 与 v160.7 上复跑通过；`tests/run_tests.py` 是 36 条 golden，不依赖 Java。
 
 ## 独立副本
 
@@ -709,7 +709,7 @@ python mindustry-blueprint\tools\parallel.py --items 1421   # 先看它会开几
 ## 改完分析器先跑測試
 
 ```bash
-python tests/run_tests.py          # 12 條 golden digest，任何結論變化都會失敗
+python tests/run_tests.py          # 36 條 golden digest，任何結論變化都會失敗
 python tests/run_tests.py -v       # 逐條列出
 python tests/run_tests.py --write  # 改了就有意識地改期望值——然後讀 diff
 ```

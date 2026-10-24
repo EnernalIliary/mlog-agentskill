@@ -1,4 +1,4 @@
-"""Build ``sensor_attrs.json`` -- the 77 things ``sensor`` can read.
+"""Descriptions for ``sensor_attrs.json`` -- the 77 things ``sensor`` can read.
 
 The *names* come from the enum in ``LAccess.java`` (order and the ``obj`` flag
 are taken verbatim).  The one-line descriptions are mine: the game's own docs
@@ -12,12 +12,23 @@ Two things this file exists to prevent:
 - ``sensor n cell1 @size`` returns the UTF-16 length when the target is a
   string, so it is not only a building property.
 
-Run from the repo root:  python tools/sensor_from_source.py
+This file is now the **single home of DESC** (name -> short description) and
+nothing else: the table itself is generated from the game's own jar by
+``tools/sensor_attrs_from_jar.py``, which imports DESC from here.
+
+Do **not** run this file as a script any more.  Its old writer parsed a Java
+snapshot and wrote to the *mirror* at
+``mindustry-blueprint/tools/sensor_attrs.json`` with a 75-name / v159.3 schema;
+running it would silently roll the table back and turn the mirror gate red.
+
+    python tools/sensor_attrs_from_jar.py --check   # verify the real table
+    python tools/sensor_attrs_from_jar.py           # regenerate it from the jar
 """
 from __future__ import annotations
 
 import json
 import re
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -114,7 +125,12 @@ def _target(key: str) -> str:
     return " / ".join(TARGET[k] for k in key.split())
 
 
-def main() -> int:
+def _legacy_main() -> int:
+    """Dead code, kept for the git history: the old Java-snapshot writer.
+
+    It wrote a 75-name / v159.3 table straight into the *mirror* copy, so any
+    run would turn the mirror gate red.  Do not call it.
+    """
     src = SRC.read_text(encoding="utf-8")
     body = src[src.index("public enum LAccess{"):src.index("public final String[] params;")]
 
@@ -158,6 +174,17 @@ def main() -> int:
     if missing:
         print("!! no description:", ", ".join(missing))
     return 0
+
+
+def main() -> int:
+    """Refuse to write: the real table comes from the jar, not from this file."""
+    print("!! tools/sensor_from_source.py no longer writes sensor_attrs.json.",
+          file=sys.stderr)
+    print("   it now only holds DESC; the table is generated from the jar:",
+          file=sys.stderr)
+    print("       python tools/sensor_attrs_from_jar.py --check", file=sys.stderr)
+    print("       python tools/sensor_attrs_from_jar.py", file=sys.stderr)
+    return 1
 
 
 if __name__ == "__main__":

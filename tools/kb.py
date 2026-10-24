@@ -54,6 +54,11 @@ DOC_FILES = [
     "dsh-preset-mlog/README.md",
     "rules/README.md",
     "docs/本地知识库.md",
+    # Truth-source docs: what was actually run and what got refuted. Without
+    # these, "is L2-07 still ✅?" is unanswerable from the KB (found 2026-10-24
+    # when a rebuilt snapshot could not find 「已推翻」 anywhere).
+    "docs/断言表.md",
+    "docs/验证记录.md",
 ]
 CODE_GLOBS = ["tools/*.py", "tests/run_tests.py"]
 DOC_GLOBS = ["docs/游戏速查/*.md"]

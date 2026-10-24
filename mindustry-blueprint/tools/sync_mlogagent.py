@@ -1,30 +1,42 @@
 #!/usr/bin/env python3
-"""Vendor the mlog toolchain into the standalone `mlogagent` skill.
+"""Vendor the mlog toolchain into every copy of itself.
 
-The `mlogagent` skill is meant to be self-contained: copy
-`.dsh/skills/mlog-agentskill` somewhere else and it still runs, without the rest of
-this repo.  That means the skill carries its own copy of every module and data
-file, and this script is the one place that produces that copy -- so "which
-version is in the skill" never becomes a guess.
+Four copies of this toolchain exist on this machine, and this script is the one
+place that writes them -- so "which version is in that copy" never becomes a
+guess:
+
+    skill    .dsh/skills/mlog-agentskill/tools        standalone skill payload
+    bp       mindustry-blueprint/tools                superset used by the src tree
+    install  .dsh/skills/mindustry-blueprint/tools    what DSH actually loads
+    global   $DSH_HOME/skills/mlog-agentskill/tools   outside the repo, opt-in
+
+    python tools/sync_mlogagent.py                       # skill only (default)
+    python tools/sync_mlogagent.py --mirror all          # skill + bp + install
+    python tools/sync_mlogagent.py --mirror bp --check   # compare, exit 1 if stale
+    python tools/sync_mlogagent.py --global              # also user-level copy
 
 Only the *tools* are synced.  `mlogagent/SKILL.md` is authored in place: it
-belongs to that skill alone, while `mindustry-blueprint/SKILL.md` is a different
-document.  (Copying it here once clobbered the playbook and silently removed the
-skill from the catalog -- hence the explicit exclusion below.)
+belongs to that skill alone, while `mindustry-blueprint/SKILL.md` is a
+different document.  (Copying it here once clobbered the playbook and silently
+removed the skill from the catalog -- hence the explicit exclusion below.)
 
-    python tools/sync_mlogagent.py            # copy + rewrite MANIFEST.sha256
-    python tools/sync_mlogagent.py --check    # compare only, exit 1 if stale
-    python tools/sync_mlogagent.py --global   # also install into DSH's user-level
-                                              # skills dir, so the skill is in
-                                              # scope for EVERY project
+`--mirror all` deliberately does NOT include the global copy: that directory is
+outside the checkout (`C:/Users/<you>/.dsh/skills`, a junction into
+`.dsh-pack/skills/default`) and installing it changes every DSH project on the
+machine.  Use `--global` for that; it composes with `--mirror` in either
+order, and it always installs the *skill* payload (never bp/install).
 
-Run it after touching any module listed in `mlogagent._MODULES`, then
-`python .dsh/skills/mlog-agentskill/tools/mlogagent.py info --verify` to confirm.
+Each mirror receives `mlogagent._MODULES` + `mlogagent._DATA` plus a freshly
+written MANIFEST.sha256.  `bp` and `install` are supersets -- they also carry
+src-side helpers this script does not manage -- so they are updated in place:
+only payload files that already exist there are overwritten.  A payload file
+missing from a superset is reported, never silently created: adding files to
+those trees is a decision, not a sync.  The copy of this script that lives in
+bp/install is refreshed too (it is tracked and the consistency gate compares it
+against tools/).
 
-`--global` writes outside this repo (`$DSH_HOME/skills/...`, usually
-`C:/Users/<you>/.dsh/skills`, which is a junction into `.dsh-pack/skills/default`).
-That is what makes the skill visible in every project instead of only this one --
-DSH has no per-skill scope switch, so scope *is* the directory it lives in.
+After writing, every target is self-verified by running its own
+`mlogagent.py info --verify` (recomputes SHA256 against its MANIFEST).
 """
 from __future__ import annotations
 
@@ -32,6 +44,7 @@ import argparse
 import hashlib
 import os
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -64,8 +77,20 @@ GLOBAL_SKILL = (Path(os.environ.get("DSH_HOME") or (Path.home() / ".dsh"))
                 / "skills" / "mlog-agentskill")
 GLOBAL_DEST = GLOBAL_SKILL / "tools"
 
+#: Refreshed in every target that already has it (gate compares it to tools/).
+SELF = "sync_mlogagent.py"
+
 sys.path.insert(0, str(HERE))
 import mlogagent  # noqa: E402  (needs the sys.path line above)
+
+
+#: target name -> (directory, may it gain files, does it carry a MANIFEST).
+MIRRORS: dict[str, tuple[Path, bool, bool]] = {
+    "skill": (DEST, True, True),
+    "bp": (ROOT / "mindustry-blueprint" / "tools", False, True),
+    "install": (ROOT / ".dsh" / "skills" / "mindustry-blueprint" / "tools", False, True),
+}
+MIRROR_ORDER = ["skill", "bp", "install"]
 
 
 def sha256(path: Path) -> str:
@@ -79,6 +104,98 @@ def sha256(path: Path) -> str:
 def payload() -> list[str]:
     """Modules + data files, in a stable order.  Never SKILL.md."""
     return list(mlogagent._MODULES) + list(mlogagent._DATA)
+
+
+def _manifest_text(d: Path, names: list[str]) -> str:
+    return "".join(f"{sha256(d / n)}  {n}\n" for n in names)
+
+
+def _run_verify(d: Path) -> bool | None:
+    """Ask the copy in `d` to verify itself.  None = it has no MANIFEST."""
+    if not (d / "MANIFEST.sha256").is_file():
+        print(f"verify  : {d} -- no MANIFEST.sha256, skipped")
+        return None
+    exe = d / "mlogagent.py"
+    env = dict(os.environ, PYTHONIOENCODING="utf-8")
+    try:
+        cp = subprocess.run([sys.executable, str(exe), "info", "--verify"],
+                            cwd=str(d), capture_output=True, text=True,
+                            encoding="utf-8", errors="replace", env=env)
+    except OSError as exc:
+        print(f"!! verify {d}: could not run {exe}: {exc}")
+        return False
+    tail = [ln for ln in (cp.stdout or "").splitlines() if ln.strip()]
+    print(f"verify  : {d.name or d} -> {tail[-1].strip() if tail else '(no output)'}")
+    if cp.returncode != 0:
+        for ln in tail:
+            if "MISMATCH" in ln:
+                print(f"          {ln.strip()}")
+        return False
+    return True
+
+
+def write_target(name: str, check_only: bool) -> int:
+    d, may_create, want_manifest = MIRRORS[name]
+    if not d.is_dir():
+        print(f"!! {name}: directory not found: {d}")
+        return 2
+
+    present = [n for n in payload() if (d / n).is_file()]
+    absent = [n for n in payload() if n not in present]
+    rc = 0
+
+    if check_only:
+        stale = [n for n in present if sha256(HERE / n) != sha256(d / n)]
+        for n in stale:
+            print(f"  {name}/{n}: differs")
+        if absent:
+            print(f"  {name}: absent payload {', '.join(absent)}")
+        if want_manifest:
+            want = _manifest_text(d, present)
+            mp = d / "MANIFEST.sha256"
+            if not mp.is_file():
+                print(f"  {name}/MANIFEST.sha256: missing")
+                stale.append("MANIFEST.sha256")
+            elif mp.read_text("utf-8") != want:
+                print(f"  {name}/MANIFEST.sha256: stale")
+                stale.append("MANIFEST.sha256")
+        sp = d / SELF
+        if sp.is_file() and sha256(sp) != sha256(HERE / SELF):
+            print(f"  {name}/{SELF}: differs")
+            stale.append(SELF)
+        if stale:
+            print(f"STALE  {name}: {len(stale)} file(s) differ from {HERE}")
+            print(f"  run: python tools/sync_mlogagent.py --mirror {name}")
+            return 1
+        print(f"ok     {name}: {len(present)} tool file(s) in sync")
+        return 0
+
+    if absent and may_create:
+        d.mkdir(parents=True, exist_ok=True)
+    wrote = 0
+    for n in present:
+        dst = d / n
+        if sha256(HERE / n) != sha256(dst):
+            shutil.copy2(HERE / n, dst)
+            wrote += 1
+    if want_manifest:
+        mp = d / "MANIFEST.sha256"
+        text = _manifest_text(d, present)
+        if not mp.is_file() or mp.read_text("utf-8") != text:
+            mp.write_text(text, "utf-8")
+            wrote += 1
+    if absent:
+        print(f"WARN   {name}: payload file(s) absent from this tree, not created: "
+              f"{', '.join(absent)}")
+        print(f"       (if they belong there, copy them in by hand once, then re-run)")
+        rc = 1
+    sp = d / SELF
+    if sp.is_file() and sp.resolve() != (HERE / SELF).resolve() and sha256(sp) != sha256(HERE / SELF):
+        shutil.copy2(HERE / SELF, sp)
+        wrote += 1
+    print(f"ok     {name}: {len(present)} tool file(s) vendored into {d}"
+          f"  ({wrote} changed)")
+    return rc
 
 
 def install_global(check_only: bool = False) -> int:
@@ -129,49 +246,45 @@ def install_global(check_only: bool = False) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    ap = argparse.ArgumentParser(
+        description=__doc__.splitlines()[0],
+        epilog="targets: skill (default), bp, install, all.  --global is orthogonal.",
+        formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--mirror", default="skill",
+                    choices=[*MIRROR_ORDER, "all"],
+                    help="which copy to write: skill (default), bp, install, or all "
+                         "(the three inside the repo; never the global one)")
     ap.add_argument("--check", action="store_true",
-                    help="do not write; report what differs from the skill copy")
+                    help="do not write; report what differs from this directory")
     ap.add_argument("--global", dest="install_global", action="store_true",
                     help="also install into $DSH_HOME/skills, so the skill is in "
                          "scope for every project (combine with --check to verify)")
+    ap.add_argument("--no-verify", action="store_true",
+                    help="skip the per-target 'mlogagent.py info --verify' pass")
     args = ap.parse_args(argv)
 
     if not SKILL.is_dir():
         print(f"!! skill directory not found: {SKILL}")
         return 2
 
+    targets = MIRROR_ORDER if args.mirror == "all" else [args.mirror]
     names = payload()
-    stale: list[str] = []
+    print(f"source : {HERE}  ({len(names)} payload file(s))")
+    rc = 0
+    for name in targets:
+        rc = max(rc, write_target(name, check_only=args.check))
 
-    if args.check:
-        for n in names:
-            dst = DEST / n
-            if not dst.exists():
-                stale.append(f"{n}: missing from the skill")
-            elif sha256(HERE / n) != sha256(dst):
-                stale.append(f"{n}: differs")
-    else:
-        DEST.mkdir(parents=True, exist_ok=True)
-        for n in names:
-            shutil.copy2(HERE / n, DEST / n)
-        lines = [f"{sha256(DEST / n)}  {n}" for n in names]
-        (DEST / "MANIFEST.sha256").write_text("\n".join(lines) + "\n", "utf-8")
+    if not args.check and not args.no_verify:
+        for name in targets:
+            d = MIRRORS[name][0]
+            if d.is_dir():
+                ok = _run_verify(d)
+                if ok is False:
+                    rc = 1
 
-    if stale:
-        print(f"STALE  {len(stale)} file(s) differ from {HERE}:")
-        for s in stale:
-            print(f"  {s}")
-        print("run: python tools/sync_mlogagent.py")
-        return 1
-
-    print(f"ok     {len(names)} tool file(s) vendored into {DEST}")
-    print(f"       manifest: {DEST / 'MANIFEST.sha256'}")
-    if not args.check:
-        print("verify : python .dsh/skills/mlog-agentskill/tools/mlogagent.py info --verify")
     if args.install_global:
-        return install_global(check_only=args.check)
-    return 0
+        rc = max(rc, install_global(check_only=args.check))
+    return rc
 
 
 if __name__ == "__main__":
