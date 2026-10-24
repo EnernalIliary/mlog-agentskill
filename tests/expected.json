@@ -224,6 +224,20 @@
     "case": "link-hyphen-ok.mlog",
     "digest": []
   },
+  "check/sensor-not-prop": {
+    "kind": "check",
+    "case": "sensor-not-prop.mlog",
+    "digest": [
+      [
+        "WARN",
+        1
+      ],
+      [
+        "WARN",
+        2
+      ]
+    ]
+  },
   "check/spin-deadlock": {
     "kind": "check",
     "case": "spin.mlog",

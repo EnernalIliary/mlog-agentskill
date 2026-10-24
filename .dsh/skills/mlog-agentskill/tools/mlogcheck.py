@@ -11,7 +11,7 @@ loops, and unit-control executed without a live `ubind`.
 Usage
 -----
   python tools/mlogcheck.py 逻辑.mlog
-  python tools/mlogcheck.py --blueprint out/示例逻辑.msch     # check a whole schematic
+  python tools/mlogcheck.py --blueprint out/无线超.msch     # check a whole schematic
   python tools/mlogcheck.py --dir logic-corpus/by-blueprint # (md dumps, not for this)
 """
 from __future__ import annotations
@@ -305,6 +305,23 @@ def _load_arity() -> dict[str, int]:
 
 
 ARITY = _load_arity()
+
+
+def _load_sensor_props() -> set[str]:
+    """The `LAccess` attributes a `sensor` instruction can read.
+
+    `sensor` compiles to `SenseI`, which looks the third operand up in
+    `LAccess`; anything else (an item, a block, a typo) reads null. The table
+    ships next to this file as `sensor_attrs.json` (`access` = 75 entries).
+    """
+    try:
+        raw = (Path(__file__).with_name("sensor_attrs.json")).read_text("utf-8")
+        return set((json.loads(raw).get("access") or {}).keys())
+    except Exception:
+        return set()
+
+
+SENSOR_PROPS = _load_sensor_props()
 
 
 def _load_specs() -> dict[str, dict]:
@@ -728,6 +745,60 @@ def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> l
         ever_defined |= set(defs_of(c))
     ever_defined |= link_vars
 
+    # Declaration does not require `set`: the assembler's readVar() creates a
+    # variable on its first mention anywhere (`vars.get(name, true)`), which is
+    # why `draw triangle a b c d e f` works as a compact six-slot table. So the
+    # only truly undeclared name is one no statement mentions at all.
+    mentioned: set[str] = set(ever_defined)
+    for _, c in stmts:
+        mentioned |= set(uses_of(c))
+
+    # ---- a name containing '-' can never be a link variable ---------------
+    # LogicBlock.getLinkName() builds the link name from the block name's LAST
+    # '-'-separated segment (plus its index): `silicon-arc-furnace` -> `furnace1`.
+    # So `silicon-arc-furnace1` never binds; the statement silently does nothing.
+    _HYPHEN_NAME = re.compile(r"^[A-Za-z_][\w.]*(?:-[\w.]+)+$")
+    for _ln, _code in stmts:
+        # Strip string literals first: `print "Power Gauge v0-B.2"` tokenises to
+        # `v0-B.2`, which is not a link name at all.
+        _bare_code = re.sub(r'"[^"]*"', '""', _code)
+        for _tok in re.findall(r"\S+", _bare_code):
+            if _tok.startswith('"') or _tok.startswith("@"):
+                continue
+            # A hyphenated name that the program itself assigns is a legal
+            # variable (`set needed-icon ""`), not a unbound link.
+            if _tok in ever_defined:
+                continue
+            if _HYPHEN_NAME.match(_tok):
+                out.append(Finding(
+                    "ERR", _ln + 1, "link-name-hyphen",
+                    f"`{_tok}` contains '-': the game derives a link's name from the "
+                    f"block name's last hyphenated segment plus its index "
+                    f"(`silicon-arc-furnace` -> `furnace1`), so this name never binds "
+                    f"and the statement is a silent no-op"))
+
+    # ---- sensor property must be one of the 75 LAccess attributes ----------
+    # `sensor result target @prop`: the game calls `sense(LAccess)`. A property
+    # that is not in `LAccess` -- an item name, a block name, a typo -- reads
+    # null, so the statement looks like it worked. `sensor 铜 core
+    # @hyper-processor` is a real example from a user program: every branch on
+    # it was silently false.
+    if SENSOR_PROPS:
+        for _ln, _code in stmts:
+            _q = _code.split()
+            if len(_q) < 4 or _q[0].lower() != "sensor":
+                continue
+            _prop = _q[3]
+            if not _prop.startswith("@") or _prop[1:] in SENSOR_PROPS:
+                continue
+            out.append(Finding(
+                "WARN", _ln + 1, "sensor-not-a-property",
+                f"`{_prop}` is not a sensor property: `sensor` reads one of the "
+                f"{len(SENSOR_PROPS)} `LAccess` attributes (`@x`, `@health`, "
+                f"`@totalItems`, `@itemCapacity`, ...), not an item or block name "
+                f"-- the game returns null here, so comparisons against it are "
+                f"silently false"))
+
     # ---- read/write @this "name": a string addresses a processor variable ----
     # `LogicBlock.read` looks the name up in `executor.optionalVar(name)`, then
     # falls back to `optionalLink(name)`; `LogicBlock.write` returns silently
@@ -739,21 +810,22 @@ def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> l
         m = _SELF_READ.match(_code)
         if m:
             name = m.group(1)
-            if name not in ever_defined and not LINK_RE.match(name):
+            if name not in mentioned and not LINK_RE.match(name):
                 out.append(Finding(
                     "INFO", _ln + 1, "self-read-undefined",
-                    f'`read ... @this "{name}"` addresses a processor variable this '
-                    f'program never declares, so the game returns null (a name ending '
-                    f'in a digit would resolve as a link instead)'))
+                    f'`read ... @this "{name}"` names a variable no statement in '
+                    f'this program mentions (a mention anywhere would declare it), '
+                    f'so the game returns null (a name ending in a digit would '
+                    f'resolve as a link instead)'))
         m = _SELF_WRITE.match(_code)
         if m:
             name = m.group(1)
-            if name not in ever_defined:
+            if name not in mentioned:
                 out.append(Finding(
                     "INFO", _ln + 1, "self-write-noop",
-                    f'`write ... @this "{name}"` addresses a variable this program '
-                    f'never declares; LogicBlock.write returns silently when the name '
-                    f'is not a variable, so this statement does nothing'))
+                    f'`write ... @this "{name}"` names a variable this program '
+                    f'never mentions; LogicBlock.write returns silently when the '
+                    f'name is not a variable, so this statement does nothing'))
 
     # How is each name USED? A name that only ever appears in `print` is not a
     # mistake: the in-game editor shows every variable of a program in its
@@ -922,8 +994,9 @@ def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> l
                 continue
             out.append(Finding(
                 "ERR", orig + 1, c,
-                f"`{v}` is read here but is never assigned anywhere in this "
-                f"program (and is not a link or built-in)"))
+                f"`{v}` is mentioned (so it is declared, with the initial value "
+                f"null) but is never assigned anywhere in this program; reading "
+                f"it here yields null (and it is not a link or built-in)"))
 
     # ---- privileged built-ins --------------------------------------------
     # INFO, not WARN: a world processor legitimately reads these, and a .mlog

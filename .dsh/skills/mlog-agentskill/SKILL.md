@@ -144,6 +144,7 @@ mlog **只有 `#` 起注释**（`LParser.java:98-99`），没有行尾注释 —
 | `read`/`write` 的 `@this "名字"` 是**处理器变量** | `LogicBlock.java:607-620, 644-650`：字符串先 `optionalVar(name)`，没有再 `optionalLink(name)`；write 找不到变量直接 return | 名字是字符串不是变量；写未提及的名字=静默空操作（`check` 报 INFO `self-write-noop`），读未提及的名字=null（INFO `self-read-undefined`）；数字下标 `read v @this 0` 是链接 |
 | 变量声明不要求 `set`，任何语句首次提及即声明 | `LAssembler.readVar` 用 `vars.get(name, true)`；`draw triangle a b c d e f` 一次声明 6 个（值 null→0） | 只有“全文从未出现过”才算未声明；只声明未赋值读到 null，不是 0 |
 | **链接名不是方块全名** | `LogicBlock.getLinkName()` 取方块名最后一个连字符段再加序号：`silicon-arc-furnace` → `furnace1`；`large` 结尾先去掉 `large` | 写 `silicon-arc-furnace1` 永远不绑定（静默无操作）；`check` 报 ERR `link-name-hyphen` |
+| `sensor` 第三参必须是 `LAccess` 属性 | `SenseI` 按 `LAccess` 查表（75 个：`@x`/`@health`/`@totalItems`/`@itemCapacity`/`@config`…） | 填物品或方块名（`@copper`、`@hyper-processor`）读到 null，比较恒假；`check` 报 WARN `sensor-not-a-property` |
 
 ## 「我以为是作者写错」清单（其实都是检查器的 bug）
 

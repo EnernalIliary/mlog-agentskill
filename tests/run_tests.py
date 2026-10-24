@@ -240,6 +240,8 @@ SUITE: list[tuple[str, str, str | None]] = [
     # A hyphenated name the program assigns is a legal variable; a hyphen
     # inside a quoted string is not a name at all. Neither may be reported.
     ("check/link-hyphen-ok",  "check",   "link-hyphen-ok.mlog"),
+    # `sensor` reads LAccess attributes; an item/block name there reads null.
+    ("check/sensor-not-prop", "check",   "sensor-not-prop.mlog"),
     ("check/spin-deadlock",   "check",   "spin.mlog"),
     ("check/spin-handshake",  "check",   "spin-ok.mlog"),
     ("pack/three-fields",      "pack",    "pack1.mlog"),
