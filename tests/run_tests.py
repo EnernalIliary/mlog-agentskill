@@ -242,6 +242,11 @@ SUITE: list[tuple[str, str, str | None]] = [
     ("check/link-hyphen-ok",  "check",   "link-hyphen-ok.mlog"),
     # `sensor` reads LAccess attributes; an item/block name there reads null.
     ("check/sensor-not-prop", "check",   "sensor-not-prop.mlog"),
+    # The effect slot of `status` is a literal content name, not a variable
+    # read (LExecutor.java:1743 -> ContentLoader.getByName). The bare spelling
+    # is the working one; `@unmoving` is the spelling that does nothing.
+    ("check/status-effect-slot", "check", "status-effect-slot.mlog"),
+    ("check/status-bare-ok",     "check", "status-bare-ok.mlog"),
     ("check/spin-deadlock",   "check",   "spin.mlog"),
     ("check/spin-handshake",  "check",   "spin-ok.mlog"),
     ("pack/three-fields",      "pack",    "pack1.mlog"),

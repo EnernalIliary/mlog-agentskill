@@ -1108,26 +1108,48 @@ def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> l
                     f"unset variable is 0 and `null` reads as 0, so only `===` "
                     f"tells null from 0 (a constant branch is often a signature)"))
                 continue
-            if v.lower() in STATUS_NAMES:
-                # `status false unmoving @unit 0.1`: the name is a real status
-                # effect (StatusEffects.java declares it) but a content constant
-                # needs the @ prefix, so a bare name is an ordinary unset
-                # variable -- null.  Reported as INFO because the author clearly
-                # meant the effect and the line still runs; what is wrong is the
-                # spelling, and some builds spell it `@status_<name>`.
-                out.append(Finding(
-                    "INFO", orig + 1, c,
-                    f"`{v}` is the name of a status effect, not a variable: a "
-                    f"content constant needs the @ prefix (`@{v}`, and some "
-                    f"builds expose it as `@status_{v}` -- check the variable "
-                    f"list in the editor), so as written this reads null and "
-                    f"the instruction does nothing"))
-                continue
             out.append(Finding(
                 "ERR", orig + 1, c,
                 f"`{v}` is mentioned (so it is declared, with the initial value "
                 f"null) but is never assigned anywhere in this program; reading "
                 f"it here yields null (and it is not a link or built-in)"))
+
+    # ---- status: the effect slot is a LITERAL name, not a variable ----------
+    # `status <clear|apply> <effect> <unit> <duration>`: ApplyEffectI keeps the
+    # effect as a plain Java String (LStatements.java:1618 `new ApplyEffectI(
+    # clear, effect, builder.var(unit), builder.var(duration))` -- only the last
+    # two become LVars) and resolves it at LExecutor.java:1743 with
+    # `content.statusEffect(effect)` -> ContentLoader.getByName
+    # (ContentLoader.java:228-240), an EXACT map lookup on the raw token with no
+    # '@' handling and no null-variable indirection. So the bare spelling is the
+    # correct one; `@unmoving` resolves to nothing and the guard at
+    # LExecutor.java:1743 makes the whole instruction a silent no-op.
+    # This check is the inverse of the old status-name-needs-at rule, which
+    # fired on 3168 lines across 1400 saves in a 1421-save corpus sweep.
+    for _ln, _code in stmts:
+        _p = tokenize(_code)
+        if not _p or _p[0] != "status" or len(_p) < 3:
+            continue
+        _eff = _p[2]
+        if _eff.startswith("@"):
+            out.append(Finding(
+                "INFO", _ln + 1, _code,
+                f"`{_eff}` in the effect slot is not a content constant: this "
+                f"slot takes the BARE name (`{_eff[1:]}`). ApplyEffectI keeps "
+                f"the effect as a plain string and the game resolves it by exact "
+                f"map lookup (LExecutor.java:1743 -> ContentLoader.getByName), so "
+                f"no '@' handling happens here and this spelling resolves to "
+                f"nothing -- the instruction silently does nothing"))
+        elif (re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", _eff)
+              and _eff.lower() not in STATUS_NAMES):
+            out.append(Finding(
+                "INFO", _ln + 1, _code,
+                f"`{_eff}` is not a status effect this build knows "
+                f"(status_names.json, generated from StatusEffects.java): the "
+                f"executor resolves the effect by exact name and the guard "
+                f"`content.statusEffect(effect) != null` makes the instruction "
+                f"a silent no-op if the name does not resolve (mods may add "
+                f"their own effects -- this table is vanilla)"))
 
     # ---- privileged built-ins --------------------------------------------
     # INFO, not WARN: a world processor legitimately reads these, and a .mlog

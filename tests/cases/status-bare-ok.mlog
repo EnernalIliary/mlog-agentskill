@@ -1,0 +1,7 @@
+# The effect slot of `status` is a literal content name, not a variable.
+# LExecutor.java:1743 resolves it by exact map lookup (ContentLoader.java:228),
+# so these are the CORRECT spellings and must produce no finding at all.
+ubind @flare
+status false unmoving @unit 60
+status true wet @unit 0
+end

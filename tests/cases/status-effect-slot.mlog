@@ -1,0 +1,8 @@
+# Only the @-prefixed and unknown names are wrong here: the bare name in the
+# effect slot is the form the game actually resolves. Line numbers in the
+# digest are STATEMENT indices (0-based), matching `jump`.
+ubind @flare
+status false unmoving @unit 60
+status false @unmoving @unit 60
+status false zzz_typo @unit 60
+end

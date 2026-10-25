@@ -7,9 +7,10 @@
  "source": "user",
  "ref": "m15225",
  "since": "2026-10-19",
- "counter_example": "fetch unit u core.c 1 A @oct",
+ "counter_example": "tests/cases/fetch-count-index.mlog",
  "match": {
   "sevs": [],
   "msg_any": []
- }
+ },
+ "note": "the fixture keeps a NAME in the index slot of a counting fetch: it must not read as a variable"
 }

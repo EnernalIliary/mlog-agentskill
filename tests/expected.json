@@ -246,6 +246,25 @@
       ]
     ]
   },
+  "check/status-effect-slot": {
+    "kind": "check",
+    "case": "status-effect-slot.mlog",
+    "digest": [
+      [
+        "INFO",
+        2
+      ],
+      [
+        "INFO",
+        3
+      ]
+    ]
+  },
+  "check/status-bare-ok": {
+    "kind": "check",
+    "case": "status-bare-ok.mlog",
+    "digest": []
+  },
   "check/spin-deadlock": {
     "kind": "check",
     "case": "spin.mlog",

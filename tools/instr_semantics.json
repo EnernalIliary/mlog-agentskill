@@ -1258,16 +1258,14 @@
    "arity": 4,
    "defs": [],
    "uses": [
-    1,
-    2
+    2,
+    3
    ],
    "tokens": {
     "0": "boolean"
    },
-   "note": "LStatements.java:1567-1625 -> ApplyEffectI (LExecutor.java:1724-1751). index0 is a BOOLEAN literal (field 'boolean clear', so the text token is true/false - the docs' '<apply|clear>' wording is UI text), never a variable. duration (3) is read only when clearing is false and the effect is not permanent.",
-   "maybe_uses": [
-    3
-   ],
+   "note": "LStatements.java:1567-1625 -> ApplyEffectI (LExecutor.java:1724-1751). index0 is a BOOLEAN literal (field 'boolean clear', so the text token is true/false - the docs' '<apply|clear>' wording is UI text), never a variable. index1 (effect) is a LITERAL CONTENT NAME, not a variable read: ApplyEffectI stores it as a plain Java String field (LStatements.java:1618 'new ApplyEffectI(clear, effect, builder.var(unit), builder.var(duration))' - note only unit and duration go through builder.var) and LExecutor.java:1743 resolves it with content.statusEffect(effect), i.e. ContentLoader.getByName (ContentLoader.java:228-240) = exact map lookup on the raw token, no '@' handling and no null-var indirection. So a bare 'status false unmoving @unit 60' DOES apply the effect, while '@unmoving' is the form that resolves to nothing (guard '!= null' at LExecutor.java:1743 silently skips). duration (3) is read only when clearing is false and the effect is not permanent. Earlier this row listed uses [1,2] and made every bare effect name look like an unset variable (3168 INFO hits in a 1421-save sweep).",
+   "maybe_uses": [],
    "min_build": 146,
    "min_build_source": "present at the v7 baseline (build 146); see BUILDS.md"
   },
