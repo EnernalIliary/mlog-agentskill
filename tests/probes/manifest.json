@@ -1,0 +1,153 @@
+{
+  "note": "Runtime probes: what the real executor does, asserted mechanically. Run by gate.py --full and out/_release.py; skipped when no JRE or the versioned jars are missing.",
+  "probes": [
+    {
+      "id": "status-bare-name-v160",
+      "jar": "160",
+      "steps": 20,
+      "code": "ubind @flare\nstatus false wet @unit 20\nend\n",
+      "expect": {
+        "wet": 1200
+      },
+      "why": "a bare known status name is applied: LParser normalises it to the @status-wet constant",
+      "ref": "out/takeover-20261024/20-status-effect-slot-forms.md"
+    },
+    {
+      "id": "status-at-status-prefix-v160",
+      "jar": "160",
+      "steps": 20,
+      "code": "ubind @flare\nstatus false @status-wet @unit 20\nend\n",
+      "expect": {
+        "wet": 1200
+      },
+      "why": "the canonical v160 spelling @status-<name> is applied as well",
+      "ref": "out/takeover-20261024/20-status-effect-slot-forms.md"
+    },
+    {
+      "id": "status-at-bare-v160",
+      "jar": "160",
+      "steps": 20,
+      "code": "ubind @flare\nstatus false @wet @unit 20\nend\n",
+      "expect": {
+        "wet": 0
+      },
+      "expect_has": {
+        "wet": false
+      },
+      "why": "@<name> is not a status constant: the effect resolves to null and the instruction is a silent no-op",
+      "ref": "out/takeover-20261024/20-status-effect-slot-forms.md"
+    },
+    {
+      "id": "status-hyphen-no-at-v160",
+      "jar": "160",
+      "steps": 20,
+      "code": "ubind @flare\nstatus false status-wet @unit 20\nend\n",
+      "expect": {
+        "wet": 0
+      },
+      "why": "status-<name> without the at-sign is not a constant either",
+      "ref": "out/takeover-20261024/20-status-effect-slot-forms.md"
+    },
+    {
+      "id": "status-var-holds-constant-v160",
+      "jar": "160",
+      "steps": 20,
+      "code": "set s @status-unmoving\nubind @flare\nstatus false s @unit 20\nend\n",
+      "expect": {
+        "unmoving": 1200
+      },
+      "why": "the effect slot reads a variable: v160's ApplyEffectI takes an LVar, so a variable holding the constant works",
+      "ref": "out/takeover-20261024/20-status-effect-slot-forms.md"
+    },
+    {
+      "id": "status-bare-name-v159",
+      "jar": "159",
+      "steps": 20,
+      "code": "ubind @flare\nstatus false wet @unit 20\nend\n",
+      "expect": {
+        "wet": 1200
+      },
+      "why": "v159 looks the effect up by exact name, so the bare name is the only spelling that works there",
+      "ref": "out/takeover-20261024/20-status-effect-slot-forms.md"
+    },
+    {
+      "id": "status-at-status-prefix-v159",
+      "jar": "159",
+      "steps": 20,
+      "code": "ubind @flare\nstatus false @status-wet @unit 20\nend\n",
+      "expect": {
+        "wet": 0
+      },
+      "why": "the @status- prefix does not exist before v160: the jar's constant pool has no status- literal at all",
+      "ref": "out/takeover-20261024/20-status-effect-slot-forms.md"
+    },
+    {
+      "id": "status-clear-keeps-applied-bit-v160",
+      "jar": "160",
+      "steps": 40,
+      "code": "ubind @flare\nstatus false wet @unit 20\nstatus true wet @unit 0\nend\n",
+      "expect": {
+        "wet": 0
+      },
+      "expect_has": {
+        "wet": true
+      },
+      "why": "unapply() drops the timer but not the applied bit, so hasEffect stays true: read getDuration, never hasEffect",
+      "ref": "Mindustry-Source/core/src/mindustry/entities/comp/StatusComp.java:83-92"
+    },
+    {
+      "id": "op-acos-v160",
+      "jar": "160",
+      "steps": 6,
+      "code": "set r 0\nop acos r 0.5\nend\n",
+      "processor": "world",
+      "expect_vars": {"r": {"approx": 60.0, "tol": 0.001}},
+      "expect_classes_has": ["OpI"],
+      "why": "op acos returns DEGREES: Math.acos(0.5) * doubleRadDeg = 60 (float noise 60.00000000000001)",
+      "ref": "Mindustry-Source/core/src/mindustry/logic/LogicOp.java:56"
+    },
+    {
+      "id": "localeprint-num-v160",
+      "jar": "160",
+      "steps": 6,
+      "code": "set k 5\nlocaleprint k\nend\n",
+      "processor": "world",
+      "expect_classes_has": ["LocalePrintI"],
+      "expect_text_empty": true,
+      "why": "localeprint only appends when the operand is an object: a numeric variable writes nothing",
+      "ref": "Mindustry-Source/core/src/mindustry/logic/LExecutor.java:2393-2413"
+    },
+    {
+      "id": "localeprint-missing-key-v160",
+      "jar": "160",
+      "steps": 6,
+      "code": "localeprint \"no-such-locale-key\"\nend\n",
+      "processor": "world",
+      "expect_classes_has": ["LocalePrintI"],
+      "expect_text_contains": ["???no-such-locale-key???"],
+      "why": "an unknown map locale key prints the wrapped key (v160.7 jar); the newer source snapshot appends null instead - the jar wins",
+      "ref": "Mindustry-Source/core/src/mindustry/logic/LStatements.java:2614-2636"
+    },
+    {
+      "id": "clientdata-dropped-v160",
+      "jar": "160",
+      "steps": 6,
+      "code": "clientdata \"ch\" 5 1\nend\n",
+      "processor": "world",
+      "expect_classes": ["EndI"],
+      "why": "ClientDataStatement.build returns null unless state.rules.allowLogicData: the line compiles to nothing (not even a noop)",
+      "ref": "Mindustry-Source/core/src/mindustry/logic/LStatements.java:2186-2190"
+    },
+    {
+      "id": "clientdata-allowed-v160",
+      "jar": "160",
+      "steps": 6,
+      "code": "clientdata \"ch\" 5 1\nend\n",
+      "processor": "world",
+      "rules": {"allowLogicData": true},
+      "expect_classes_has": ["ClientDataI"],
+      "why": "with the map rule allowLogicData the same line compiles to ClientDataI - the gate is a rule, not a version",
+      "ref": "Mindustry-Source/core/src/mindustry/logic/LStatements.java:2186-2190"
+    }
+  ]
+}

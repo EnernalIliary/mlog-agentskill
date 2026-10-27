@@ -26,6 +26,16 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+# Rule ids for findings: tools/rule_ids.py reads rules/*.json, which is the one
+# place that says which prose a rule claims. A payload packaged without that
+# directory (the standalone skill) leaves Finding.rid as None -- callers then
+# fall back to the statement text, i.e. the pre-2026-10-26 behaviour.
+try:
+    from rule_ids import rule_id as _rule_id_of
+except Exception:                                   # pragma: no cover
+    def _rule_id_of(sev, msg):
+        return None
+
 # --------------------------------------------------------------------------- #
 # instruction tables
 # --------------------------------------------------------------------------- #
@@ -70,6 +80,12 @@ OP_BINARY = {"add", "sub", "mul", "div", "idiv", "mod", "emod", "pow",
              "greaterThan", "greaterThanEq", "strictEqual",
              "shl", "shr", "ushr", "or", "and", "xor",
              "max", "min", "angle", "angleDiff", "len", "noise", "logn"}
+
+# LParser.java:11-14 rewrites two legacy operator names before parsing
+# (`atan2` -> `angle`, `dst` -> `len`), so both are legal in game even though
+# LogicOp has no constant for them. Keep them out of the missing-argument test
+# (they take two operands) but do not call them unknown.
+OP_LEGACY = {"atan2", "dst"}
 
 # built-in / magic symbols that are always in scope.
 # `true` / `false` ARE here: GlobalVars.init() registers them as plain constants
@@ -132,14 +148,27 @@ OTHER_KEYWORDS = {
 KEYWORDS |= DRAW_SUBS | OTHER_KEYWORDS
 
 JMP_RE = re.compile(r"^jump\s+(-?\d+)\s+(\S+)(?:\s+(\S+))?(?:\s+(\S+))?$")
-OP_RE = re.compile(r"^op\s+(\S+)\s+(\S+)(?:\s+(\S+))?(?:\s+(\S+))?$")
+# There used to be an OP_RE here, and it only matched op lines with at most four
+# tokens after `op`.  Every longer line -- e.g. the 8-token
+# `op select k1 lessThan cu 6 @copper @dormant-cyst` -- fell through the arity
+# check silently, so an unknown operator name was never reported even though in
+# game it becomes a noop (see the op-arity block below).  The arity check now
+# tokenizes; do not reintroduce a bounded regex here.
 
 
 class Finding:
-    __slots__ = ("sev", "line", "code", "msg")
+    """One diagnostic.
 
-    def __init__(self, sev: str, line: int, code: str, msg: str):
+    rid is the id of the rule in rules/*.json that claims this message (see
+    tools/rule_ids.py), or None when no rule owns it. Consumers used to
+    re-derive that by matching text themselves -- the corpus sweep did, and its
+    report ended up showing statement source in the "rule" column.
+    """
+    __slots__ = ("sev", "line", "code", "msg", "rid")
+
+    def __init__(self, sev: str, line: int, code: str, msg: str, rid=None):
         self.sev, self.line, self.code, self.msg = sev, line, code, msg
+        self.rid = rid if rid is not None else _rule_id_of(sev, msg)
 
     def __str__(self):
         return f"  [{self.sev}] L{self.line:<4} {self.code:<44} {self.msg}"
@@ -923,7 +952,10 @@ def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> l
                     f"count and one without returns null (`sensor x vault1 "
                     f"@hyper-processor` -> null; "
                     f"out/takeover-20261024/15-sensor-link-oracle.md). If a property "
-                    f"was meant, this is the wrong spelling"))
+                    f"was meant, this is the wrong spelling. Note: this table is "
+                    f"the vanilla v160 snapshot -- modded content (`@commanded`, "
+                    f"`@new-horizon-...`) is simply not in it, so a modded name "
+                    f"lands here too"))
                 continue
             out.append(Finding(
                 "WARN", _ln + 1, "sensor-not-a-property",
@@ -934,7 +966,10 @@ def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> l
                 f"destination is then written null, so every comparison against it "
                 f"is false -- `jump ... equal x 0` matches too, because null's "
                 f"numeric value is 0 "
-                f"(out/takeover-20261024/15-sensor-link-oracle.md)"))
+                f"(out/takeover-20261024/15-sensor-link-oracle.md). Note: this "
+                f"table is the vanilla v160 snapshot, so a modded attribute or "
+                f"content name (`@commanded`, `@饱和火力-...`) lands here without "
+                f"being an author mistake"))
 
     # ---- read/write @this "name": a string addresses a processor variable ----
     # `LogicBlock.read` looks the name up in `executor.optionalVar(name)`, then
@@ -1000,6 +1035,21 @@ def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> l
     for _, c in stmts:
         ever_read |= set(uses_of(c))
 
+    # Names a statement dereferences as a BLOCK (LINK_SLOTS): those really are
+    # link references. A link-shaped name that never lands in one is only an
+    # ordinary variable that happens to end in a digit -- the public blueprint
+    # corpus has 329 such findings (jump 43 equal stop1 false), and calling them
+    # dead links over-claims: at runtime they are null, but the mistake (if there
+    # is one) is a missing assignment, not a missing link.
+    link_slot_used: set[str] = set()
+    for _, c in stmts:
+        _lp = tokenize(c)
+        if not _lp:
+            continue
+        for _s in LINK_SLOTS.get(_lp[0].lower(), ()):
+            if _s < len(_lp):
+                link_slot_used.add(_lp[_s])
+
     def _constant_guard(c: str) -> bool:
         """A `jump` whose comparison cannot vary: both operands are constants,
         builtins, or names nothing ever assigns. `jump 21 equal colour ender`
@@ -1016,6 +1066,35 @@ def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> l
             if LINK_RE.match(tok) or tok in ever_defined:
                 return False
         return True
+
+    # A name that only ever appears in the ADDRESS slot of a memory cell
+    # (`read c stream0 frame`, `write 7 cell1 frame`) is a different animal from
+    # a name used as a value: the program computes nothing with it, it is only an
+    # index. One such name can account for hundreds of findings in one program
+    # (the `frame` family in the Anon blueprint corpus: 53 statements in a single
+    # 186-line file, 7,346 findings over 1,401 programs). They are therefore
+    # summarized once per name instead of once per statement.
+    def _index_slots(p: list[str]) -> set[int]:
+        op = p[0].lower() if p else ""
+        if op in ("read", "write") and len(p) >= 4:
+            return {3}
+        if op == "getlink" and len(p) >= 3:
+            return {2}
+        return set()
+
+    _n_uses: dict[str, int] = {}
+    _n_index: dict[str, int] = {}
+    for _, c in stmts:
+        p = tokenize(c)
+        for v in uses_of(c):
+            _n_uses[v] = _n_uses.get(v, 0) + 1
+        for pos in _index_slots(p):
+            if pos < len(p):
+                _n_index[p[pos]] = _n_index.get(p[pos], 0) + 1
+    # Only names this program never assigns and never uses as a value.
+    _index_only = {v for v, n in _n_uses.items()
+                   if v not in ever_defined and n == _n_index.get(v, 0)}
+    _index_only_sites: dict[str, list[tuple[int, str]]] = {}
 
     for i, (orig, c) in enumerate(stmts):
         # `set // read anything` is the de-facto comment idiom: the author names
@@ -1064,10 +1143,38 @@ def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> l
             # nothing (`LExecutor` requires `exec.build.validLink(b)`).
             if LINK_RE.match(v):
                 if links is not None and v not in link_vars:
-                    out.append(Finding(
-                        "WARN", orig + 1, c,
-                        f"`{v}` is shaped like a block link but this processor "
-                        f"has no such link (it has: {', '.join(sorted(link_vars)) or 'none'})"))
+                    # A blueprint that carries NO links at all and holds a long
+                    # program is a fragment cropped out of a larger base (the
+                    # Anon corpus: 2,865 of 44,241 programs have zero links, and
+                    # they account for the `display1`/`message1` bulk of this
+                    # rule's hits). There the reference is unbound because the
+                    # target block was left outside the copied region, not
+                    # because the author asked for a link that never existed --
+                    # still null at runtime, so INFO with honest wording.
+                    if not link_vars and len(stmts) > 200:
+                        out.append(Finding(
+                            "INFO", orig + 1, c,
+                            f"`{v}` is shaped like a block link, but this "
+                            f"blueprint carries no links at all and the program is "
+                            f"{len(stmts)} statements long -- that combination is a "
+                            f"fragment cropped out of a larger base, so every block "
+                            f"reference in it is unbound (in game it reads null "
+                            f"until the targets are re-linked)"))
+                    elif v in link_slot_used:
+                        out.append(Finding(
+                            "WARN", orig + 1, c,
+                            f"`{v}` is shaped like a block link but this processor "
+                            f"has no such link (it has: {', '.join(sorted(link_vars)) or 'none'})"))
+                    else:
+                        # Ends in a digit, but no statement ever puts it in
+                        # a link slot and nothing assigns it: the author is
+                        # using it as a plain value. Still null at runtime.
+                        out.append(Finding(
+                            "INFO", orig + 1, c,
+                            f"`{v}` looks like a block link but this program never uses "
+                            f"it as the target of a block instruction and never assigns "
+                            f"it -- here it is an ordinary variable that happens to end "
+                            f"in a digit, so every read of it is null"))
                 continue
             kinds = use_kinds.get(v, set())
             bslot = _bool_slot(p)
@@ -1114,11 +1221,25 @@ def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> l
                     f"unset variable is 0 and `null` reads as 0, so only `===` "
                     f"tells null from 0 (a constant branch is often a signature)"))
                 continue
+            if v in _index_only:
+                _index_only_sites.setdefault(v, []).append((orig + 1, c))
+                continue
             out.append(Finding(
                 "ERR", orig + 1, c,
                 f"`{v}` is mentioned (so it is declared, with the initial value "
                 f"null) but is never assigned anywhere in this program; reading "
                 f"it here yields null (and it is not a link or built-in)"))
+
+    for _v, _sites in _index_only_sites.items():
+        _ln0, _c0 = _sites[0]
+        out.append(Finding(
+            "ERR", _ln0, _c0,
+            f"`{_v}` is never assigned, and it is used only as a memory cell "
+            f"index ({len(_sites)} statement(s), first at line {_sites[0][0]}) "
+            f"-- every one of them addresses "
+            f"null, so all {len(_sites)} fail. A program that indexes cells with a "
+            f"variable it never sets is usually a fragment: the variable is "
+            f"written by another processor in the same base"))
 
     # ---- status: the effect slot (bare name vs @status-<name>) -------------
     # `status <clear> <effect> <unit> <duration>`. The slot changed shape:
@@ -1231,13 +1352,24 @@ def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> l
                                f"executed for nothing"))
 
     # ---- op arity ---------------------------------------------------------
+    # Parse with tokenize() instead of the old bounded OP_RE (removed above,
+    # its regex stopped matching once a line had more than 4 tokens after
+    # `op`), so any long op line -- including
+    # `op select k1 lessThan cu 6 @copper @dormant-cyst` (8 tokens) -- was
+    # skipped entirely and never reached the unknown-name test below.  An
+    # unknown operator name is NOT harmless: LParser.java:142-147 catches the
+    # parse exception and substitutes InvalidStatement, which builds a NoopI
+    # (LStatements.java:48-58), so the line silently becomes `noop` in game --
+    # no error, no warning, the destination variable just stays null.
     for i, (orig, c) in enumerate(stmts):
-        mo = OP_RE.match(c)
-        if not mo:
+        p = tokenize(c)
+        if len(p) < 2 or p[0] != "op":
             continue
-        op, a, b = mo.group(1), mo.group(3), mo.group(4)
-        want = 2 if op in OP_UNARY else (3 if op in OP_BINARY else None)
-        given = 1 + sum(1 for x in (a, b) if x is not None)
+        op = p[1]
+        want = 2 if op in OP_UNARY else (
+            3 if op in OP_BINARY or op in OP_LEGACY else None)
+        # dest + operands; surplus tokens are inert filler (see the note below)
+        given = len(p) - 1
         if want is None:
             out.append(Finding("ERR", orig + 1, c, f"unknown op `{op}`"))
         # `given > want` is deliberately silent.  The maintainer audited 29 of

@@ -42,7 +42,33 @@ CASES = HERE / "cases"
 EXPECTED = HERE / "expected.json"
 TOOLS = HERE.parent / "mindustry-blueprint" / "tools"
 
+ROOT = HERE.parent
 sys.path.insert(0, str(TOOLS))
+
+
+def _mirror_stale_reason() -> str | None:
+    """Why is this suite about to grade stale code?  None = fine.
+
+    Every analyzer imported below comes from ``mindustry-blueprint/tools`` (the
+    mirror), not from ``tools/`` (the source of truth).  Editing the source and
+    forgetting ``--mirror`` therefore leaves the suite green on old code -- the
+    exact shape of the failure that hid the status-slot mistake on 2026-10-25.
+    So compare the two first, and refuse to report anything from a stale copy.
+    """
+    script = ROOT / "tools" / "sync_mlogagent.py"
+    if not script.is_file() or not TOOLS.is_dir():
+        return None
+    try:
+        cp = subprocess.run(
+            [sys.executable, str(script), "--mirror", "all", "--check"],
+            cwd=str(ROOT), capture_output=True, text=True,
+            encoding="utf-8", errors="replace", timeout=180)
+    except Exception as exc:                                  # noqa: BLE001
+        return f"could not run the mirror check: {type(exc).__name__}: {exc}"
+    if cp.returncode == 0:
+        return None
+    tail = [ln for ln in (cp.stdout or "").splitlines() if ln.strip()][-6:]
+    return "\n".join(tail)
 
 import mlogcheck as C          # noqa: E402
 import mlogir as I             # noqa: E402
@@ -73,6 +99,30 @@ def digest_check_msg(name: str) -> list:
     (signature vs error) without pinning the whole wording."""
     st = _prepared(name)
     return [[f.sev, f.line, f.msg[:40]] for f in C.analyse([c for _, c in st])]
+
+
+def digest_check_rid(name: str) -> list:
+    """(severity, statement line, rule id) -- pins the *classification*, not wording.
+
+    A finding's id comes from tools/rule_ids.py, which picks the rule with the
+    longest matching message fragment.  That is exactly how the fragment-link
+    INFO once got attributed to unary-op-extra-operand (see
+    out/takeover-20261024/24-anon-corpus.md section 10.2), so the id is worth pinning.
+    """
+    st = _prepared(name)
+    return [[f.sev, f.line, f.rid] for f in C.analyse([c for _, c in st])]
+
+
+def digest_check_nolinks(name: str) -> list:
+    """Same as digest_check_rid, but links=[] -- the corpus case.
+
+    check_corpus.py passes the links a blueprint actually carries; an empty list
+    means "we know this program has no links", which is what downgrades a
+    block-shaped name to the fragment INFO.  analyse(lines) alone passes
+    links=None ("unknown"), so it cannot reach that branch.
+    """
+    st = _prepared(name)
+    return [[f.sev, f.line, f.rid] for f in C.analyse([c for _, c in st], links=[])]
 
 
 def digest_ir(name: str) -> dict:
@@ -214,6 +264,12 @@ SUITE: list[tuple[str, str, str | None]] = [
     ("gate/noop-drift",        "gate",    "gate1.mlog"),
     ("gate/baseline-silent",   "gate",    "baseline.mlog"),
     ("gate/op-emod",           "gate",    "gate-emod.mlog"),
+    # Corpus-driven classification: an index-only variable is summarised into
+    # ONE finding (not one per statement), and it must keep its own rule id.
+    ("check/index-only-summary", "check_rid", "index-only-summary.mlog"),
+    # 0 links + >200 statements = a fragment cropped out of a larger base: the
+    # block-shaped name is INFO (link-name-unbound-fragment), not WARN.
+    ("check/link-unbound-fragment", "check_nolinks", "link-unbound-fragment.mlog"),
     ("ir/labels-resolved",     "ir",      "label.mlog"),
     ("ir/odd-name",            "odd",     None),
     ("ir/stale-write",        "ir",      "stale.mlog"),
@@ -259,6 +315,13 @@ SUITE: list[tuple[str, str, str | None]] = [
     ("cost/counter-set",       "cost",    "counter-set.mlog"),
     ("cost/counter-unknown",   "cost",    "counter-unknown.mlog"),
     ("check/declared-by-mention", "check", "declared-by-mention.mlog"),
+    # The operator NAME inside `op` has to be validated even when the line is
+    # long. OP_RE stopped matching after four tokens, so
+    # `op select k1 lessThan cu 6 @copper @dormant-cyst` was skipped whole and
+    # the checker reported "no issues" -- in game LParser.java:142-147 replaces
+    # the line with an InvalidStatement (a noop), the destination variable stays
+    # null and nothing says why. Eight-token line, one ERR, nothing else.
+    ("check/op-long-unknown", "check_msg", "op-long-unknown.mlog"),
     ("tool/aigenerated",       "aigenerated", None),
     ("gen/normalized",         "gen",     None),
     ("tool/mcp",               "mcp",     None),
@@ -403,6 +466,7 @@ def digest_mcp() -> dict:
 
 DIGESTS = {
     "gate": digest_gate, "check": digest_check, "check_msg": digest_check_msg,
+    "check_rid": digest_check_rid, "check_nolinks": digest_check_nolinks,
     "ir": digest_ir, "values": digest_values, "pack": digest_pack,
     "cost": digest_cost, "cross": lambda _f: digest_cross_unit(),
     "crossvalues": lambda _f: digest_cross_values(),
@@ -436,7 +500,20 @@ def main() -> int:
     ap.add_argument("--write", action="store_true", help="regenerate expected.json")
     ap.add_argument("--case", help="only run labels containing this substring")
     ap.add_argument("-v", "--verbose", action="store_true")
+    ap.add_argument("--no-mirror-check", action="store_true",
+                    help="skip the tools/ vs mindustry-blueprint/tools check")
     args = ap.parse_args()
+
+    if not args.no_mirror_check:
+        why = _mirror_stale_reason()
+        if why:
+            print("refusing to run: the analyzers under test would be the stale COPY\n"
+                  f"  {TOOLS.relative_to(ROOT)}\n"
+                  "  ...not tools/.  Run: python tools/sync_mlogagent.py --mirror all\n"
+                  "  (--no-mirror-check skips this when the tree has no mirror)",
+                  file=sys.stderr)
+            print(why, file=sys.stderr)
+            return 2
 
     got = run(args.case)
     if args.write:

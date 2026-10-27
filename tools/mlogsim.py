@@ -148,9 +148,13 @@ TOOLS = os.path.join(ROOT, "mindustry-blueprint", "tools")
 # Statements whose LStatement.privileged() is true: a micro processor silently
 # turns them into InvalidStatement (LParser.read()), i.e. the line vanishes.
 # Only the first word of a line is checked; operands are not.
+# clientdata and localeprint are privileged too: ClientDataStatement
+# (LStatements.java:2182-2184) and LocalePrintStatement (:2622-2625) both return
+# true from privileged(), so a micro processor drops them -- the run then shows
+# an empty instruction list, which reads like a version gap until you look.
 PRIVILEGED_RE = re.compile(
     r"^\s*(weathersense|weatherset|setrule|message|cutscene|effect|fetch|sync|"
-    r"getblock|setblock|spawn|status)\b", re.M)
+    r"getblock|setblock|spawn|status|clientdata|localeprint)\b", re.M)
 STEAM_JAVA = r"E:\Program Files (x86)\Steam\steamapps\common\Mindustry\jre\bin\java.exe"
 V160_JAR = os.path.join(ROOT, "out", "_server160.jar")
 V159_JAR = os.path.join(ROOT, "out", "_server159.jar")

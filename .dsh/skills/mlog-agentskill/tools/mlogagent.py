@@ -250,9 +250,11 @@ _DATA = ["wiki_block_ids.json", "block_sizes.json", "cmd_index.json",
          "unit_attrs.json", "block_attrs.json", "sensor_attrs.json", "status_names.json"]
 # aigenerated.py is a runtime dependency of mlog.py (:87 imports it) even
 # though nothing else here imports it; leaving it out shipped a stale copy.
+# rule_ids.py is imported by mlogcheck.py to name findings; a copy without it
+# still analyses, but every Finding.rid comes back None.
 _MODULES = ["mlog.py", "aigenerated.py", "mlogcheck.py", "mlogir.py",
             "mlogval.py", "mlogpack.py", "mlogcross.py", "msch.py",
-            "mschgen.py", "mlogagent.py"]
+            "mschgen.py", "mlogagent.py", "rule_ids.py"]
 
 
 def _sha(path: Path) -> str:

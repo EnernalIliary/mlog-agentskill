@@ -175,6 +175,12 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--json", metavar="FILE", help="write full JSON here")
     ap.add_argument("--md", metavar="FILE", help="write a markdown summary here")
     ap.add_argument("--brief", action="store_true", help="print only aggregate counts")
+    ap.add_argument("--stride", type=int, default=1,
+                    help="sample every Nth file after sorting (1=all); use on 10k+ corpora")
+    ap.add_argument("--limit", type=int, default=0, help="keep only the first N files after --stride")
+    ap.add_argument("--no-detail", action="store_true",
+                    help="omit programs_detail from the JSON (per-program blobs dominate the "
+                         "size on large corpora: 44k programs -> hundreds of MB)")
     args = ap.parse_args(argv)
 
     files: list[Path] = []
@@ -189,8 +195,17 @@ def main(argv: list[str]) -> int:
             print("missing input: %s" % p, file=sys.stderr)
             return 1
 
+    total_files = len(files)
+    if args.stride > 1:
+        files = files[::args.stride]
+    if args.limit:
+        files = files[:args.limit]
+
     programs = []
-    for f in files:
+    for idx, f in enumerate(files):
+        if idx and idx % 2000 == 0:
+            # progress on stderr: on a 40k-file corpus this loop runs for minutes
+            print("  %d/%d files" % (idx, len(files)), file=sys.stderr, flush=True)
         try:
             recs = scan_file(f)
         except Exception as exc:  # unreadable/corrupt file: report, keep scanning
@@ -206,9 +221,16 @@ def main(argv: list[str]) -> int:
         for key in summary:
             _merge(summary[key], rec[key])
 
-    doc = {"files": len(files), "programs": len(programs),
+    doc = {"files": len(files), "programs": len(programs), "files_total": total_files,
+           "stride": args.stride, "limit": args.limit,
            "errors": sum(1 for r in programs if r["error"]),
-           "summary": summary, "programs_detail": programs}
+           "summary": summary}
+    if not args.no_detail:
+        doc["programs_detail"] = programs
+    else:
+        # keep only the failures: with --no-detail they are the only records a
+        # later reader can act on, and they are rare.
+        doc["errors_detail"] = [r for r in programs if r["error"]]
     if args.json:
         Path(args.json).write_text(json.dumps(doc, ensure_ascii=False, indent=2) + "\n",
                                    encoding="utf-8")
@@ -216,7 +238,9 @@ def main(argv: list[str]) -> int:
         Path(args.md).write_text(_markdown(doc), encoding="utf-8")
 
     if args.brief:
-        print("files=%d programs=%d errors=%d" % (doc["files"], doc["programs"], doc["errors"]))
+        print("files=%d programs=%d errors=%d%s" % (
+            doc["files"], doc["programs"], doc["errors"],
+            "" if total_files == len(files) else "   (sampled: %d of %d files)" % (len(files), total_files)))
         for key in KEYS:
             items = sorted(summary[key].items(), key=lambda kv: (-kv[1], kv[0]))
             if key == "atoms":

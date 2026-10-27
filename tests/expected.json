@@ -33,6 +33,28 @@
       "reports": true
     }
   },
+  "check/index-only-summary": {
+    "kind": "check_rid",
+    "case": "index-only-summary.mlog",
+    "digest": [
+      [
+        "ERR",
+        1,
+        "undefined-var-is-not-automatically-an-error"
+      ]
+    ]
+  },
+  "check/link-unbound-fragment": {
+    "kind": "check_nolinks",
+    "case": "link-unbound-fragment.mlog",
+    "digest": [
+      [
+        "INFO",
+        202,
+        "link-name-unbound-fragment"
+      ]
+    ]
+  },
   "ir/labels-resolved": {
     "kind": "ir",
     "case": "label.mlog",
@@ -420,6 +442,17 @@
       [
         "INFO",
         4
+      ]
+    ]
+  },
+  "check/op-long-unknown": {
+    "kind": "check_msg",
+    "case": "op-long-unknown.mlog",
+    "digest": [
+      [
+        "ERR",
+        1,
+        "unknown op `select`"
       ]
     ]
   },

@@ -8,7 +8,7 @@
 | 想做什么 | 命令 |
 |---|---|
 | 看蓝图里的逻辑 | `python tools/mlog.py parse 图.msch` |
-| 静态检查 | `python tools/mlog.py check x.mlog`（`--cost` 加成本/最坏指令数） |
+| 静态检查 | `python tools/mlog.py check x.mlog`（`--cost` 加成本/最坏指令数，`--rid` 每行尾部显示规则 id） |
 | 生成只含处理器的蓝图 | `python tools/mlog.py gen --name 名字 --code x.mlog` |
 | 模拟运行 | `python tools/mlogsim.py x.mlog --ticks 120 --trace t.csv` |
 | 一次启动跑多个文件 | `python tools/mlogsim.py a.mlog b.mlog c.mlog --ticks 60` |
@@ -137,8 +137,52 @@ python tools/kb.py serve
 5. **规则**：`review.py`、`rule_seed.py`、`rule_capture.py`、`rule_audit.py`；规则数据在 `rules/`。
 6. **数据表维护**：`*_from_source.py`、`build_cmd_index.py`、`block_sizes.py`——需要 `Mindustry-Source`，输出 JSON 已在仓库里，平时不用跑。
 7. **语料流水线**（`corpus/`，低频，文档里有引用）：`analyze_logic.py`、`rank_logic.py`、`mine_idioms.py`、`check_ops.py`、`scan_all.py`、`extract_logic.py`、`label_*.py`、`sweep_*.py`、`pack_scan.py`、`typo_*.py`、`_sweep_saves.py`、`_sweep_analyse.py`、`_label_programs.py`、`_err_table.py` 等。脚本已按新位置改过路径，能直接跑。
-8. **一次性脚本**：`dev/`——探针、patch、调试脚本，默认被忽略，不保证能跑，不要依赖。
-9. **数据 JSON**（顶层，和代码同目录）：`block_attrs`(253)、`sensor_attrs`(75)、`unit_attrs`、`instr_semantics`、`cmd_index`(86)、`wiki_block_ids`(422)、`block_sizes`(446)、`item_ids`、`status_names`、`label_rules`。
+
+8. **外部逻辑语料**（`corpus/`，2026-10-26 新增，需要网络，不进 gate）：三条流水线，共用 `check_corpus.py` 按 rule id 聚合。小蓝图包走 GitHub tree API，成品地图走 mindustry.top 站点（限速极狠，默认 10 s 间隔），上万文件的大仓库走整包 tarball。
+
+   ```
+   python tools/corpus/fetch_schematics.py      # 小包：GitHub tree API + raw -> logic-corpus/<owner>-<repo>/
+   python tools/corpus/crawl_maps.py --search 逻辑 --search 塔防 --want 20
+                                                # 站点抓 .msav -> logic-corpus/_maps/（--list-only 只刷 id）
+   python tools/corpus/extract_maps.py          # 读存档 + 去重 -> logic-corpus/_maps_procs/<sha>.mlog
+   python tools/corpus/fetch_repo_tarball.py --repo owner/name --dest C:/Users/<you>/mlog-corpus --prefix anon
+                                                # 大仓库：codeload tar.gz + Python tarfile -> <dest>/<prefix>-flat/ + _index.json
+   python tools/corpus/classify_schematics.py [--src <别的目录>] [--dest <语料根>]
+                                                # 解码 + 去重 -> <dest>/_procs/<sha>.mlog + _meta.json
+   python tools/corpus/check_corpus.py                            # 蓝图：_procs
+   python tools/corpus/check_corpus.py --procs _maps_procs        # 地图：_maps_procs
+   python tools/corpus/check_corpus.py --procs _procs --jobs 16   # 4 万程序 / 3 千万行：16 进程 199 s（串行要 20 min）
+   python tools/corpus/check_corpus.py --procs _procs --stride 37 --limit 400 --fail-on-errors
+                                                 # 抽样冒烟：只跑 400 个，分析器抛异常就 exit 1（gate --full 用）
+   python tools/corpus/instr_coverage.py --src <doc>/_procs --json out/_crawl/instr-coverage-anon.json
+                                                 # 指令覆盖率：语料里每条 instruction/op/draw 子命令出现几次
+   python tools/corpus/instr_coverage.py --src <doc>/_procs --limit 400 --baseline tests/corpus-coverage-baseline.json
+                                                 # 覆盖率关：绝对值随样本漂，只钉「这批样本从不使用的指令集合」；
+                                                 # 集合一变就 FAIL，要人重录基线（--write-baseline）
+   python tools/mlog_needs.py <doc>/_procs --brief --no-detail --stride 10
+                                                 # 世界符号清单（传感器/单位/方块/全局量）；大语料必须 --no-detail
+   ```
+
+   `logic-corpus/` 已 gitignore（可随时重抓）；三条命令都把蓝图/存档里声明的链接名传进
+   `mlogcheck.analyse(links=...)`，所以 `link-name-not-bound` 这类规则在外部语料上才有意义。
+   `map_site.download()` 的 `dest` 必须是 `Path`（传 `str` 报 `AttributeError`）。
+   上万文件 / 上百 MB 的仓库放在**工作区外**（如 `C:/Users/<you>/mlog-corpus`），别塞进 OneDrive 目录；
+   这类仓库的**文件名多为中文，Windows 自带 `tar.exe` 会按 CP936 解码 UTF-8 文件名**（`核心入冷` → `鏍稿績鍏ュ喎`），
+   不同名字撞成同一文件、只落一半且互相覆盖——必须用 Python `tarfile` 解包；
+   `git clone --depth 1` 对大包也不稳（`RPC failed; curl 28 Recv failure: Connection was reset`）。
+
+   语料还能当**回归基线**用：`python gate.py --full` 末尾有一个 `corpus` 步，
+   对 4 万程序按 `--stride 37` 抽 400 个跑 `check_corpus.py --fail-on-errors`
+   （约 10 s），断言「分析器在真实代码上不崩」。紧接着的 `coverage` 步用同一批样本跑
+   `instr_coverage.py --limit 400 --baseline tests/corpus-coverage-baseline.json`（0.5 s），
+   断言零覆盖指令集合仍是签过字的那 18 条 —— 往 `instr_semantics.json` 加一行、或样本里
+   丢一条指令，集合就变，必须有人重新录基线。两步都依赖语料目录；不在 git 里，机器上没有时 SKIP，
+   目录可用 `MLOG_CORPUS` 覆盖（默认 `~/mlog-corpus/anon-corpus`）。
+   注意 `mlog_needs.py` 的 `programs_detail` 在大语料上是几百 MB，
+   4 万程序全量跑要加 `--no-detail`，否则 JSON 慢到像挂死。
+
+9. **一次性脚本**：`dev/`——探针、patch、调试脚本，默认被忽略，不保证能跑，不要依赖。
+10. **数据 JSON**（顶层，和代码同目录）：`block_attrs`(253)、`sensor_attrs`(75)、`unit_attrs`、`instr_semantics`、`cmd_index`(86)、`wiki_block_ids`(422)、`block_sizes`(446)、`item_ids`、`status_names`、`label_rules`。
 
 ## 不要手改的副本
 
@@ -154,7 +198,7 @@ python tools/kb.py serve
     python tools/sync_mlogagent.py --mirror all   # 三处仓库内副本 + 各自 MANIFEST.sha256
     python tools/sync_mlogagent.py --mirror all --check   # 只比不写
     python tools/sync_mlogagent.py --global      # 第四处（仓库外），需全权限
-    python tests/run_tests.py                     # 门禁：36 条 golden（行为层；副本一致性由上面的 --check 负责）
+    python tests/run_tests.py                     # 门禁：41 条 golden（行为层；副本一致性由上面的 --check 负责）
 
 `--mirror` 只有 skill（默认）/ bp / install / all，**all 不含 global**；写完会对每个目标自动跑一次它自己的 `mlogagent.py info --verify`（要关掉加 `--no-verify`）。
 

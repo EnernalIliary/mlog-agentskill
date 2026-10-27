@@ -325,10 +325,11 @@ def cmd_gen(args) -> int:
 # check
 # --------------------------------------------------------------------------- #
 
-def _report(label: str, findings: list) -> int:
+def _report(label: str, findings: list, show_rule: bool = False) -> int:
     print(f"=== {label}")
     for f in findings:
-        print(f)
+        rule = f"  <{f.rid}>" if show_rule and getattr(f, "rid", None) else ""
+        print(f"{f}{rule}")
     errs = [f for f in findings if f.sev in ("ERR", "SUSPECT")]
     if not findings:
         print("  no issues found")
@@ -364,7 +365,7 @@ def cmd_check(args) -> int:
     for p in _text_targets:
         with open(p, encoding="utf-8") as fh:
             lines = fh.read().split("\n")
-        rc |= _report(p, _check.analyse(lines))
+        rc |= _report(p, _check.analyse(lines), args.rid)
         if args.cost:
             _cost(lines)
     for p in _msch_targets:
@@ -374,7 +375,7 @@ def cmd_check(args) -> int:
             lines = t.logic.code.split("\n")
             names = [l.name for l in t.logic.links]
             rc |= _report(f"{p} [{t.block} @({t.x},{t.y})]",
-                          _check.analyse(lines, names))
+                          _check.analyse(lines, names), args.rid)
             if args.cost:
                 _cost(lines, names)
     return rc
@@ -1795,6 +1796,9 @@ def main() -> int:
     p.add_argument("--cost", action="store_true",
                    help="also report statement count, unreachable code, loop "
                         "bounds and worst-case instruction cost per cycle")
+    p.add_argument("--rid", action="store_true",
+                   help="tag each finding with the rule id from rules/*.json "
+                        "that claims it (blank when no rule owns the message)")
     p.set_defaults(fn=cmd_check)
 
     p = sub.add_parser("ir", help="structural view: dead code, dead stores")

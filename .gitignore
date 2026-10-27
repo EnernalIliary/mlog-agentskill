@@ -34,6 +34,9 @@ out/caime_scan*.txt
 # publishable export (own git repo) - /dist/mlog-toolkit
 /dist/
 
+# 外部蓝图语料（tools/dev/fetch_schematics.py 重抓即可，不要入库）
+/logic-corpus/
+
 # 本地知识库：模型/依赖/索引都只在本机，不进仓库
 /out/_kblibs/
 /out/_kbmodels/

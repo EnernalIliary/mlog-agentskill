@@ -137,8 +137,10 @@ def _run_verify(d: Path) -> bool | None:
 def write_target(name: str, check_only: bool) -> int:
     d, may_create, want_manifest = MIRRORS[name]
     if not d.is_dir():
-        print(f"!! {name}: directory not found: {d}")
-        return 2
+        # 公开仓/精简导出里没有某个镜像目录是正常的（比如 install 那份只在作者本机），
+        # 不是「陈旧」——只提示一下，别让 --check 因此判定失败。
+        print(f".. {name}: directory not found, skipped: {d}")
+        return 0
 
     present = [n for n in payload() if (d / n).is_file()]
     absent = [n for n in payload() if n not in present]
@@ -170,9 +172,18 @@ def write_target(name: str, check_only: bool) -> int:
         print(f"ok     {name}: {len(present)} tool file(s) in sync")
         return 0
 
-    if absent and may_create:
-        d.mkdir(parents=True, exist_ok=True)
     wrote = 0
+    if absent and may_create:
+        # The skill payload is generated, so a new module belongs there by
+        # definition: leaving it out let a vendored copy import a module that
+        # does not exist (mlogcheck -> rule_ids, 2026-10-26). bp/install stay
+        # "overwrite what is there" -- they are supersets with their own files.
+        d.mkdir(parents=True, exist_ok=True)
+        for n in absent:
+            shutil.copy2(HERE / n, d / n)
+            wrote += 1
+        absent = []
+        present = [n for n in payload() if (d / n).is_file()]   # for the manifest
     for n in present:
         dst = d / n
         if sha256(HERE / n) != sha256(dst):

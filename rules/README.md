@@ -81,6 +81,7 @@ python tools/rule_audit.py --apply        # 把实测数字写回 rules/*.json
 | `getblock` 「146 就已经有 getblock 了」 | `instr_semantics.json` 的 `min_build` 157 → 146（157.4 加的是 `query`） |
 | 「状态效果改版，裸名变 null」 | 新 `status_names.json` + INFO `is the name of a status effect` |
 | 「A 是无效参数，不影响」（`fetch ...Count`） | `uses_of` 不再把 count 类型的 `index` 当变量读 |
+| 外部语料反馈（ref m02993）：0 链接且 >200 行降 INFO / 同名字索引操作数汇总 / 模组内容文案 | `link-name-not-bound` 拆出 INFO 版 `link-name-unbound-fragment`（Anon 语料 896 条/44 程序）；`undefined-var` 的纯索引变量按名字汇总（11,165 → 4,093）；两条 `sensor-not-a-property` 文案点明「原版 v160 快照，模组内容不认识」 |
 
 两条教训：
 
