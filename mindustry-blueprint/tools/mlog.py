@@ -1906,7 +1906,9 @@ def main() -> int:
     p.set_defaults(fn=cmd_explain)
 
     p = sub.add_parser("selftest", help="round-trip every blueprint in the game dir")
-    p.set_defaults(fn=lambda a: _gen.selftest())
+    p.add_argument("--jobs", type=int, default=None,
+                   help="worker processes (default: min(8, cpu_count); 1 = serial)")
+    p.set_defaults(fn=lambda a: _gen.selftest(jobs=a.jobs))
 
     p = sub.add_parser("sim", help="run logic on the real executor (forwards to mlogsim.py)")
     p.add_argument("sim_args", nargs=argparse.REMAINDER,

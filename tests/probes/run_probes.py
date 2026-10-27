@@ -29,8 +29,9 @@ What a probe may assert
 
 Usage
 -----
-    python tests/probes/run_probes.py              # all probes
+    python tests/probes/run_probes.py              # all probes (concurrent by default)
     python tests/probes/run_probes.py status-v160  # ids containing this
+    python tests/probes/run_probes.py --jobs 1     # serial (easier to read a traceback)
 
 Exit: 0 every probe passed, 1 a probe failed, 3 nothing could run (no JRE, or the
 versioned jars are absent -- they live in out/ and are not in git, so a fresh clone
@@ -39,8 +40,10 @@ SKIPs this rather than failing it).
 from __future__ import annotations
 
 import json
+import os
 import pathlib
 import sys
+from concurrent.futures import ThreadPoolExecutor
 
 HERE = pathlib.Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
@@ -169,12 +172,67 @@ def check(p, rec, effects, classes):
     return bad
 
 
+def run_one(p, java, M):
+    """One probe, one server, one verdict: ("pass"|"fail"|"skip", id, why).
+
+    Every probe boots its own JVM (~3 s each -- the dominant cost of this file),
+    so main() runs them concurrently: they share nothing but the jars on disk.
+    """
+    jar = getattr(M, JAR_ATTR[p['jar']], None)
+    if not jar or not pathlib.Path(jar).is_file():
+        return ('skip', p['id'], 'missing jar ' + str(jar))
+    names = list(p.get('expect') or {})
+    proc = p.get('processor', 'auto')
+    srv = None
+    try:
+        srv = M.Server(java, jar)
+        srv._core_spec = 'copper:100'
+        srv._unit_spec = [['flare', 1]]
+        srv.prepare()
+        for field, value in (p.get('rules') or {}).items():
+            # Server.js() ends a console command by waiting for the line
+            # "undefined" (Rhino prints the value of the last expression).  A bare
+            # assignment evaluates to true/false and never prints it, so end the
+            # script with an explicit void 0.
+            srv.js('Vars.state.rules.%s = %s; void 0' % (
+                field, 'true' if value is True else
+                'false' if value is False else json.dumps(value)))
+        rec = M.run_mlog(srv, 'p', p['code'], steps=int(p.get('steps', 20)),
+                         processor=proc)
+        effects = read_effects(as_lines(srv.js(probe_js(names))))
+        classes = read_classes(srv)
+    except Exception as exc:
+        return ('fail', p['id'], '%s: %s' % (type(exc).__name__, str(exc)[:120]))
+    finally:
+        if srv is not None:
+            try:
+                srv.close()
+            except Exception:
+                pass
+    bad = check(p, rec, effects, classes)
+    if bad:
+        return ('fail', p['id'], '; '.join(bad))
+    return ('pass', p['id'], '')
+
+
 def main(argv=None):
     argv = list(argv if argv is not None else sys.argv[1:])
+    jobs = min(8, os.cpu_count() or 4)
+    filters = []
+    rest = list(argv)
+    while rest:
+        a = rest.pop(0)
+        if a == '--jobs' and rest:
+            jobs = max(1, int(rest.pop(0)))
+        elif a.startswith('--jobs='):
+            jobs = max(1, int(a.split('=', 1)[1]))
+        else:
+            filters.append(a)
+
     manifest = json.loads((HERE / 'manifest.json').read_text(encoding='utf-8'))
     probes = manifest['probes']
-    if argv:
-        probes = [p for p in probes if any(a.lower() in p['id'].lower() for a in argv)]
+    if filters:
+        probes = [p for p in probes if any(a.lower() in p['id'].lower() for a in filters)]
     try:
         import mlogsim as M
     except Exception as exc:
@@ -185,48 +243,20 @@ def main(argv=None):
         print('SKIP no java found (set MLOGSIM_JAVA)')
         return 3
 
-    passed = []
-    failed = []
-    skipped = []
-    for p in probes:
-        jar = getattr(M, JAR_ATTR[p['jar']], None)
-        if not jar or not pathlib.Path(jar).is_file():
-            skipped.append((p['id'], 'missing jar ' + str(jar)))
-            continue
-        names = list(p.get('expect') or {})
-        proc = p.get('processor', 'auto')
-        srv = None
-        try:
-            srv = M.Server(java, jar)
-            srv._core_spec = 'copper:100'
-            srv._unit_spec = [['flare', 1]]
-            srv.prepare()
-            for field, value in (p.get('rules') or {}).items():
-                # Server.js() ends a console command by waiting for the line
-                # "undefined" (Rhino prints the value of the last expression).
-                # A bare assignment evaluates to true/false and would never
-                # print it, so end the script with an explicit void 0.
-                srv.js('Vars.state.rules.%s = %s; void 0' % (
-                    field, 'true' if value is True else
-                    'false' if value is False else json.dumps(value)))
-            rec = M.run_mlog(srv, 'p', p['code'], steps=int(p.get('steps', 20)),
-                             processor=proc)
-            effects = read_effects(as_lines(srv.js(probe_js(names))))
-            classes = read_classes(srv)
-        except Exception as exc:
-            failed.append((p['id'], '%s: %s' % (type(exc).__name__, str(exc)[:120])))
-            continue
-        finally:
-            if srv is not None:
-                try:
-                    srv.close()
-                except Exception:
-                    pass
-        bad = check(p, rec, effects, classes)
-        if bad:
-            failed.append((p['id'], '; '.join(bad)))
+    if jobs > 1 and len(probes) > 1:
+        with ThreadPoolExecutor(max_workers=jobs) as pool:
+            rows = list(pool.map(lambda pr: run_one(pr, java, M), probes))
+    else:
+        rows = [run_one(pr, java, M) for pr in probes]
+
+    passed, failed, skipped = [], [], []
+    for kind, pid, why in rows:
+        if kind == 'pass':
+            passed.append(pid)
+        elif kind == 'skip':
+            skipped.append((pid, why))
         else:
-            passed.append(p['id'])
+            failed.append((pid, why))
 
     for pid in passed:
         print('PASS ' + pid)

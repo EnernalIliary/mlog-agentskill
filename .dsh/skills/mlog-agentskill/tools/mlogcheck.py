@@ -147,7 +147,7 @@ OTHER_KEYWORDS = {
 }
 KEYWORDS |= DRAW_SUBS | OTHER_KEYWORDS
 
-JMP_RE = re.compile(r"^jump\s+(-?\d+)\s+(\S+)(?:\s+(\S+))?(?:\s+(\S+))?$")
+# `jump` lines go through jump_parts(), not a regex -- see the note there.
 # There used to be an OP_RE here, and it only matched op lines with at most four
 # tokens after `op`.  Every longer line -- e.g. the 8-token
 # `op select k1 lessThan cu 6 @copper @dormant-cyst` -- fell through the arity
@@ -293,6 +293,28 @@ def tokenize(line: str) -> list[str]:
             out.append(line[i:j])
             i = j
     return out
+
+
+def jump_parts(code: str):
+    """(target, cond, value, value2) for a `jump` line, or None.
+
+    Tokenized, not a bounded anchored regex: LParser reads the four fields it
+    knows and ignores whatever follows, so `jump 3 always x 0 <junk>` is still
+    a jump.  An anchored `(?:\s+\S+)?{0,2}$` regex silently dropped every
+    longer line and each check built on it then skipped the statement entirely
+    (fail-open; pinned by tests/shapes/run_shapes.py).  What is accepted here
+    is exactly what the old regex accepted -- numeric target, condition given.
+    """
+    toks = tokenize(code)
+    if len(toks) < 3 or toks[0] != "jump":
+        return None
+    try:
+        tgt = int(toks[1])
+    except ValueError:
+        return None
+    return (tgt, toks[2],
+            toks[3] if len(toks) > 3 else None,
+            toks[4] if len(toks) > 4 else None)
 
 
 def _vars(tokens) -> list[str]:
@@ -793,13 +815,13 @@ def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> l
     # ---- predecessors (successors are i+1 and, for jump, the target) ------
     preds: list[set[int]] = [set() for _ in range(n)]
     for i, (_, c) in enumerate(stmts):
-        m = JMP_RE.match(c)
+        jp = jump_parts(c)
         succ = []
-        if m:
-            tgt = int(m.group(1))
+        if jp:
+            tgt = jp[0]
             if 0 <= tgt < n:
                 succ.append(tgt)
-            if m.group(2) != "always":
+            if jp[1] != "always":
                 succ.append(i + 1)                # fall-through when not taken
         else:
             succ.append(i + 1)
@@ -976,12 +998,27 @@ def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> l
     # falls back to `optionalLink(name)`; `LogicBlock.write` returns silently
     # when the name is not a variable (LogicBlock.java:607-650). Neither path
     # shows up in defs_of(), because the name is a string, not a variable token.
-    _SELF_READ = re.compile(r'^read\s+\S+\s+@this\s+"([^"]+)"\s*$')
-    _SELF_WRITE = re.compile(r'^write\s+\S+\s+@this\s+"([^"]+)"\s*$')
+    def _self_slot(code: str):
+        """(kind, name) for `read/write <dst> @this "<name>"`, else None.
+
+        Tokenized rather than anchored: LParser reads the four fields it
+        knows and ignores trailing ones, so `read v c @this "x" 0` is still an
+        access -- an anchored regex dropped it (fail-open, see run_shapes.py).
+        """
+        toks = tokenize(code)
+        if len(toks) < 4 or toks[0] not in ("read", "write"):
+            return None
+        if toks[2] != "@this":
+            return None
+        name = toks[3]
+        if len(name) < 2 or name[0] != chr(34) or name[-1] != chr(34):
+            return None
+        return toks[0], name[1:-1]
+
     for _ln, _code in stmts:
-        m = _SELF_READ.match(_code)
-        if m:
-            name = m.group(1)
+        _sw = _self_slot(_code)
+        if _sw and _sw[0] == "read":
+            name = _sw[1]
             if name not in mentioned and not LINK_RE.match(name):
                 out.append(Finding(
                     "INFO", _ln + 1, "self-read-undefined",
@@ -989,9 +1026,8 @@ def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> l
                     f'this program mentions (a mention anywhere would declare it), '
                     f'so the game returns null (a name ending in a digit would '
                     f'resolve as a link instead)'))
-        m = _SELF_WRITE.match(_code)
-        if m:
-            name = m.group(1)
+        if _sw and _sw[0] == "write":
+            name = _sw[1]
             if name not in mentioned:
                 out.append(Finding(
                     "INFO", _ln + 1, "self-write-noop",
@@ -1329,10 +1365,10 @@ def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> l
 
     # ---- jump diagnostics (only structural problems) ---------------------
     for i, (orig, c) in enumerate(stmts):
-        m = JMP_RE.match(c)
-        if not m:
+        jp = jump_parts(c)
+        if not jp:
             continue
-        tgt = int(m.group(1))
+        tgt = jp[0]
         if tgt == -1:
             continue
         if not (0 <= tgt < n):
@@ -1344,7 +1380,7 @@ def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> l
         # jump landing on a jump is an ordinary dispatch triangle -- when the
         # condition is false you fall through and never touch the target.
         _hop = stmts[tgt][1].split()
-        if (m.group(2) == "always" and _hop[0].lower() == "jump"
+        if (jp[1] == "always" and _hop[0].lower() == "jump"
                 and len(_hop) > 2 and _hop[2] == "always"):
             out.append(Finding("INFO", orig + 1, c,
                                f"this jump is unconditional and lands on another "
@@ -1366,21 +1402,21 @@ def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> l
         if len(p) < 2 or p[0] != "op":
             continue
         op = p[1]
-        want = 2 if op in OP_UNARY else (
-            3 if op in OP_BINARY or op in OP_LEGACY else None)
-        # dest + operands; surplus tokens are inert filler (see the note below)
-        given = len(p) - 1
-        if want is None:
+        # Only an unknown NAME is an error.  Slot COUNT is not checked: a
+        # missing slot is silent, and that is deliberate.  LStatement's default
+        # read() leaves absent fields at their declared defaults
+        # (`OperationStatement.dest = "result", a = "a", b = "b"`,
+        # LStatements.java:708-711), so `op add r 1`, `op add` and `op abs` each
+        # compile to a real OpI -- v160.7 jar: `op add r 1` -> [OpI] with r=1
+        # (the absent operand reads null and adds as 0), `op abs` -> [OpI].
+        # The old WARN (`given 2 args, expects 3`) was a false positive on
+        # every one of those, and a *surplus* slot is inert filler anyway (the
+        # maintainer audited 29 of them and judged each "not worth reporting"),
+        # so the count check is gone rather than kept as a warning.
+        # `rules/arity-is-not-effective-params.json` keeps the whole per-case
+        # record for both counts (op and ucontrol), so nobody re-adds them.
+        if op not in OP_UNARY and op not in OP_BINARY and op not in OP_LEGACY:
             out.append(Finding("ERR", orig + 1, c, f"unknown op `{op}`"))
-        # `given > want` is deliberately silent.  The maintainer audited 29 of
-        # these and judged every single one "not worth reporting": an extra
-        # operand is what you get when someone edits an operator in place and
-        # leaves the old tokens behind, and the game parses the line then hands
-        # the operator only the operands it takes.  The rule JSON keeps this as
-        # a negative record (`unary-op-extra-operand`) so nobody re-adds it.
-        elif given < want:
-            out.append(Finding("WARN", orig + 1, c,
-                               f"`op {op}` given {given} args, expects {want}"))
 
     # ---- @dead polarity: NOT reported ------------------------------------
     # Every row of this rule was judged bad by the author (m15434): "这个逻辑使用
@@ -1392,17 +1428,19 @@ def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> l
     # the reasoning so it is not re-invented.
 
     # ---- ulocate hygiene --------------------------------------------------
+    # `ulocate` is genuinely fixed-arity: LParser reads exactly eight operands
+    # and ignores whatever follows, so read the eight positions and do not
+    # insist the line ends there (run_shapes.py pads every sample with junk).
     for i, (orig, c) in enumerate(stmts):
-        mu = re.match(r"^ulocate\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+"
-                      r"(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s*$", c)
-        if not mu:
+        _u = tokenize(c)
+        if len(_u) < 9 or _u[0] != "ulocate":
             continue
-        if mu.group(2) in ("0", "null"):
+        if _u[2] in ("0", "null"):
             out.append(Finding("ERR", orig + 1, c,
                                "ulocate arg2 (flag) must be a valid BlockFlag; "
                                "`0` makes the whole instruction invalid"))
         # only complain about discarded coords if the code actually moves to them
-        outx, outy = mu.group(5), mu.group(6)
+        outx, outy = _u[5], _u[6]
         if outx in ("0", "null") or outy in ("0", "null"):
             uses_move = any(
                 re.match(rf"^ucontrol\s+(move|approach)\s+({re.escape(outx)}|{re.escape(outy)})\b",
@@ -1411,7 +1449,7 @@ def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> l
             if uses_move:
                 out.append(Finding("ERR", orig + 1, c,
                                    "outX/outY discarded but later used by move/approach"))
-        if mu.group(8) in ("0", "null") and mu.group(1) in ("building", "damaged"):
+        if _u[8] in ("0", "null") and _u[1] in ("building", "damaged"):
             # find whether an itemDrop/itemTake later uses a link-ish name
             out.append(Finding("INFO", orig + 1, c,
                                "outBuild discarded -- if you need to itemTake/itemDrop "
@@ -1461,13 +1499,10 @@ def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> l
 
     _spin = []
     for i, (orig, c) in enumerate(stmts):
-        mj = JMP_RE.match(c)
-        if not mj:
+        jp = jump_parts(c)
+        if not jp:
             continue
-        try:
-            tgt = int(mj.group(1))
-        except (TypeError, ValueError):
-            continue
+        tgt = jp[0]
         if not (0 <= tgt < i):
             continue                       # not a backward branch
         head = c.split()
@@ -1737,9 +1772,9 @@ def _cfg(stmts: list[tuple[int, str]]) -> list[list[int]]:
         if op == "end":
             succ.append([0] if n else [])
             continue
-        m = JMP_RE.match(c)
-        if m:
-            tgt, cond = int(m.group(1)), m.group(2)
+        jp = jump_parts(c)
+        if jp:
+            tgt, cond = jp[0], jp[1]
             out = []
             if tgt >= 0 and tgt < n:
                 out.append(tgt)

@@ -48,13 +48,18 @@ SEED = [
     {
         "id": "arity-is-not-effective-params",
         "kind": "semantics",
-        "severity": "INFO",
-        "claim": "`ucontrol move x y` takes four fields, not six. The parser keeps a slot "
-                 "count (`arity`); the instruction only reads a prefix of it.",
-        "why": "LExecutor.java:344-352 — `case move, stop, approach, pathfind` reads x,y and "
+        "severity": "SUPPRESSED",
+        "claim": "Slots are not checked by count: `ucontrol move x y` reads a prefix of the "
+                 "parser slot count (`arity`), and a short `op` line fills absent fields from "
+                 "the statement defaults (LStatements.java:708-711), so neither is a defect.",
+        "why": "LExecutor.java:344-352 -- `case move, stop, approach, pathfind` reads x,y and "
                "(only for `approach`) a radius. The `p1..p4` toNumber() calls happen before "
                "dispatch, so `uses` is always 1,2,3 even when nothing reads them. Reporting a "
-               "missing/extra slot against `arity` flags correct community code.",
+               "missing/extra slot against `arity` flags correct community code. Same on the "
+               "`op` side (2026-10-27, user asked for the WARN to go): `op add r 1`, `op add` and "
+               "`op abs` all compile to a real OpI (LStatements.java:708-711 defaults; v160.7 jar: "
+               "`op add r 1` -> OpI with r=1), so the old `given N args, expects M` warning was a "
+               "false positive and is gone; an unknown operator NAME is still ERR (`unknown-op`).",
         "source": "user",
         "ref": "m14600",
         "since": "2026-10-18",

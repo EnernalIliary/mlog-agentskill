@@ -23,7 +23,7 @@
 | 规则逐条审计 | `python tools/review.py md` |
 | 本地知识库（向量+可选重排） | `python tools/kb.py search "read @this 怎么写" -k 6` |
 | MCP 服务（模型直接调用工具） | `python tools/mlog_mcp.py`（stdio，见下节） |
-| 自检工具链 | `python tools/mlog.py selftest`；`python tests/run_tests.py` |
+| 自检工具链 | `python tools/mlog.py selftest`（`--jobs N` 分片）；`python tests/run_tests.py` |
 
 `mlog.py --help` 是子命令总表；`tools/mlogsim.py --help` 是模拟器参数（世界、单位、战斗 tick、trace/assert）。
 
@@ -178,6 +178,18 @@ python tools/kb.py serve
    断言零覆盖指令集合仍是签过字的那 18 条 —— 往 `instr_semantics.json` 加一行、或样本里
    丢一条指令，集合就变，必须有人重新录基线。两步都依赖语料目录；不在 git 里，机器上没有时 SKIP，
    目录可用 `MLOG_CORPUS` 覆盖（默认 `~/mlog-corpus/anon-corpus`）。
+   与语料无关的还有一个 `shapes` 步（0.1 s）：`python tests/shapes/run_shapes.py`
+   断言检查器自己的**语句形状不变量**——每条规则对坏样例追加 1/2/5 个惰性 token 与行尾注释后仍必须开火，
+   防的是整行锚定正则 fail-open（`op select` 那类漏洞；`--module` 可指向旧版做负向自证）。
+    `--full` 独有的四步（`selftest` / `probes` / `corpus` / `coverage`）互不依赖——各自起 JVM、
+    各写各的 `out/_bench` 文件、互不读对方输出——所以 `gate.py` 把它们**并发**跑：75 s → 44 s。
+    两条长杆内部再各自并行：`probes` 每条探针一个 JVM（`run_probes.py --jobs`，默认 min(8, CPU)，41 s → 9.6 s）；
+    `selftest` 用进程池把 420 个蓝图分片（`mlog.py selftest --jobs`，26 s → 5.3 s），
+    并且**验证用的重建蓝图改用 deflate 级别 1**（`Blueprint(deflate_level=1)`）——级别只影响压缩耗时，
+    解析回来的内容一模一样（level 9 = 0.200 s/MB，level 1 = 0.008 s/MB，这一项曾占自检 89% 的时间）；
+    生成路径的默认级别仍是 9，蓝图字节与改前逐字节相同。现在 `--full` 约 **15 s**。
+    `--serial` 回到串行，`--stream` 也强制串行。
+    日常改完跑默认档即可（3.3 s，含 `shapes` 与 `lint`），`--full` 留给提交前/发版前。
    注意 `mlog_needs.py` 的 `programs_detail` 在大语料上是几百 MB，
    4 万程序全量跑要加 `--no-detail`，否则 JSON 慢到像挂死。
 

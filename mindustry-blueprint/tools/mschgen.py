@@ -153,7 +153,7 @@ def write_utf(out: bytearray, s: str) -> None:
 # logic payload
 # --------------------------------------------------------------------------- #
 
-def build_logic_config(code: str, links: list[Link]) -> bytes:
+def build_logic_config(code: str, links: list[Link], level: int = 9) -> bytes:
     """Build the byte[] that goes in a logic block's TypeIO config field."""
     inner = bytearray()
     inner.append(1)                                     # logicVersion = 1
@@ -163,7 +163,7 @@ def build_logic_config(code: str, links: list[Link]) -> bytes:
     for lk in links:
         write_utf(inner, lk.name)
         inner += struct.pack(">hh", lk.dx, lk.dy)
-    return zlib.compress(bytes(inner), 9)
+    return zlib.compress(bytes(inner), level)
 
 
 # --------------------------------------------------------------------------- #
@@ -174,7 +174,7 @@ class Blueprint:
     """Compose a .msch from tiles. Add links per-logic-block with add_logic()."""
 
     def __init__(self, name: str = "blueprint", description: str = "",
-                 labels: list[str] | None = None):
+                 labels: list[str] | None = None, deflate_level: int = 9):
         self.name = name
         self.description = description
         self.labels = labels or []
@@ -184,6 +184,11 @@ class Blueprint:
         # content ids are NOT serialized in a schematic (the game resolves a
         # block by its NAME on load), so this is informational only.
         self.content_ids: dict[str, int] = {}
+        # zlib level for this blueprint: the per-tile logic configs and the body.
+        # 9 is what the game emits and what generated blueprints must keep; the
+        # self-test lowers it, because a throw-away round-trip only needs the
+        # parsed content back (level 9 costs 0.200 s/MB, level 1 costs 0.008).
+        self.deflate_level = deflate_level
 
     def add(self, block: str, x: int, y: int, rotation: int = 0, config=None,
             content_id: int | None = None) -> Tile:
@@ -217,7 +222,7 @@ class Blueprint:
         # real blueprints are inconsistent about it (some end with \n, some not)
         # and the game's parser does not care.
         code = code.replace("\r\n", "\n").replace("\r", "\n")
-        cfg = build_logic_config(code, links or [])
+        cfg = build_logic_config(code, links or [], self.deflate_level)
         for lk in (links or []):
             self.link_points.append((x + lk.dx, y + lk.dy))
         return self.add(block, x, y, rotation, cfg)
@@ -298,7 +303,8 @@ class Blueprint:
             return 0, 0, 0, 0
         return min(xs), min(ys), max(xs), max(ys)
 
-    def build(self) -> bytes:
+    def build(self, level: int | None = None) -> bytes:
+        """Serialize to .msch bytes (deflate level: self.deflate_level unless given)."""
         if not self.tiles:
             raise ValueError("blueprint has no tiles")
 
@@ -341,7 +347,8 @@ class Blueprint:
             write_object(body, t.config)
             body.append(t.rotation & 0xFF)
 
-        return MAGIC + bytes([VERSION]) + zlib.compress(bytes(body), 9)
+        lvl = self.deflate_level if level is None else level
+        return MAGIC + bytes([VERSION]) + zlib.compress(bytes(body), lvl)
 
     def write(self, path: str) -> str:
         data = self.build()
@@ -401,7 +408,80 @@ def default_schematics_dir() -> str | None:
     return None
 
 
-def selftest(schem_dir: str | None = None) -> int:
+def _selftest_file(f: str) -> tuple[str, str, list[str]]:
+    """One blueprint -> (logic_state, build_state, messages); "skip" = unusable.
+
+    "skip" reproduces what the serial loop's two continue statements used to do
+    (a file that will not parse, or that carries no logic tiles).  Module level,
+    so ProcessPoolExecutor can pickle it.
+    """
+    try:
+        sch = msch.parse_file(f)
+    except Exception:
+        return ("skip", "skip", [])
+    if not sch.logic_tiles():
+        return ("skip", "skip", [])
+
+    msgs: list[str] = []
+    logic_state = "ok"
+
+    # ---- logic fidelity: rebuild a processor-only blueprint and compare ----
+    try:
+        lbp = Blueprint(sch.name or "t", sch.description, list(sch.labels),
+                  deflate_level=1)
+        for t in sch.logic_tiles():
+            assert t.logic is not None
+            lbp.add_logic(t.logic.code, t.x, t.y, t.block, t.rotation,
+                          [Link(l.name, l.x - t.x, l.y - t.y)
+                           for l in t.logic.links])
+        # verification only: the rebuilt content is what gets compared, so the
+        # deflate level of this throw-away blueprint is irrelevant
+        back = msch.parse_bytes(lbp.build())
+
+        # compare *relative layout*: a rebuilt blueprint is normalized to
+        # (0,0), so pure translation must not count as a mismatch (the old
+        # absolute compare scored 176/430 for exactly this reason).
+        def _norm(items):
+            if not items:
+                return items
+            ox = min(i[1] for i in items)
+            oy = min(i[2] for i in items)
+            return [(blk, x - ox, y - oy, rot, code,
+                     [(n, lx - ox, ly - oy) for (n, lx, ly) in links])
+                    for (blk, x, y, rot, code, links) in items]
+
+        a = _norm([(t.block, t.x, t.y, t.rotation, t.logic.code,
+                    [(l.name, l.x, l.y) for l in t.logic.links])
+                   for t in sch.logic_tiles()])
+        b = _norm([(t.block, t.x, t.y, t.rotation, t.logic.code,
+                    [(l.name, l.x, l.y) for l in t.logic.links])
+                   for t in back.logic_tiles()])
+        if a != b:
+            logic_state = "bad"
+            msgs.append(f"logic mismatch: {os.path.basename(f)}")
+    except Exception as e:
+        logic_state = "bad"
+        msgs.append(f"{os.path.basename(f)}: {type(e).__name__}: {e}")
+
+    # ---- whole-blueprint build (best effort) ----
+    try:
+        bp = Blueprint(sch.name or "t", sch.description, list(sch.labels),
+                  deflate_level=1)
+        for t in sch.tiles:
+            if t.logic is not None:
+                bp.add_logic(t.logic.code, t.x, t.y, t.block, t.rotation,
+                             [Link(l.name, l.x - t.x, l.y - t.y)
+                              for l in t.logic.links])
+            else:
+                bp.add(t.block, t.x, t.y, t.rotation, t.config)
+        bp.build()
+        build_state = "ok"
+    except Exception:
+        build_state = "skip"
+    return (logic_state, build_state, msgs)
+
+
+def selftest(schem_dir: str | None = None, jobs: int | None = None) -> int:
     """
     Round-trip every blueprint found in the schematics folder.
 
@@ -422,68 +502,37 @@ def selftest(schem_dir: str | None = None) -> int:
     print(f"selftest against {schem_dir}")
     files = sorted(glob.glob(os.path.join(schem_dir, "*.msch")))
 
+    # One blueprint is ~85 ms of pure python and there are ~430 of them: this is
+    # the slowest single step of gate.py --full.  Spread it over a pool when
+    # asked to; the worker is module-level so it pickles, and any pool trouble
+    # falls back to the serial loop.
+    workers = jobs if jobs else min(8, os.cpu_count() or 1)
+    if workers > 1 and len(files) > 4:
+        try:
+            from concurrent.futures import ProcessPoolExecutor
+            with ProcessPoolExecutor(max_workers=workers) as pool:
+                results = list(pool.map(_selftest_file, files, chunksize=8))
+        except Exception as exc:
+            print(f"selftest: parallel run failed ({type(exc).__name__}: {exc}); "
+                  f"falling back to serial")
+            results = [_selftest_file(f) for f in files]
+    else:
+        results = [_selftest_file(f) for f in files]
+
     logic_ok = logic_bad = 0
     build_ok = build_skip = 0
     bad_examples: list[str] = []
-
-    for f in files:
-        try:
-            sch = msch.parse_file(f)
-        except Exception:
+    for logic_state, build_state, msgs in results:
+        bad_examples.extend(msgs)
+        if logic_state == "skip":
             continue
-        if not sch.logic_tiles():
-            continue
-
-        # ---- logic fidelity: rebuild a processor-only blueprint and compare ----
-        try:
-            lbp = Blueprint(sch.name or "t", sch.description, list(sch.labels))
-            for t in sch.logic_tiles():
-                assert t.logic is not None
-                lbp.add_logic(t.logic.code, t.x, t.y, t.block, t.rotation,
-                              [Link(l.name, l.x - t.x, l.y - t.y)
-                               for l in t.logic.links])
-            back = msch.parse_bytes(lbp.build())
-
-            # compare *relative layout*: a rebuilt blueprint is normalized to
-            # (0,0), so pure translation must not count as a mismatch (the old
-            # absolute compare scored 176/430 for exactly this reason).
-            def _norm(items):
-                if not items:
-                    return items
-                ox = min(i[1] for i in items)
-                oy = min(i[2] for i in items)
-                return [(blk, x - ox, y - oy, rot, code,
-                         [(n, lx - ox, ly - oy) for (n, lx, ly) in links])
-                        for (blk, x, y, rot, code, links) in items]
-
-            a = _norm([(t.block, t.x, t.y, t.rotation, t.logic.code,
-                        [(l.name, l.x, l.y) for l in t.logic.links])
-                       for t in sch.logic_tiles()])
-            b = _norm([(t.block, t.x, t.y, t.rotation, t.logic.code,
-                        [(l.name, l.x, l.y) for l in t.logic.links])
-                       for t in back.logic_tiles()])
-            if a == b:
-                logic_ok += 1
-            else:
-                logic_bad += 1
-                bad_examples.append(f"logic mismatch: {os.path.basename(f)}")
-        except Exception as e:
+        if logic_state == "ok":
+            logic_ok += 1
+        else:
             logic_bad += 1
-            bad_examples.append(f"{os.path.basename(f)}: {type(e).__name__}: {e}")
-
-        # ---- whole-blueprint build (best effort) ----
-        try:
-            bp = Blueprint(sch.name or "t", sch.description, list(sch.labels))
-            for t in sch.tiles:
-                if t.logic is not None:
-                    bp.add_logic(t.logic.code, t.x, t.y, t.block, t.rotation,
-                                 [Link(l.name, l.x - t.x, l.y - t.y)
-                                  for l in t.logic.links])
-                else:
-                    bp.add(t.block, t.x, t.y, t.rotation, t.config)
-            bp.build()
+        if build_state == "ok":
             build_ok += 1
-        except Exception:
+        else:
             build_skip += 1
 
     total = logic_ok + logic_bad
