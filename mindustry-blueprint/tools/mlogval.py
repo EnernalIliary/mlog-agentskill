@@ -39,7 +39,6 @@ import mlogir
 
 TOP = None  # sentinel below; real values are V instances
 
-
 @dataclass(frozen=True)
 class V:
     """Abstract value: a number range, a string, definite null, or top."""
@@ -65,31 +64,26 @@ class V:
         body = _fnum(self.lo) if self.lo == self.hi else f"{_fnum(self.lo)}..{_fnum(self.hi)}"
         return body + ("|null" if self.null else "")
 
-
 TOP_V = V("top")
 NA = V("na")
 NUM0 = V("num", 0.0, 0.0)
 NUM1 = V("num", 1.0, 1.0)
-
 
 def num(lo: float, hi: float, null: bool = False) -> V:
     if lo > hi:
         lo, hi = hi, lo
     return V("num", lo, hi, null=null)
 
-
 def _fnum(x: float) -> str:
     if x == int(x) and abs(x) < 1e15:
         return str(int(x))
     return f"{x:.4g}"
-
 
 def _setnum(x: float) -> V:
     """What `LVar.setnum()` leaves behind: non-finite becomes null."""
     if math.isnan(x) or math.isinf(x):
         return NA
     return num(x, x)
-
 
 # ---------------------------------------------------------------- lattice ----
 
@@ -110,13 +104,11 @@ def join(a: V, b: V) -> V:
         return TOP_V
     return num(min(a.lo, b.lo), max(a.hi, b.hi), a.null or b.null)
 
-
 def _join_state(a: dict[str, V], b: dict[str, V]) -> dict[str, V]:
     out = dict(a)
     for k, vb in b.items():
         out[k] = join(out[k], vb) if k in out else vb
     return out
-
 
 # ------------------------------------------------------- numeric projection ---
 
@@ -135,7 +127,6 @@ def as_num(v: V) -> tuple[float, float] | None:
     if v.null:
         return (min(0.0, v.lo), max(0.0, v.hi))
     return (v.lo, v.hi)
-
 
 # ------------------------------------------------------------ transfer ops ---
 
@@ -206,13 +197,11 @@ _MONOTONE_BIN = {"add", "sub", "mul", "min", "max", "len", "angle", "angleDiff",
                  "pow"}
 _MONOTONE_UN = {"abs", "floor", "ceil", "round", "sign"}
 
-
 def _i(x: float) -> int:
     try:
         return int(x)
     except (ValueError, OverflowError):
         return 0
-
 
 def _pow(a: float, b: float) -> float:
     try:
@@ -223,7 +212,6 @@ def _pow(a: float, b: float) -> float:
         return math.nan
     return float(r)
 
-
 def _float_or_none(x: V) -> float | None:
     """Exact float value, projecting null/objects the way `num()` does."""
     if x.kind == "na":
@@ -232,14 +220,12 @@ def _float_or_none(x: V) -> float | None:
         return 1.0
     return x.exact()
 
-
 # `_cond` hands us a lower-cased operator token; the tables are keyed by the
 # real camelCase LogicOp names. Without this map `strictEqual` silently never
 # matches and every null-check branch stays unresolved.
 _CANON = {k.lower(): k for k in
           list(_BIN_EXACT) + list(_UN_EXACT) + list(_CMP)
           + ["logn", "strictEqual", "select"]}
-
 
 def op_value(name: str, name_known: bool, a: V, b: V | None) -> V:
     """Result of `op <name> ...` after the `setnum()` normalisation."""
@@ -337,7 +323,6 @@ def op_value(name: str, name_known: bool, a: V, b: V | None) -> V:
 
     return TOP_V
 
-
 # ---------------------------------------------------------------- analysis ---
 
 @dataclass
@@ -349,7 +334,6 @@ class Analysis:
     rounds: int = 0
     stable: bool = True
     cross_folded: int = 0      # `read` results replaced by knowledge of the target
-
 
 def _const_token(tok: mlogir.Tok) -> V | None:
     if tok.kind == mlogir.KIND_NUM:
@@ -374,10 +358,8 @@ def _const_token(tok: mlogir.Tok) -> V | None:
         return NA
     return None
 
-
 _BUILTIN_CONST = {"@pi": math.pi, "@e": math.e, "@degToRad": math.pi / 180.0,
                   "@radToDeg": 180.0 / math.pi, "@pi2": math.pi * 2}
-
 
 def value_of(tok: mlogir.Tok, state: dict[str, V]) -> V:
     c = _const_token(tok)
@@ -388,10 +370,8 @@ def value_of(tok: mlogir.Tok, state: dict[str, V]) -> V:
         return num(v, v) if v is not None else TOP_V
     return state.get(tok.text, TOP_V)
 
-
 def _cond(name: str, a: V, b: V) -> V:
     return op_value(name.strip().lower(), True, a, b)
-
 
 def analyze(prog: mlogir.Program, max_rounds: int = 40,
             slots: dict[tuple[str, str], V] | None = None) -> Analysis:
@@ -538,7 +518,6 @@ def analyze(prog: mlogir.Program, max_rounds: int = 40,
     st.cross_folded = len(folded)
     return st
 
-
 def format_report(label: str, prog: mlogir.Program, st: Analysis) -> str:
     lines: list[str] = [f"=== {label}"]
     if not st.stable:
@@ -575,7 +554,6 @@ def format_report(label: str, prog: mlogir.Program, st: Analysis) -> str:
         lines.append("  provably null   : none")
     return "\n".join(lines)
 
-
 def trace(prog: mlogir.Program, st: Analysis, var: str) -> list[str]:
     """Every statement that changes the abstract value of `var`."""
     out: list[str] = []
@@ -586,7 +564,6 @@ def trace(prog: mlogir.Program, st: Analysis, var: str) -> list[str]:
             out.append(f"  L{s.line:<5} {var} = {cur}   <- `{s.raw.strip()}`")
             prev = cur
     return out
-
 
 def main(argv: list[str] | None = None) -> int:
     import argparse
@@ -609,7 +586,6 @@ def main(argv: list[str] | None = None) -> int:
             for ln in trace(prog, st, var) or ["  (never assigned)"]:
                 print(ln)
     return rc
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

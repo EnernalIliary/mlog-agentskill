@@ -47,10 +47,8 @@ import mlogir
 # smallest one that shows up in real blueprints.
 MIN_EXP = 3
 
-
 def _text(tok) -> str:
     return getattr(tok, "text", tok)
-
 
 def _num(tok) -> float | None:
     """Literal value of a token, or None if it is a variable."""
@@ -62,7 +60,6 @@ def _num(tok) -> float | None:
         return None
     return v
 
-
 def _power_of_ten(v: float | None) -> int | None:
     """Return k if v == 10**k (k >= MIN_EXP), else None."""
     if v is None or v <= 0:
@@ -73,7 +70,6 @@ def _power_of_ten(v: float | None) -> int | None:
     if abs(10.0 ** k - v) > 1e-9 * max(1.0, v):
         return None
     return int(k)
-
 
 @dataclass
 class Field:
@@ -87,7 +83,6 @@ class Field:
         if self.kind == "idiv":
             return f"1e{self.exp}  ->  {self.dst}   (= data / 1e{self.exp})"
         return f"1e{self.exp}  ->  {self.dst}   (= data % 1e{self.exp})"
-
 
 @dataclass
 class PackSite:
@@ -144,7 +139,6 @@ class PackSite:
     def max_id(self) -> int | None:
         return None if self.capacity_bits is None else self.capacity_bits - 1
 
-
 def _subtract_mask(prog: "mlogir.Program | None", src: str,
                    hi: Field) -> int | None:
     """Detect `op mul t hi 1eN` + `op sub u src t` -- the correct decode.
@@ -181,7 +175,6 @@ def _subtract_mask(prog: "mlogir.Program | None", src: str,
                 return s.line
     return None
 
-
 @dataclass
 class BitPeel:
     """The `x & -x` / log2(lowbit) / `x -= lowbit` set-iteration idiom."""
@@ -190,7 +183,6 @@ class BitPeel:
     value: str          # variable being consumed
     lowbit: str         # the isolated lowest set bit
     base: float | None  # the log base (2 for bits)
-
 
 def find_pack_sites(prog: mlogir.Program) -> list[PackSite]:
     """Group idiv/mod-with-decimal-scale sites by the value they peel."""
@@ -216,7 +208,6 @@ def find_pack_sites(prog: mlogir.Program) -> list[PackSite]:
         sites.append(site)
     sites.sort(key=lambda p: p.fields[0].line)
     return sites
-
 
 def find_bit_peels(prog: mlogir.Program) -> list[BitPeel]:
     """Find `op logn <idx> <low> 2` and locate the `and` that made <low>."""
@@ -246,7 +237,6 @@ def find_bit_peels(prog: mlogir.Program) -> list[BitPeel]:
             break
     return found
 
-
 def _capacity_note(site: PackSite, item_count: int | None) -> list[str]:
     out: list[str] = []
     if site.capacity_bits is None:
@@ -259,7 +249,6 @@ def _capacity_note(site: PackSite, item_count: int | None) -> list[str]:
                    f"fit: ids {site.capacity_bits}..{item_count - 1} overflow "
                    f"into the next field (raise the separator, e.g. 1e6 -> 1e7)")
     return out
-
 
 def format_report(prog: mlogir.Program, item_count: int | None = None,
                   label: str = "") -> str:

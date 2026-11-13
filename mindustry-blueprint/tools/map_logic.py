@@ -46,7 +46,6 @@ PROCESSORS = {
 
 CT_BLOCK = 1  # ContentType.all ordinal for blocks
 
-
 class Reader:
     """Big-endian reader over a bytes buffer, matching DataInputStream."""
 
@@ -94,10 +93,8 @@ class Reader:
     def done(self) -> bool:
         return self.p >= len(self.d)
 
-
 def _read_string_map(r: Reader) -> dict[str, str]:
     return {r.utf(): r.utf() for _ in range(r.u16())}
-
 
 def _split_regions(data: bytes, start: int) -> list[bytes]:
     """Read framed regions until the buffer runs out or the framing stops making sense."""
@@ -111,7 +108,6 @@ def _split_regions(data: bytes, start: int) -> list[bytes]:
         out.append(data[p:p + n])
         p += n
     return out
-
 
 def _scan_config(payload: bytes):
     """Find the logic config inside a processor's building payload.
@@ -158,7 +154,6 @@ def _scan_config(payload: bytes):
         return code, links
     return None
 
-
 def _content_blocks(reg: bytes):
     """Return the block-name table of a content region (or None if it is not one)."""
     r = Reader(reg)
@@ -173,7 +168,6 @@ def _content_blocks(reg: bytes):
         if tid == CT_BLOCK:
             table = names
     return table
-
 
 def _parse_map(reg: bytes, blocks: list[str]):
     """Parse a modern (version >= 11) map region. Raises if it is not one."""
@@ -228,7 +222,6 @@ def _parse_map(reg: bytes, blocks: list[str]):
         raise ValueError(f"map region has {len(r.d) - r.p} byte(s) left over")
     return w, h, found
 
-
 def _parse_legacy_map(reg: bytes, blocks: list[str]):
     """Parse a legacy (version <= 10) map region. Raises if it is not one."""
     r = Reader(reg)
@@ -273,7 +266,6 @@ def _parse_legacy_map(reg: bytes, blocks: list[str]):
         raise ValueError(f"legacy map region has {len(r.d) - r.p} byte(s) left over")
     return w, h, found
 
-
 def _proc_entry(name: str, x: int, y: int, payload: bytes) -> dict:
     """Build one logic-processor record from its building payload."""
     entry = {"x": x, "y": y, "block": name, "code": None, "links": []}
@@ -289,7 +281,6 @@ def _proc_entry(name: str, x: int, y: int, payload: bytes) -> dict:
     elif "error" not in entry:
         entry["error"] = "no config blob found in the building payload"
     return entry
-
 
 def _parse_shortchunk_map(reg: bytes, blocks: list[str]):
     """Parse a v7-v9 (ShortChunkSaveVersion) map region.
@@ -355,7 +346,6 @@ def _parse_shortchunk_map(reg: bytes, blocks: list[str]):
         raise ValueError(f"shortchunk map region has {len(r.d) - r.p} byte(s) left over")
     return w, h, found
 
-
 def _unwrap_save(raw: bytes) -> bytes:
     """A .msav is either a zlib stream that contains `MSAV`, or a plain `MSAV` blob.
 
@@ -372,7 +362,6 @@ def _unwrap_save(raw: bytes) -> bytes:
     if out[:4] != b"MSAV":
         raise ValueError(f"not a save file: zlib payload starts {out[:8]!r}")
     return out
-
 
 def read_save(path) -> dict:
     data = _unwrap_save(Path(path).read_bytes())
@@ -427,7 +416,6 @@ def read_save(path) -> dict:
         f"{'legacy' if version <= 6 else 'shortchunk' if version <= 9 else 'modern'} layout)"
     )
 
-
 def main(argv) -> int:
     if len(argv) < 2:
         print("usage: map_logic.py <save.msav> [--code]", file=sys.stderr)
@@ -457,7 +445,6 @@ def main(argv) -> int:
                 for n, line in enumerate(code.splitlines(), 1):
                     print(f"       {n:>3} {line}")
     return 1 if bad else 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main(sys.argv))

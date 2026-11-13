@@ -50,7 +50,6 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 
-
 def _repo_root(start: Path) -> Path:
     """Find the checkout root by looking for `.dsh/skills`.
 
@@ -64,7 +63,6 @@ def _repo_root(start: Path) -> Path:
         if (p / ".dsh" / "skills").is_dir():
             return p
     return start.parent
-
 
 ROOT = _repo_root(HERE)
 SKILL = ROOT / ".dsh" / "skills" / "mlog-agentskill"
@@ -83,7 +81,6 @@ SELF = "sync_mlogagent.py"
 sys.path.insert(0, str(HERE))
 import mlogagent  # noqa: E402  (needs the sys.path line above)
 
-
 #: target name -> (directory, may it gain files, does it carry a MANIFEST).
 MIRRORS: dict[str, tuple[Path, bool, bool]] = {
     "skill": (DEST, True, True),
@@ -92,23 +89,21 @@ MIRRORS: dict[str, tuple[Path, bool, bool]] = {
 }
 MIRROR_ORDER = ["skill", "bp", "install"]
 
-
 def sha256(path: Path) -> str:
+    # Line-ending-insensitive (see tools/mlogagent.py::_sha): git checkout
+    # normalization must not make a locally generated manifest look stale on CI.
     h = hashlib.sha256()
     with path.open("rb") as f:
         for chunk in iter(lambda: f.read(1 << 16), b""):
-            h.update(chunk)
+            h.update(chunk.replace(b"\r\n", b"\n"))
     return h.hexdigest()
-
 
 def payload() -> list[str]:
     """Modules + data files, in a stable order.  Never SKILL.md."""
     return list(mlogagent._MODULES) + list(mlogagent._DATA)
 
-
 def _manifest_text(d: Path, names: list[str]) -> str:
     return "".join(f"{sha256(d / n)}  {n}\n" for n in names)
-
 
 def _run_verify(d: Path) -> bool | None:
     """Ask the copy in `d` to verify itself.  None = it has no MANIFEST."""
@@ -133,8 +128,7 @@ def _run_verify(d: Path) -> bool | None:
         return False
     return True
 
-
-def write_target(name: str, check_only: bool) -> int:
+def write_target(name: str, check_only: bool, allow_absent: bool = False) -> int:
     d, may_create, want_manifest = MIRRORS[name]
     if not d.is_dir():
         # 公开仓/精简导出里没有某个镜像目录是正常的（比如 install 那份只在作者本机），
@@ -152,6 +146,14 @@ def write_target(name: str, check_only: bool) -> int:
             print(f"  {name}/{n}: differs")
         if absent:
             print(f"  {name}: absent payload {', '.join(absent)}")
+            if not allow_absent:
+                # write mode already refuses (rc=1), and a silently short copy is
+                # worse than a loud one: a missing data JSON degrades to "{}" in
+                # every consumer and the tests then grade a table that is not there.
+                print(f"STALE  {name}: {len(absent)} payload file(s) missing from {d}")
+                print(f"  run: python tools/sync_mlogagent.py --mirror {name}"
+                      f"   (or pass --allow-absent if this tree is meant to be short)")
+                return 1
         if want_manifest:
             want = _manifest_text(d, present)
             mp = d / "MANIFEST.sha256"
@@ -208,7 +210,6 @@ def write_target(name: str, check_only: bool) -> int:
           f"  ({wrote} changed)")
     return rc
 
-
 def install_global(check_only: bool = False) -> int:
     """Copy the vendored skill into DSH's user-level skills directory.
 
@@ -255,7 +256,6 @@ def install_global(check_only: bool = False) -> int:
           "(reload the session if the catalog does not refresh)")
     return 0
 
-
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(
         description=__doc__.splitlines()[0],
@@ -272,18 +272,27 @@ def main(argv: list[str] | None = None) -> int:
                          "scope for every project (combine with --check to verify)")
     ap.add_argument("--no-verify", action="store_true",
                     help="skip the per-target 'mlogagent.py info --verify' pass")
+    ap.add_argument("--allow-absent", action="store_true",
+                    help="with --check: tolerate payload files missing from a copy "
+                         "(trimmed exports only; the repo copies must be complete)")
     args = ap.parse_args(argv)
 
-    if not SKILL.is_dir():
-        print(f"!! skill directory not found: {SKILL}")
-        return 2
-
     targets = MIRROR_ORDER if args.mirror == "all" else [args.mirror]
+    if not SKILL.is_dir() and "skill" in targets:
+        # 公开仓/CI 的 fresh checkout 没有 .dsh 技能目录：write_target 对缺席
+        # 目录本来就跳过（return 0），这里只有显式点名 skill 才值得硬退。
+        print(f"!! skill directory not found: {SKILL}")
+        if args.mirror == "all" and args.check:
+            print("   (checking the in-tree mirrors only; skill copy absent)")
+            targets = [n for n in targets if n != "skill"]
+        else:
+            return 2
     names = payload()
     print(f"source : {HERE}  ({len(names)} payload file(s))")
     rc = 0
     for name in targets:
-        rc = max(rc, write_target(name, check_only=args.check))
+        rc = max(rc, write_target(name, check_only=args.check,
+                                  allow_absent=args.allow_absent))
 
     if not args.check and not args.no_verify:
         for name in targets:
@@ -296,7 +305,6 @@ def main(argv: list[str] | None = None) -> int:
     if args.install_global:
         rc = max(rc, install_global(check_only=args.check))
     return rc
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

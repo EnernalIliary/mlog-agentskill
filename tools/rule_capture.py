@@ -49,7 +49,6 @@ KINDS = {"semantics", "heuristic", "negative"}
 SEVES = {"ERR", "WARN", "INFO", "SUSPECT", "SUPPRESSED"}
 SOURCES = {"user", "source", "corpus", "reasoning"}
 
-
 def load_rules() -> list[dict]:
     out = []
     for path in sorted(RULES_DIR.glob("*.json")):
@@ -62,7 +61,6 @@ def load_rules() -> list[dict]:
         out.append(rec)
     return out
 
-
 def matches(rec: dict, sev: str, msg: str) -> bool:
     m = rec.get("match") or {}
     if sev not in (m.get("sevs") or []):
@@ -72,7 +70,6 @@ def matches(rec: dict, sev: str, msg: str) -> bool:
         return False
     low = msg.lower()
     return any(k in low for k in keys)
-
 
 def cmd_add(args: argparse.Namespace) -> int:
     if args.id in {r.get("id") for r in load_rules()}:
@@ -103,7 +100,6 @@ def cmd_add(args: argparse.Namespace) -> int:
     print("next: fill match.msg_any (the substring that identifies this finding) and run lint")
     return 0
 
-
 def cmd_list(_args: argparse.Namespace) -> int:
     rules = load_rules()
     if not rules:
@@ -119,7 +115,6 @@ def cmd_list(_args: argparse.Namespace) -> int:
         guard = "" if r.get("counter_example") else "  (unguarded)"
         print(f"  {r['kind']:<9} {r['severity']:<10} {r['id']}{seen}{guard}")
     return 0
-
 
 def cmd_lint(args: argparse.Namespace) -> int:
     rules = load_rules()
@@ -190,7 +185,6 @@ def cmd_lint(args: argparse.Namespace) -> int:
           f"{unguarded} unguarded, {problems} problem(s)")
     return 1 if problems else 0
 
-
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -219,7 +213,6 @@ def main(argv: list[str] | None = None) -> int:
 
     args = ap.parse_args(argv)
     return args.fn(args)
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

@@ -40,15 +40,6 @@ except Exception:                                   # pragma: no cover
 # instruction tables
 # --------------------------------------------------------------------------- #
 
-# statements that WRITE into their first operand (or a named output slot)
-# key -> parameter positions that are outputs (-1 = first operand)
-OUTPUT_SLOTS: dict[str, list[int]] = {
-    "sensor": [0], "getlink": [0], "op": [1], "set": [0], "select": [0],
-    "lookup": [1], "read": [0], "packcolor": [0], "unpackcolor": [0, 1, 2, 3],
-    "radar": [-1], "uradar": [-1], "ulocate": [-4, -3, -2, -1],
-    "sensor_": [0],
-}
-
 # statements with a side effect on the world / processor state
 SIDE_EFFECT = {
     "ubind", "ucontrol", "uradar", "ulocate", "control", "write", "read",
@@ -155,7 +146,6 @@ KEYWORDS |= DRAW_SUBS | OTHER_KEYWORDS
 # game it becomes a noop (see the op-arity block below).  The arity check now
 # tokenizes; do not reintroduce a bounded regex here.
 
-
 class Finding:
     """One diagnostic.
 
@@ -173,7 +163,6 @@ class Finding:
     def __str__(self):
         return f"  [{self.sev}] L{self.line:<4} {self.code:<44} {self.msg}"
 
-
 def strip_comment(line: str) -> str:
     # A BOM on the first line would otherwise become part of the mnemonic
     # ("\ufeffset"), and no rule or opcode tally would recognise it.
@@ -186,7 +175,6 @@ def strip_comment(line: str) -> str:
             break
         out.append(ch)
     return "".join(out).strip()
-
 
 def defs_of(c: str) -> list[str]:
     """Variables this statement WRITES."""
@@ -248,7 +236,6 @@ def defs_of(c: str) -> list[str]:
             return got
     return []
 
-
 QUOTED = re.compile(r'"[^"]*"')
 
 # Everything LAssembler.var() turns into a constant instead of a variable:
@@ -266,10 +253,8 @@ _NUMERIC = re.compile(
     r"|%\[[A-Za-z]+\]"
     r")$")
 
-
 def is_number(t: str) -> bool:
     return bool(_NUMERIC.match(t))
-
 
 def tokenize(line: str) -> list[str]:
     """Split into tokens, keeping a quoted string as ONE token."""
@@ -294,7 +279,6 @@ def tokenize(line: str) -> list[str]:
             i = j
     return out
 
-
 def jump_parts(code: str):
     """(target, cond, value, value2) for a `jump` line, or None.
 
@@ -316,7 +300,6 @@ def jump_parts(code: str):
             toks[3] if len(toks) > 3 else None,
             toks[4] if len(toks) > 4 else None)
 
-
 def _vars(tokens) -> list[str]:
     """Filter operand tokens down to things that can actually be variables."""
     out = []
@@ -330,9 +313,7 @@ def _vars(tokens) -> list[str]:
         out.append(t)
     return out
 
-
 _PUNCT_NAME = re.compile(r"^[^A-Za-z0-9_@\"]*$")
-
 
 def _load_arity() -> dict[str, int]:
     """Tokens each mnemonic actually consumes (from `instr_semantics.json`).
@@ -354,9 +335,97 @@ def _load_arity() -> dict[str, int]:
             out[name.lower()] = n
     return out
 
-
 ARITY = _load_arity()
 
+def _load_instr_specs() -> dict[str, dict]:
+    """The same file again, with its structure: slot names, enum slots, sub-commands.
+
+    ARITY answers "how many tokens does the parser consume"; the checks added in
+    v0.19.0 need the rest of what `instr_semantics.json` already knows:
+
+      * `params`      -- which slot IS what (`radar` writes its RESULT in the
+                         last one; `sensor` writes into the first),
+      * `tokens`      -- text index -> Java enum, i.e. the slots whose value has
+                         to be one of a fixed word list,
+      * `subcommands` -- `ucontrol`'s per-sub-command `args`, because `ucontrol
+                         move <x> <y>` and `ucontrol build <x> <y> <block>
+                         <rotation> <config>` do not take the same operands.
+
+    Indices in `tokens` are PARAM indices (0 is the first operand after the
+    mnemonic; `radar`'s `0..2` are target1..target3), so the operand token is
+    `tokens[index + 1]` in the text.
+    """
+    try:
+        raw = (Path(__file__).with_name("instr_semantics.json")).read_text("utf-8")
+        data = json.loads(raw)
+    except Exception:
+        return {}
+    out: dict[str, dict] = {}
+    for name, spec in (data.get("instructions") or {}).items():
+        subs = spec.get("subcommands") or {}
+        out[name.lower()] = {
+            "arity": spec.get("arity"),
+            "params": [str(p).lower() for p in (spec.get("params") or [])],
+            "tokens": {int(k): str(v) for k, v in (spec.get("tokens") or {}).items()},
+            "subcommands": {str(k).lower(): [str(a) for a in ((v or {}).get("args") or [])]
+                            for k, v in subs.items()},
+        }
+    return out
+
+INSTR_SPECS = _load_instr_specs()
+
+def _load_enums() -> dict[str, list[str]]:
+    """Fixed word lists the parser resolves a slot against (`instr_enums.json`).
+
+    Read straight out of the v160.7 jar's enum classes (RadarTarget, RadarSort,
+    LLocate, BlockFlag, LUnitControl, LAccess.controls), cross-checked against
+    Logic-Docs-v1.1.0.md. Kept as a data file because the same lists are quoted
+    into the model prompt (mlogprovider.py) -- one table, two readers.
+    """
+    try:
+        raw = (Path(__file__).with_name("instr_enums.json")).read_text("utf-8")
+        data = json.loads(raw)
+    except Exception:
+        return {}
+    return {str(k): [str(v) for v in (vals or [])]
+            for k, vals in (data.get("enums") or {}).items()}
+
+ENUMS = _load_enums()
+
+#: How many OPERANDS each instruction must be given when the count is fixed by
+#: its signature. Derived, never guessed:
+#:   radar/uradar/sensor/ulocate -> `arity` in instr_semantics.json
+#:   ucontrol                    -> 1 + len(subcommands[sub]["args"])
+#:   control                     -> Logic-Docs-v1.1.0.md:3038-3140, which shows
+#:                                  one written form per type: `control enabled
+#:                                  <b> <v> 0 0 0` (3 operands before the zero
+#:                                  padding), `control shoot <b> <x> <y> <v> 0`
+#:                                  (5), `control shootp <b> <u> <v> 0 0` (4),
+#:                                  `control color|config <b> <v> 0 0 0` (3).
+#: `op` is deliberately absent: a missing operand there is filled by the
+#: statement's own default and compiles to a real instruction (see
+#: rules/arity-is-not-effective-params.json), so an under-arity warning would be
+#: the false positive that was deleted once already.
+_UNDER_ARITY_FIXED = ("radar", "uradar", "sensor", "ulocate")
+
+def _operand_min(name: str, toks: list[str]) -> int | None:
+    """Operands the signature requires, or None when the count is not fixed."""
+    spec = INSTR_SPECS.get(name) or {}
+    if name in _UNDER_ARITY_FIXED:
+        n = spec.get("arity")
+        return n if isinstance(n, int) else None
+    if name == "control":
+        if len(toks) < 2:
+            return None
+        return _OPERAND_MIN_CONTROL.get(toks[1].lower())
+    if name == "ucontrol":
+        if len(toks) < 2:
+            return None
+        args = (spec.get("subcommands") or {}).get(toks[1].lower())
+        return None if args is None else 1 + len(args)
+    return None
+
+_OPERAND_MIN_CONTROL = {"enabled": 3, "config": 3, "color": 3, "shoot": 5, "shootp": 4}
 
 def _load_sensor_props() -> set[str]:
     """The `LAccess` attributes a `sensor` instruction can read.
@@ -373,9 +442,7 @@ def _load_sensor_props() -> set[str]:
     except Exception:
         return set()
 
-
 SENSOR_PROPS = _load_sensor_props()
-
 
 def _load_content_names() -> dict[str, str]:
     """`name -> "item" | "liquid" | "block" | "unit" | "status"`.
@@ -403,9 +470,7 @@ def _load_content_names() -> dict[str, str]:
             out.setdefault(str(name).lower(), category)
     return out
 
-
 CONTENT_NAMES = _load_content_names()
-
 
 def _load_specs() -> dict[str, dict]:
     """`defs` / `uses` / `tokens` per mnemonic, from `instr_semantics.json`.
@@ -427,7 +492,6 @@ def _load_specs() -> dict[str, dict]:
             out[name.lower()] = spec
     return out
 
-
 SPECS = _load_specs()
 
 #: Mnemonic -> the parameter that names a *block link* rather than an ordinary
@@ -441,7 +505,6 @@ LINK_PARAMS: dict[str, str] = {
     "control": "target", "radar": "building", "setprop": "of",
     "bullet": "from", "read": "cell", "write": "cell",
 }
-
 
 def _load_link_slots(specs: dict[str, dict]) -> dict[str, frozenset[int]]:
     """mnemonic -> parameter indices that name a link (from instr_semantics.json)."""
@@ -458,8 +521,60 @@ def _load_link_slots(specs: dict[str, dict]) -> dict[str, frozenset[int]]:
         out[mnemonic] = frozenset({idx + 1})
     return out
 
-
 LINK_SLOTS = _load_link_slots(SPECS)
+
+def _load_block_names() -> set[str]:
+    """Every vanilla block's internal name, from the two tables next to this file.
+
+    Only used to answer "could the game have produced this link name?" -- a name
+    that no table feeds simply never matches, so a missing table degrades to
+    "say nothing" instead of inventing a warning.
+    """
+    out: set[str] = set()
+    for rel in ("block_attrs.json", "wiki_block_ids.json"):
+        try:
+            data = json.loads(
+                Path(__file__).with_name(rel).read_text(encoding="utf-8"))
+        except Exception:  # table optional: never break analysis over it
+            continue
+        blocks = data.get("blocks") or {}
+        if isinstance(blocks, dict):
+            for k, v in blocks.items():
+                out.add(k)
+                if isinstance(v, str):
+                    out.add(v)
+        elif isinstance(blocks, list):
+            out.update(x for x in blocks if isinstance(x, str))
+    return {n for n in out if re.fullmatch(r"[a-z][a-z0-9-]*", n)}
+
+#: Internal block names (`silicon-arc-furnace`), and the LAST '-' segment of
+#: each -- the stem the game actually puts in a link name.
+BLOCK_NAMES: set[str] = _load_block_names()
+LINK_BASES: set[str] = {n.split("-")[-1] for n in BLOCK_NAMES}
+
+def link_base_prefixes(stem: str, limit: int = 3) -> tuple[list[str], list[str]]:
+    """(bindable stems, sample block names) for a name stem, or ([], []).
+
+    `LogicBlock.getLinkName` (`Mindustry-Source/core/src/mindustry/world/blocks/
+    logic/LogicBlock.java:123-135`) keeps the text after the block name's last
+    '-' and `findLinkName` (`:331-360`) appends the link's 1-based index; on load
+    a stored name that does not start with that stem is rewritten. So `sw1`
+    cannot bind while `sw` is merely the beginning of `switch` / `swarmer` --
+    exactly the case that killed both buttons of the MG-4 device (the save
+    rewrote `sw1` to `switch1`, m00622). A stem no block name starts with is not
+    link-shaped at all (a modded block, or an ordinary variable ending in a
+    digit): report nothing rather than guess.
+    """
+    hits = sorted((n for n in BLOCK_NAMES if n.startswith(stem) and n != stem),
+                  key=lambda n: (len(n), n))
+    if not hits:
+        return [], []
+    bases: list[str] = []
+    for _n in hits:
+        _seg = _n.split("-")[-1]
+        if _seg not in bases:
+            bases.append(_seg)
+    return bases, hits[:limit]
 
 #: Statement -> the first vanilla build that understands it. Only the ones with a
 #: citable release note are listed (see `mindustry-blueprint/BUILDS.md`); everything
@@ -481,7 +596,6 @@ try:
 except Exception:  # the file is optional: never break analysis over it
     STATUS_NAMES = set()
 
-
 def _load_op_builds() -> dict[str, int]:
     """Operators that arrived after the v7 baseline (`emod`, `ushr` = v150)."""
     try:
@@ -492,13 +606,11 @@ def _load_op_builds() -> dict[str, int]:
     except Exception:
         return {}
 
-
 OP_MIN_BUILD: dict[str, int] = _load_op_builds()
 
 MIN_BUILD: dict[str, int] = {
     k: v["min_build"] for k, v in SPECS.items() if isinstance(v.get("min_build"), int)
 }
-
 
 def build_floor(stmts: list[tuple[int, str]]) -> tuple[int, list[str]]:
     """Oldest vanilla build that understands every statement here, plus which ones.
@@ -536,7 +648,6 @@ def build_floor(stmts: list[tuple[int, str]]) -> tuple[int, list[str]]:
     # reasons a program "needs build 146".
     users = sorted({n for n, b in hits if b == floor and b > BASELINE_BUILD})
     return floor, sorted(set(users))
-
 
 def _effective_params(p: list[str]) -> int:
     """How many parameters this instruction actually consumes, for the form in use.
@@ -581,7 +692,6 @@ def _effective_params(p: list[str]) -> int:
     arity = spec.get("arity")
     return arity if isinstance(arity, int) else max(len(p) - 1, 0)
 
-
 def _surplus_names(c: str) -> set[str]:
     """Names sitting in parameter slots the instruction never actually uses."""
     p = tokenize(c)
@@ -589,7 +699,6 @@ def _surplus_names(c: str) -> set[str]:
         return set()
     return {t for t in p[1 + _effective_params(p):]
             if not is_number(t) and not QUOTED.match(t) and t not in ("0", "null")}
-
 
 # Parameters the game reads as a BOOLEAN (`p1.bool()`). An unset name there is
 # 0, i.e. always false -- a constant, not a missing value. `ucontrol payTake`
@@ -604,7 +713,6 @@ _BOOL_PARAM: dict[tuple[str, str], int] = {
     ("setflag", ""): 2,
     ("spawnwave", ""): 3,
 }
-
 
 def _bool_slot(p: list[str]) -> int | None:
     """Index of this statement's boolean parameter, if it has one."""
@@ -621,6 +729,87 @@ def _bool_slot(p: list[str]) -> int | None:
             return _BOOL_PARAM[key]
     return None
 
+# ---- what the SLOT does with the null that an unset variable holds ---- #
+# An unset name reads as null.  Whether that is harmless or fatal is a property
+# of the slot, not of the name: LVar.num() / LVar.bool() turn null into 0 /
+# false, so the statement still runs with a value (INFO), while LVar.obj()
+# hands the null OBJECT to the instruction, which then either skips itself (a
+# link/unit/content guard, see LExecutor's instanceof checks) or writes null
+# onward (ERR).  So the severity of a never-assigned read is decided by the slot
+# the name sits in.
+_SLOT_NUM, _SLOT_BOOL, _SLOT_ANY, _SLOT_OBJ = "num", "bool", "any", "obj"
+
+#: Token index -> kind, for slots that are not plain numbers.  Token 0 is the
+#: mnemonic, so parameter p1 is token 1.  Link slots come from LINK_SLOTS
+#: (above) and are merged in by _slot_kinds().
+_NON_NUM_SLOTS = {
+    "set": {2: _SLOT_ANY},
+    "print": {1: _SLOT_ANY},
+    "format": {1: _SLOT_ANY},
+    "localeprint": {1: _SLOT_ANY},
+    "select": {4: _SLOT_ANY, 5: _SLOT_ANY},
+    "setprop": {3: _SLOT_ANY},
+    "setrule": {2: _SLOT_ANY},
+    "setflag": {2: _SLOT_ANY},
+    "clientdata": {2: _SLOT_ANY},
+    "effect": {5: _SLOT_ANY},
+    "sync": {1: _SLOT_ANY},
+    "ubind": {1: _SLOT_OBJ},
+    "setblock": {2: _SLOT_OBJ},
+    "status": {1: _SLOT_BOOL, 3: _SLOT_OBJ},
+    "radar": {6: _SLOT_BOOL},
+    "uradar": {6: _SLOT_BOOL},
+    "spawnwave": {3: _SLOT_BOOL},
+    "weatherset": {2: _SLOT_BOOL},
+    "playmusic": {2: _SLOT_BOOL},
+    "makemarker": {5: _SLOT_BOOL},
+    "fetch": {5: _SLOT_OBJ},
+}
+
+#: ucontrol <sub> ... -- the slots depend on the sub-command.
+_UCONTROL_SLOTS = {
+    "target": {2: _SLOT_OBJ},
+    "targetp": {2: _SLOT_OBJ, 3: _SLOT_BOOL},
+    "itemdrop": {2: _SLOT_OBJ, 3: _SLOT_OBJ},
+    "itemtake": {2: _SLOT_OBJ, 3: _SLOT_OBJ},
+    "paytake": {2: _SLOT_BOOL},
+    "boost": {2: _SLOT_BOOL},
+    "build": {2: _SLOT_OBJ, 4: _SLOT_ANY},
+    "deconstruct": {2: _SLOT_OBJ, 3: _SLOT_BOOL},
+}
+
+#: control <type> ... -- config takes a content or a number, shoot / shootp
+#: take coordinates plus a shoot flag, enabled a boolean.
+_CONTROL_SLOTS = {
+    "enabled": {3: _SLOT_BOOL},
+    "shoot": {5: _SLOT_BOOL},
+    "shootp": {3: _SLOT_OBJ, 5: _SLOT_BOOL},
+    "config": {3: _SLOT_ANY},
+}
+
+def _slot_kinds(p, name):
+    """Kinds of the parameter slots in which this statement reads a name.
+
+    Default is num: an unset name is null, and num() reads null as 0, so a
+    numeric slot does not fail -- it silently uses 0.
+    """
+    if not p:
+        return set()
+    mnem = p[0].lower()
+    table = {}
+    for i in LINK_SLOTS.get(mnem, ()):
+        table[i] = _SLOT_OBJ
+    table.update(_NON_NUM_SLOTS.get(mnem) or {})
+    sub = p[1].lower() if len(p) > 1 else ""
+    if mnem == "ucontrol":
+        table.update(_UCONTROL_SLOTS.get(sub) or {})
+    elif mnem == "control":
+        table.update(_CONTROL_SLOTS.get(sub) or {})
+    kinds = set()
+    for k in range(1, len(p)):
+        if p[k] == name:
+            kinds.add(table.get(k, _SLOT_NUM))
+    return kinds or {_SLOT_NUM}
 
 def _comment_stmt(c: str) -> bool:
     """True for `set <punctuation-name> <prose>` -- mlog's de-facto comment.
@@ -632,7 +821,6 @@ def _comment_stmt(c: str) -> bool:
     """
     p = tokenize(c)
     return len(p) >= 2 and p[0] == "set" and bool(_PUNCT_NAME.match(p[1]))
-
 
 def uses_of(c: str) -> list[str]:
     """Variables this statement READS (operators/keywords filtered out)."""
@@ -717,18 +905,15 @@ def uses_of(c: str) -> list[str]:
         return _vars(p[1:9])
     return _vars(p[1:6])
 
-
 _CMP_OPS = {"lessthan", "lessthaneq", "greaterthan", "greaterthaneq",
             "equal", "notequal", "strictequal"}
 _REACTOR_LINK = re.compile(r"^(?:nuclear-)?reactor\d*$", re.I)
-
 
 def _num_or_none(text: str) -> float | None:
     try:
         return float(text)
     except (TypeError, ValueError):
         return None
-
 
 def _guard_threshold(stmts: list[tuple[int, str]], var: str) -> float | None:
     """The constant this program compares a sensed value against."""
@@ -752,8 +937,13 @@ def _guard_threshold(stmts: list[tuple[int, str]], var: str) -> float | None:
                     return n
     return None
 
-
-def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> list[Finding]:
+def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2,
+            links_authoritative: bool = False) -> list[Finding]:
+    # links=None means "no link table was supplied" (a plain .mlog file); links=[]
+    # means "the table is known and it is empty".  links_authoritative says the
+    # caller got that empty table from the processor itself (the mod reads
+    # LogicBlock.links), not from a blueprint cropped out of a larger base, so
+    # the fragment heuristic below must not demote a real unbound reference.
     # Labels are resolved by prepare(), the only place that knows a label is not
     # a statement. Resolving them again here used to map a label to its LINE
     # index while prepare() used the STATEMENT index, so every `jump idle` on a
@@ -762,21 +952,94 @@ def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> l
     out: list[Finding] = []
     n = len(stmts)
 
-    # `jump <label>` with no such label: LParser resolves a missing label to -1
-    # (LParser.java:195-198 `jumpLocations.get(location, -1)`) and JumpI.run()
-    # guards `if(address != -1)`, so the jump does nothing at all and execution
-    # falls through. Almost always a renamed or mistyped label.
+    # `jump <label>` with no such label does NOT become a jump to -1. LParser
+    # remembers the label name (LParser.java:130-133) and, at the end of
+    # parse(), any jump whose label was never defined makes parse() throw
+    # (LParser.java:181-202: `Invalid code. Undefined jump location: "nope".
+    # Make sure the jump label exists and is typed correctly.`). LAssembler.read
+    # rethrows it (LAssembler.java:53-57), and LogicBlock.updateCode() catches
+    # every Exception and loads an EMPTY program instead
+    # (LogicBlock.java:430-432: `executor.load(LAssembler.assemble(code = "", ...))`).
+    # So the whole processor stops -- every statement is lost, not just this
+    # jump -- which is why a missing label is ERR. (Measured on v160.7,
+    # out/_noop_matrix2.py: the read throws, it does not return a statement.)
     for _idx, (_i, _c) in enumerate(stmts):
         _t = _c.split()
-        if len(_t) < 2 or _t[0].lower() != "jump":
+        if len(_t) < 2 or _t[0] != "jump":
             continue
         try:
             int(_t[1])
         except ValueError:
             out.append(Finding(
-                "WARN", _i + 1, "no-target-jump",
-                f"`{_t[1]}` is not a label in this program, so the game turns this "
-                f"into a jump to -1, which does nothing; execution just falls through"))
+                "ERR", _i + 1, "no-target-jump",
+                f"`{_t[1]}` is not a label in this program: LParser.parse() throws "
+                f"`Invalid code. Undefined jump location` for it, and "
+                f"LogicBlock.updateCode() catches that exception by loading an "
+                f"EMPTY program -- the whole processor stops running, every "
+                f"statement after it is lost, so this is not a fall-through"))
+
+    # ---- a first token that is not an instruction at all -------------------
+    # LParser's unknown-mnemonic branch builds an InvalidStatement
+    # (LParser.java:171-173), which the game shows as `noop` and never runs.
+    # INSTR_SPECS is the whitelist: the 53 statement names registered in the
+    # v160.7 jar (LStatements.java @RegisterStatement, mirrored in
+    # instr_semantics.json). The comparison is CASE-SENSITIVE on purpose -- the
+    # names are registered in lower case, so `RADAR`, `NOOP` and `END` are all
+    # InvalidStatement in game (probed on v160.7, out/_noop_matrix2.py), while
+    # the LUnitControl sub-commands have their own camelCase spelling.
+    # Labels are dropped by prepare(); `#` comments never reach stmts; a line
+    # whose first token is `;` starts no instruction at all.
+    for _i, _c in stmts:
+        _t = tokenize(_c)
+        if not _t:
+            continue
+        _first = _t[0].lstrip(";")
+        if not _first:
+            continue
+        if _first in INSTR_SPECS:
+            continue
+        out.append(Finding(
+            "ERR", _i + 1, "unknown-instruction",
+            f"`{_first}` is not an instruction in v160.7: the parser has no such "
+            f"mnemonic, so it replaces the whole line with InvalidStatement and "
+            f"this line silently never runs (the rest of the program still loads)"))
+
+    # jump 12: a numeric target written by hand. NOT an error, and it must not be
+    # reported as one: the in-game logic editor can only write numbers (user m06173,
+    # 2026-11-03: the editor's jump target is a number field), so a numeric target
+    # is the normal form of every program that has been edited in the editor. What
+    # is worth one line is the drift risk: a literal target is a promise about the
+    # statements above it, so inserting or deleting one statement shifts every
+    # target below it. One finding per program, not one per jump -- six branches
+    # would otherwise put the same sentence on the panel six times. The failure this
+    # note is about is out/takeover-20261024/98-quality-analysis.md section 2:
+    # jump 12 / jump 5, each one line off, one branch never executed and a radar
+    # fired exactly once. Range and reachability are checked separately below
+    # (jump-target-out-of-range, unreachable-statement).
+    _num_jumps: list[tuple[int, str]] = []
+    for _i, _raw in enumerate(lines):
+        _c = strip_comment(_raw)
+        if "aigenerated:" in _c:
+            # The signature idiom jump 0 always 0 "aigenerated:MAI:<12hex>" is
+            # written by tools/aigenerated.py on purpose (target 0 = restart the
+            # program, the id lives in the value slot); it is not the numeric
+            # confusion this note is about.
+            continue
+        _t = _c.split()
+        if len(_t) < 2 or _t[0].lower() != "jump" or not is_number(_t[1]):
+            continue
+        _num_jumps.append((_i, _t[1]))
+    if _num_jumps:
+        _where = ", ".join("L%d" % (_i + 1) for _i, _v in _num_jumps[:8])
+        if len(_num_jumps) > 8:
+            _where += " ..."
+        out.append(Finding(
+            "INFO", _num_jumps[0][0] + 1, "numeric-jump",
+            f"{len(_num_jumps)} numeric jump target(s) ({_where}): the in-game editor "
+            f"can only write numbers, so this is the normal form, not a mistake -- but a "
+            f"literal target is a promise about the statements above it, so inserting or "
+            f"deleting one statement shifts every target below it; re-check them after "
+            f"editing (0-based: the first statement is 0)"))
 
     # ---- 病毒逻辑 / virus logic: `ucontrol build ... @this` ---------------
     # The last argument of `ucontrol build` is the config copied onto the new
@@ -802,6 +1065,150 @@ def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> l
                 f"runs the same code and builds more -- 病毒逻辑 (virus logic), "
                 f"i.e. self-replication; check the rest of the program before importing "
                 f"the map"))
+
+    # ---- radar/uradar: the 6th operand is a sort DIRECTION, not a count ----
+    # LStatements.java:485-547 -> RadarI. The operands are
+    #   radar  <t1> <t2> <t3> <sort> <building> <order> <output>
+    # and LExecutor.java:753 is `int sortDir = sortOrder.bool() ? 1 : -1;`, so
+    # the order operand is a boolean: 5 is simply "true". The statement has ONE
+    # output (LExecutor.java:802 output.setobj(targeted)) and no count at all.
+    # 蓝图逻辑模式库.md used to teach a count ("at most 10, it is really the Nth
+    # one"), which is how this program shape got written; the doc is fixed and
+    # tests/docsig/ checks the signature, but a program copied from the old
+    # page still deserves one line. Measured on v160.7 (out/_radar_probe.py):
+    # `radar enemy any any distance turret1 5 u` -> out=u, sortOrder=___5.0.
+    for _idx, (_i, _c) in enumerate(stmts):
+        _t = _c.split()
+        if len(_t) < 7 or _t[0].lower() not in ("radar", "uradar"):
+            continue
+        _num = _num_or_none(_t[6])
+        if _num is not None and _num > 1:
+            out.append(Finding(
+                "WARN", _i + 1, "radar-takes-no-count",
+                f"`{_t[6]}` sits in the sort-direction slot of `{_t[0]}`, which the "
+                f"engine reads as a boolean (1 ascending, anything else descending) "
+                f"and the statement returns ONE unit -- there is no count operand; "
+                f"writing {_t[6]} does not make it look for {_t[6]} units"))
+
+    # ---- too few operands for the signature (v0.19.0) ----------------------
+    # The analyzer has always trimmed SURPLUS operands (defs_of/uses_of cap at
+    # `arity`); a line that is one operand SHORT was silent, which is how the
+    # prompt's own example library shipped `control shoot turret1 target 0` --
+    # one operand short of `control shoot <block> <x> <y> <on>` -- as a shape the
+    # gate accepted (out/takeover-20261024/98-quality-analysis.md §3-§4).
+    # Only the signature-sensitive instructions are checked. `op add r 1` is NOT
+    # a finding: the statement fills its missing slot with its own default and
+    # still compiles to a real OpI, which is the false positive that was deleted
+    # once already -- the reasoning is pinned in
+    # rules/arity-is-not-effective-params.json.
+    for _idx, (_i, _c) in enumerate(stmts):
+        _t = tokenize(_c)
+        if not _t:
+            continue
+        _name = _t[0].lower()
+        _need = _operand_min(_name, _t)
+        if _need is None:
+            continue
+        _have = len(_t) - 1
+        if _have >= _need:
+            continue
+        _params = ", ".join((INSTR_SPECS.get(_name) or {}).get("params") or [])
+        out.append(Finding(
+            "WARN", _i + 1, "under-arity",
+            f"`{_name}` is short by {_need - _have} operand(s): the signature reads "
+            f"{_need} here ({_params or 'operand count'}) and this line has {_have}, "
+            f"so the operands you left out are not the ones the engine will act on -- "
+            f"the parser fills each missing slot with the statement's DEFAULT value, "
+            f"so the line still compiles and runs, just with different values than "
+            f"written (a wrong-but-running line, not a line the game turns off)"))
+
+    # ---- slots the parser resolves against a fixed word list (v0.19.0) -----
+    # `radar enemy any any distance turret1 1 out` works because RadarTarget has
+    # a constant literally named `enemy`: the slot is an enum word, not a
+    # variable and not a number, so a word the enum does not have is not a
+    # filter. Same for `control`'s first operand (the five members of
+    # LAccess.controls), `ulocate`'s mode and flag, `ucontrol`'s command, and
+    # the ConditionOp of `jump`/`select`. The slot table comes from
+    # instr_semantics.json `tokens`, the word lists from instr_enums.json (read
+    # out of the v160.7 jar) -- nothing here is a hand-written guess.
+    #
+    # Severity is ERR, and the comparison is CASE-SENSITIVE, because that is
+    # what the parser does: the slot is resolved against the enum, a miss
+    # becomes an InvalidStatement (LParser.java:142-147), the whole line is
+    # shown as `noop` and never runs -- it does not fall back to a variable
+    # read. Probed on v160.7 (out/_noop_matrix2.py, out/_probe_extra.py):
+    # `radar Enemy..`, `radar .. foo ..`, `control Enabled..`,
+    # `jump 0 Equal..`, `select r eq..`, `ulocate mine..`,
+    # `ulocate building foo..` (and a numeric flag) are all InvalidStatement,
+    # while the proper spellings are real statements. The LUnitControl
+    # sub-commands are camelCase in the enum (`payTake`, `itemTake`,
+    # `autoPathfind`, `getBlock`), so `ucontrol paytake..` is also invalid.
+    # `op`/`sensor` content slots are NOT included -- they have rules of their
+    # own (unknown-op, sensor-not-a-property) and their slot may legitimately be
+    # a variable in ways these enum slots cannot.
+    _enum_alias = {"LAccess": "ControlType"}
+    _enum_checked = ("RadarTarget", "RadarSort", "ControlType", "LLocate",
+                     "ConditionOp", "BlockFlag", "LUnitControl")
+    for _idx, (_i, _c) in enumerate(stmts):
+        _t = tokenize(_c)
+        if not _t or _t[0] not in INSTR_SPECS:
+            continue                      # unknown mnemonic: reported above
+        _name = _t[0]
+        _spec = INSTR_SPECS[_name]
+        for _pos, _enum in sorted((_spec.get("tokens") or {}).items()):
+            _enum = _enum_alias.get(_enum, _enum)
+            if _enum not in _enum_checked:
+                continue
+            _vals = ENUMS.get(_enum) or []
+            if not _vals or _pos + 1 >= len(_t):
+                continue
+            _val = _t[_pos + 1]
+            if _val in _vals:
+                continue
+            if _enum == "BlockFlag" and _val in ("0", "null"):
+                # ulocate-flag-invalid owns exactly this case; a second ERR on
+                # the same operand would read as two independent mistakes.
+                continue
+            _words = "|".join(_vals)
+            _op = _pos + 1
+            _sig = (f"{_name} <target1> <target2> <target3> <sort> "
+                    f"<building> <order> <output>")
+            if _enum == "RadarTarget":
+                _msg = (f"`{_val}` is not a radar filter: operand {_op} of "
+                        f"`{_sig}` takes only {_words} (v160.7, case-sensitive) "
+                        f"-- the slot is an enum word, not a variable or a number")
+            elif _enum == "RadarSort":
+                _msg = (f"`{_val}` is not a radar sort key: operand {_op} of "
+                        f"`{_sig}` takes only {_words} (v160.7, case-sensitive) "
+                        f"-- the slot is an enum word, not a variable")
+            elif _enum == "ControlType":
+                _msg = (f"`{_val}` is not a control type: operand 1 of `control` takes "
+                        f"only {_words} (v160.7, case-sensitive), then the block, then "
+                        f"that type's own operands (`control shoot <block> <x> <y> "
+                        f"<on>`)")
+            elif _enum == "LLocate":
+                _msg = (f"`{_val}` is not a ulocate mode: operand 1 of `ulocate` takes "
+                        f"only {_words} (v160.7, case-sensitive)")
+            elif _enum == "ConditionOp":
+                _msg = (f"`{_val}` is not a condition: operand {_op} of `{_name}` "
+                        f"takes only {_words} (v160.7, case-sensitive) -- the parser "
+                        f"resolves this slot against ConditionOp, and a word it "
+                        f"cannot match replaces the whole line with InvalidStatement, "
+                        f"so the branch/jump never happens")
+            elif _enum == "BlockFlag":
+                _msg = (f"`{_val}` is not a block flag: operand 2 of `ulocate` takes "
+                        f"only {_words} (v160.7, case-sensitive) -- this slot is "
+                        f"always a BlockFlag word, never a number; an unknown word "
+                        f"makes the whole line InvalidStatement, so outX/outY/found/"
+                        f"outBuild are never written")
+            else:
+                _msg = (f"`{_val}` is not a unit control command: operand 1 of "
+                        f"`ucontrol` takes only {_words} (v160.7, case-sensitive -- "
+                        f"`payTake`, `itemTake`, `autoPathfind`, `getBlock` are "
+                        f"camelCase); an unknown word makes the whole line "
+                        f"InvalidStatement, so nothing the command was meant to do "
+                        f"happens")
+            out.append(Finding("ERR", _i + 1, "slot-not-in-enum", _msg))
 
     # Link names are bound by the processor itself, not by an assignment, so
     # they are live from the very first statement. We also auto-detect them by
@@ -922,8 +1329,39 @@ def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> l
             _tok = _p[_slot]
             if (is_number(_tok) or _tok == "null" or _tok.startswith("@")
                     or _tok.startswith('"') or _PUNCT_NAME.match(_tok)
-                    or _tok in ever_defined or LINK_RE.match(_tok)
+                    or _tok in ever_defined
                     or _HYPHEN_NAME.match(_tok)):
+                continue
+            # A name ending in a digit is only a *possible* link. Whether the
+            # game could have produced it is a second question: the stem must
+            # be a block name's last '-' segment (`switch1`), not merely a
+            # beginning of one (`sw1`), because load() rewrites the stored name
+            # to the real one and the old spelling stays null forever (m00622).
+            _shape = re.fullmatch(r"([A-Za-z_]\w*?)(\d+)", _tok)
+            if _shape:
+                _stem = _shape.group(1).lower()
+                if _stem in LINK_BASES:
+                    continue  # `switch1` / `bank1` / `cell1`: binds for real
+                _bases, _names = link_base_prefixes(_stem)
+                if _bases:
+                    _hit = ", ".join("`" + _v + "`" for _v in _names)
+                    out.append(Finding(
+                        "WARN", _ln + 1, "link-name-base-mismatch",
+                        f"`{_tok}` looks like a link name but cannot bind: the game "
+                        f"builds a link's name from the block's LAST name segment "
+                        f"plus a 1-based index, and `{_stem}` is only the beginning "
+                        f"of {_hit} -- the save writes that link back as "
+                        f"`{_bases[0]}<its index>`, so the spelling here stays an "
+                        f"unassigned variable: everything reading `{_tok}` reads "
+                        f"null, and every comparison against it is false. Measured "
+                        f"on v160.7, MG-4 device (m00622): `sw1`/`sw2` came back as "
+                        f"`switch1`/`switch2` after a load and both switches read "
+                        f"null. Write the real base and its index -- e.g. "
+                        f"`{_bases[0]}1`. A modded block whose name begins with "
+                        f"`{_stem}` is not in this vanilla table: then ignore this"))
+                # A stem that no vanilla block name starts with is either a
+                # modded block or an ordinary variable ending in a digit:
+                # nothing is provable statically, so stay silent on purpose.
                 continue
             out.append(Finding(
                 "WARN", _ln + 1, "link-name-unbindable",
@@ -1187,7 +1625,7 @@ def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> l
                     # target block was left outside the copied region, not
                     # because the author asked for a link that never existed --
                     # still null at runtime, so INFO with honest wording.
-                    if not link_vars and len(stmts) > 200:
+                    if not links_authoritative and not link_vars and len(stmts) > 200:
                         out.append(Finding(
                             "INFO", orig + 1, c,
                             f"`{v}` is shaped like a block link, but this "
@@ -1216,7 +1654,7 @@ def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> l
             bslot = _bool_slot(p)
             if bslot is not None and len(p) > bslot and p[bslot] == v:
                 out.append(Finding(
-                    "WARN", orig + 1, c,
+                    "INFO", orig + 1, c,
                     f"`{v}` is never assigned, and this parameter is read as a "
                     f"boolean -- so it is constantly 0 (false). Harmless if "
                     f"that is the intent; a typo of `true`/`false` lands here"))
@@ -1260,22 +1698,34 @@ def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> l
             if v in _index_only:
                 _index_only_sites.setdefault(v, []).append((orig + 1, c))
                 continue
-            out.append(Finding(
-                "ERR", orig + 1, c,
-                f"`{v}` is mentioned (so it is declared, with the initial value "
-                f"null) but is never assigned anywhere in this program; reading "
-                f"it here yields null (and it is not a link or built-in)"))
+            _kinds = _slot_kinds(p, v)
+            if _kinds <= {_SLOT_NUM, _SLOT_BOOL}:
+                out.append(Finding(
+                    "INFO", orig + 1, c,
+                    f"`{v}` is never assigned, and every slot this statement "
+                    f"reads it in is numeric/boolean -- mlog turns null into 0 there, "
+                    f"so this runs with 0/false. Usually a forgotten `set` or a "
+                    f"typo; only `===` can tell null from 0"))
+            else:
+                out.append(Finding(
+                    "ERR", orig + 1, c,
+                    f"`{v}` is mentioned (so it is declared, with the initial "
+                    f"value null) but is never assigned anywhere in this program, and "
+                    f"this statement reads it in a {'/'.join(sorted(_kinds))} slot -- "
+                    f"the slot receives the null OBJECT, not 0, so the instruction "
+                    f"either skips itself (a link/unit/content target) or writes null "
+                    f"onward"))
 
     for _v, _sites in _index_only_sites.items():
         _ln0, _c0 = _sites[0]
         out.append(Finding(
-            "ERR", _ln0, _c0,
+            "INFO", _ln0, _c0,
             f"`{_v}` is never assigned, and it is used only as a memory cell "
             f"index ({len(_sites)} statement(s), first at line {_sites[0][0]}) "
-            f"-- every one of them addresses "
-            f"null, so all {len(_sites)} fail. A program that indexes cells with a "
-            f"variable it never sets is usually a fragment: the variable is "
-            f"written by another processor in the same base"))
+            f"-- the address slot is numeric and null reads as 0 there, so all "
+            f"{len(_sites)} of them address cell 0. A program that indexes cells "
+            f"with a variable it never sets is usually a fragment: the variable "
+            f"is written by another processor in the same base"))
 
     # ---- status: the effect slot (bare name vs @status-<name>) -------------
     # `status <clear> <effect> <unit> <duration>`. The slot changed shape:
@@ -1373,7 +1823,10 @@ def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> l
             continue
         if not (0 <= tgt < n):
             out.append(Finding("ERR", orig + 1, c,
-                               f"jump target {tgt} out of range (0..{n-1})"))
+                               f"jump target {tgt} out of range (0..{n-1}): jump takes a "
+                               f"0-based STATEMENT index, so the last statement is {n-1} and a "
+                               f"larger target does nothing at all -- execution just falls "
+                               f"through. If you counted 1-based line numbers, subtract 1"))
             continue
         # Only UNCONDITIONAL into UNCONDITIONAL is a chain: then the second hop
         # is guaranteed and one instruction is spent for nothing. A conditional
@@ -1675,6 +2128,25 @@ def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> l
                 f"ramp that never explodes -- so this is a question, not a "
                 f"verdict"))
 
+    # ---- statements that can never run (v0.13.2) ---------------------------
+    # The cost model has always computed this (cost_report -> "UNREACHABLE"),
+    # but it lived in a report nobody opens at write time.  A program whose jump
+    # target is off by one jumps INTO the middle of a block: the statement it
+    # skipped can never run, the program still parses, and the analyzer used to
+    # call it clean.  Promote it to a finding so it reaches the job, the panel
+    # and the retry hint (measured: out/jobs/43fe34c6557e3eeb.json, `jump 12`
+    # where the label was at 11, so `control shootp ... null 0` never ran).
+    if stmts:
+        _live = reachable_set(stmts)
+        for _k, (_ln, _c) in enumerate(stmts):
+            if _k in _live:
+                continue
+            out.append(Finding(
+                "WARN", _ln + 1, "unreachable-statement",
+                "this statement can never run: no jump reaches it and the "
+                "statement before it does not fall through, so a jump target is "
+                "usually off by one"))
+
     # dedupe, keep order
     # Every finding above was created against the RAW line index (orig + 1),
     # because that is what someone counting in a text editor expects. But `jump
@@ -1697,11 +2169,9 @@ def analyse(lines: list[str], links: list[str] | None = None, ipt: int = 2) -> l
     uniq.sort(key=lambda f: (order.get(f.sev, 9), f.line))
     return uniq
 
-
 _INT = re.compile(r"^-?\d+$")
 _SET_COUNTER = re.compile(r"^set\s+@counter\s+(\S+)")
 _OP_COUNTER = re.compile(r"^op\s+(\w+)\s+@counter\s+(\S+)\s+(\S+)")
-
 
 def _counter_target(i: int, c: str, n: int) -> list[int] | None:
     """Successors of a computed `@counter` write, or None if it is not one.
@@ -1748,7 +2218,6 @@ def _counter_target(i: int, c: str, n: int) -> list[int] | None:
         return list(range(n))
     return [tgt] if 0 <= tgt < n else []
 
-
 def _cfg(stmts: list[tuple[int, str]]) -> list[list[int]]:
     """Control-flow successors for each statement index.
 
@@ -1790,7 +2259,6 @@ def _cfg(stmts: list[tuple[int, str]]) -> list[list[int]]:
         succ.append([i + 1] if i + 1 < n else [0])
     return succ
 
-
 def reachable_set(stmts: list[tuple[int, str]]) -> set[int]:
     """Statement indices reachable from entry 0."""
     succ = _cfg(stmts)
@@ -1804,7 +2272,6 @@ def reachable_set(stmts: list[tuple[int, str]]) -> set[int]:
         stack.extend(succ[i])
     return seen
 
-
 # a loop-guard comparison, in either of the two forms mlog uses:
 #   op   lessThan idx CONST
 #   jump <target> lessThan idx CONST
@@ -1817,7 +2284,6 @@ _BACKJUMP = re.compile(r"^jump\s+(-?\d+)\s+(\S+)")
 
 COND_OPS = {"lessThan", "lessThanEq", "greaterThan", "greaterThanEq"}
 
-
 def _bound_from_guard(a: str, b: str) -> int | None:
     """If one operand is a literal > 1, that literal is the trip-count hint."""
     const = None
@@ -1829,7 +2295,6 @@ def _bound_from_guard(a: str, b: str) -> int | None:
         return None
     cand = int(abs(const))
     return cand if cand > 1 else None
-
 
 def find_loop_bounds(stmts: list[tuple[int, str]]) -> dict[int, int]:
     """Best-effort loop trip counts.
@@ -1875,7 +2340,6 @@ def find_loop_bounds(stmts: list[tuple[int, str]]) -> dict[int, int]:
             bounds[target] = max(bounds.get(target, 0), best)
     return bounds
 
-
 def prepare(lines: list[str]) -> list[tuple[int, str]]:
     """Statements for analysis: comments stripped, labels dropped, jumps resolved.
 
@@ -1910,7 +2374,6 @@ def prepare(lines: list[str]) -> list[tuple[int, str]]:
         out.append((ln, code))
     return out
 
-
 def wait_ticks(stmts: list[tuple[int, str]],
                bounds: dict[int, int],
                loops: list[tuple[int, int, int]]) -> list[tuple[int, int | None]]:
@@ -1943,7 +2406,6 @@ def wait_ticks(stmts: list[tuple[int, str]],
                 mult *= max(bound, 1)
         out.append((ln, int(round(sec * 60)) * mult))
     return out
-
 
 def cost_report(stmts: list[tuple[int, str]],
                 links: list[str] | None = None) -> str:
@@ -2155,7 +2617,6 @@ def cost_report(stmts: list[tuple[int, str]],
                      f"({', '.join(links[:6])}{'...' if len(links) > 6 else ''})")
     return "\n".join(lines)
 
-
 def show(path: str, findings: list[Finding]) -> int:
     errs = [f for f in findings if f.sev in ("ERR", "SUSPECT")]
     warns = [f for f in findings if f.sev == "WARN"]
@@ -2167,7 +2628,6 @@ def show(path: str, findings: list[Finding]) -> int:
         print("  no issues found")
     print(f"  -> {len(errs)} error/ suspect, {len(warns)} warning, {len(infos)} info")
     return 1 if errs else 0
-
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
@@ -2203,9 +2663,7 @@ def main() -> int:
                          [l.name for l in t.logic.links])
     return rc
 
-
 _CP_RE = re.compile(r'^(read|write)\s+(\S+)\s+(\S+)\s+"([^"]*)"')
-
 
 def cross_processor(tiles) -> list[Finding]:
     """Check `read`/`write` string addressing between logic processors.
@@ -2255,7 +2713,6 @@ def cross_processor(tiles) -> list[Finding]:
                 f"there first (the game does not create it on demand), so this "
                 f"{kind} does nothing"))
     return out
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

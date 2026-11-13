@@ -25,6 +25,12 @@
 | `line_regex` | 可选：命中行应长什么样 | precision 无法测量 |
 | `auto_downgrade` | 允许 R2 自动降级 | 高噪声规则要人工发现 |
 | `observed` | R2 写回：命中数/程序数/占比 | 没人知道它现在有多吵 |
+| `surface` | 可选，目前只有 `blueprint`：这条规则只在 `analyse_blueprint()` 里可能命中（要读别的处理器的变量表），`.mlog` fixture 永远碰不到 | `tests/ruleids/run_ruleids.py` 会把它当死规则报错 |
+
+**每条规则都必须被某个 fixture 真的点火一次**（`tests/ruleids/run_ruleids.py`，
+也在 gate 里）。写规则时顺手写 `tests/cases/<rid>.mlog`：只写反例的规则在
+`rule_capture.py lint` 里也是绿的——lint 只证明「反例不命中」，不证明「正例能命中」。
+改 `match.msg_any` 就必须重跑 `run_ruleids.py --write`，diff 就是这次改动的复核。
 
 ## 三种 kind，一条硬规矩
 
@@ -68,7 +74,7 @@ python tools/rule_audit.py --apply        # 把实测数字写回 rules/*.json
 - `rule_capture.py` 无法读聊天记录。它只能把**已经写成一句话**的纠正落成文件；
   「我意识到用户刚才否掉了什么」这一步仍然是手动的。
 - R3（源码差分）、R4（与 mindcode 模拟器对拍）、R5（覆盖挖掘）还没实现，
-  但零件都有：`tools/corpus/_sweep_saves.py`（分桶）、`C:\Users\<you>\src\mindcode-dist\mindcode.jar`（第二实现）。
+  但零件都有：`tools/corpus/_sweep_saves.py`（分桶）、`<mindcode-dist>/mindcode.jar`（第二实现）。
 
 ## 审计之后改过的
 
@@ -82,6 +88,7 @@ python tools/rule_audit.py --apply        # 把实测数字写回 rules/*.json
 | 「状态效果改版，裸名变 null」 | 新 `status_names.json` + INFO `is the name of a status effect` |
 | 「A 是无效参数，不影响」（`fetch ...Count`） | `uses_of` 不再把 count 类型的 `index` 当变量读 |
 | 外部语料反馈（ref m02993）：0 链接且 >200 行降 INFO / 同名字索引操作数汇总 / 模组内容文案 | `link-name-not-bound` 拆出 INFO 版 `link-name-unbound-fragment`（Anon 语料 896 条/44 程序）；`undefined-var` 的纯索引变量按名字汇总（11,165 → 4,093）；两条 `sensor-not-a-property` 文案点明「原版 v160 快照，模组内容不认识」 |
+| 未赋值变量两条规则合并（ref m07644）：{B}undefined-var-read{B}（ERR）与 {B}undefined-var-is-not-automatically-an-error{B}（INFO） | 合成单条 {B}undefined-var-read{B}，严重度改由**槽位类型**决定：num/bool 槽 → INFO（{B}numi(){B}/{B}bool(){B} 把 null 读成 0/false），其它槽 → ERR（{B}obj(){B} 把 null 对象交给指令，要么自己跳过要么把 null 写下去）。{B}bool-param-constantly-zero{B} 随之 WARN → INFO；{B}rule_ids.rule_id(){B} 平票改由规则 id 决定（原来取决于「该规则最长的那条 key」，会让宽规则抢走窄规则的命中） |
 
 两条教训：
 
@@ -104,5 +111,7 @@ python tools/rule_audit.py --apply        # 把实测数字写回 rules/*.json
 | `jump-to-jump-chain` | 10 | 10 |
 | `constant-null-guard` | 4 | 4 |
 | `printflush-clears-buffer` | 1 | 1 |
+
+注：上表第 2 行的 `undefined-var-is-not-automatically-an-error` 已在 2026-10-29 合并进 `undefined-var-read`（ref m07644，见上表最后一行）；这里保留当时的审计记录，不改写历史。
 
 含义：这 7 类在 20 张社区地图的样本上**没有假阳性**。它不等于"这些规则的证明是对的"——样本只覆盖这 20 张图，换语料仍要重跑 `review.py run`。

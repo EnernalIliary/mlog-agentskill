@@ -34,10 +34,8 @@ LOOP = re.compile(r'for\s*\(\s*int\s+\w+\s*=\s*1\s*;\s*\w+\s*<=\s*Vars\.maxBlock
 
 CAMEL = re.compile(r"(?<!^)(?=[A-Z])")
 
-
 def camel_to_kebab(s: str) -> str:
     return CAMEL.sub("-", s).lower()
-
 
 def build_order(lines: list[str]) -> list[str]:
     """Ordered list of vanilla block names, including bulk-constructed ones.
@@ -78,7 +76,6 @@ def build_order(lines: list[str]) -> list[str]:
         if m:
             push(m.group(3))
     return order
-
 
 def main() -> None:
     with open(BLOCKS, encoding="utf-8") as fh:
@@ -146,7 +143,6 @@ def main() -> None:
         w = wiki_by_name.get(want)
         print(f"   {want:22} source#{s if s is not None else '-':<5} "
               f"wiki={w if w is not None else '-'}")
-
 
 if __name__ == "__main__":
     main()

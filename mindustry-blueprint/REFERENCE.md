@@ -147,7 +147,6 @@ instructions[(int)(counter.numval++)].run(this);   // ← 无条件 +1
 **`jump 0 always` 没有这个机制,会在一个 tick 内把额度烧光。**
 改写循环前先用 `mlog.py check --cost` 看最坏路径(§15.11、§15.12 有完整机制)。
 
-
 ## 1. 链接与命名
 
 ### 1.1 链接名规则
@@ -850,7 +849,6 @@ python tools/mschgen.py --selftest
 5. **`end` 用对地方了吗?**(§8 第 4 条) —— `end` 是**跳回开头**,不能用来"结束一个分支后继续往下"
 
 ---
-
 
 ## 15. 静态检查工具 `tools/mlogcheck.py`
 

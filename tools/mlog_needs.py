@@ -45,13 +45,11 @@ MEMORY_RE = re.compile(r"^(cell|bank)\d+$")
 KEYS = ("sensors", "ubind", "ucontrol", "ulocate", "radar_filters",
         "radar_blocks", "blocks", "links", "globals", "atoms")
 
-
 def _blank(name: str) -> dict:
     rec = {"name": name, "instructions": 0, "error": None}
     for k in KEYS:
         rec[k] = {}
     return rec
-
 
 def _record(name: str, code: str, links: dict[str, str] | None = None) -> dict:
     """Scan one program. `links` maps link name -> block type when known."""
@@ -115,7 +113,6 @@ def _record(name: str, code: str, links: dict[str, str] | None = None) -> dict:
                 rec["atoms"][tok.text] = rec["atoms"].get(tok.text, 0) + 1
     return rec
 
-
 def scan_file(path: Path) -> list[dict]:
     suffix = path.suffix.lower()
     if suffix == ".msch":
@@ -137,11 +134,9 @@ def scan_file(path: Path) -> list[dict]:
     text = path.read_text(encoding="utf-8-sig", errors="replace")
     return [_record(path.name, text)]
 
-
 def _merge(into: dict, add: dict) -> None:
     for k, v in add.items():
         into[k] = into.get(k, 0) + v
-
 
 def _markdown(doc: dict) -> str:
     lines = ["# mlog world needs", "",
@@ -167,7 +162,6 @@ def _markdown(doc: dict) -> str:
                 lines.append("| `%s` | %d |" % (k, v))
         lines.append("")
     return "\n".join(lines)
-
 
 def main(argv: list[str]) -> int:
     ap = argparse.ArgumentParser(description="Inventory world symbols used by mlog programs")
@@ -249,7 +243,6 @@ def main(argv: list[str]) -> int:
     else:
         print(json.dumps(doc, ensure_ascii=False, indent=2))
     return 0
-
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv[1:]))

@@ -64,7 +64,6 @@ _NUM_RE = re.compile(
     r"|0[bB][01]+"
     r")$|^%[0-9a-fA-F]{6}(?:[0-9a-fA-F]{2})?$|^%\[[A-Za-z]+\]$")
 
-
 @dataclass(frozen=True)
 class Tok:
     text: str
@@ -87,7 +86,6 @@ class Tok:
     def __str__(self) -> str:
         return self.text
 
-
 def classify(text: str) -> str:
     if text.startswith('"'):
         return KIND_STR
@@ -98,7 +96,6 @@ def classify(text: str) -> str:
     if text in ("true", "false"):
         return KIND_NUM
     return KIND_VAR
-
 
 def tokenize(line: str) -> list[Tok]:
     """Split one mlog statement into tokens.
@@ -138,7 +135,6 @@ def tokenize(line: str) -> list[Tok]:
         out.append(Tok(text, classify(text)))
         i = j
     return out
-
 
 # --------------------------------------------------------------------------- #
 # instruction semantics
@@ -208,8 +204,6 @@ DEFAULT_KEYWORDS: dict[str, list[int]] = {
 
 _TABLE_CACHE: dict | None = None
 
-
-
 def load_table(path: str | None = None) -> dict:
     """Load instr_semantics.json merged over DEFAULT_TABLE."""
     global _TABLE_CACHE
@@ -242,7 +236,6 @@ def load_table(path: str | None = None) -> dict:
     except Exception:
         _TABLE_CACHE = merged
     return _TABLE_CACHE
-
 
 # --------------------------------------------------------------------------- #
 # statements
@@ -292,14 +285,12 @@ class Stmt:
     def __str__(self) -> str:
         return f"L{self.line}: {self.raw}"
 
-
 def strip_comment(line: str) -> str:
     """Drop a comment line. mlog comments start with '#' at the beginning of a line."""
     s = line.strip().lstrip("\ufeff")
     if not s or s.startswith("#"):
         return ""
     return s
-
 
 def _resolve_spec(stmt_mnemonic: str, args: list[Tok], table: dict) -> dict:
     spec = table.get(stmt_mnemonic)
@@ -315,12 +306,10 @@ def _resolve_spec(stmt_mnemonic: str, args: list[Tok], table: dict) -> dict:
             return sub
     return spec
 
-
 def _index_set(val, nargs: int) -> set[int]:
     if val == "all":
         return set(range(nargs))
     return {int(i) for i in val if int(i) < nargs}
-
 
 def build_stmt(index: int, line_no: int, raw: str, table: dict) -> Stmt:
     toks = tokenize(raw)
@@ -427,7 +416,6 @@ def build_stmt(index: int, line_no: int, raw: str, table: dict) -> Stmt:
         declares=declares,
         unknown=not known,
     )
-
 
 # --------------------------------------------------------------------------- #
 # program
@@ -654,7 +642,6 @@ class Program:
 
         return [(i, v, kind(v)) for i, v in self.dead_stores()]
 
-
 def _is_label(body: str) -> str | None:
     """A line whose only token ends with ':' is a jump label, not a statement."""
     toks = tokenize(body)
@@ -663,7 +650,6 @@ def _is_label(body: str) -> str | None:
         if t.endswith(":") and len(t) > 1:
             return t[:-1]
     return None
-
 
 def parse(source: str | list[str], table: dict | None = None) -> Program:
     tbl = table if table is not None else load_table()
@@ -695,7 +681,6 @@ def parse(source: str | list[str], table: dict | None = None) -> Program:
             continue
         st.args[0] = Tok(str(labels[t.text]), KIND_NUM)
     return Program(stmts, labels)
-
 
 # --------------------------------------------------------------------------- #
 # self-check

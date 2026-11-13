@@ -57,7 +57,6 @@ SECTION_HELP = {
 }
 ALL_SECTIONS = list(SECTION_HELP)
 
-
 # --------------------------------------------------------------------------- #
 # targets: a .mlog file is one target, a .msch is one target per logic block
 # --------------------------------------------------------------------------- #
@@ -71,7 +70,6 @@ def _add_blueprint(out, p: str) -> None:
         out.append((f"{p} [{t.block} @({t.x},{t.y})]",
                     t.logic.code.split("\n"),
                     [l.name for l in t.logic.links]))
-
 
 def _targets(args) -> list[tuple[str, list[str], list[str] | None]]:
     out: list[tuple[str, list[str], list[str] | None]] = []
@@ -91,7 +89,6 @@ def _targets(args) -> list[tuple[str, list[str], list[str] | None]]:
     for p in args.msch:
         _add_blueprint(out, p)
     return out
-
 
 # --------------------------------------------------------------------------- #
 # measurements -- computed for the verdict line; the printing is delegated so
@@ -130,7 +127,6 @@ def _measure(lines: list[str], links: list[str] | None) -> dict:
         if _check.build_floor(_check.prepare(lines))[0] > _check.BASELINE_BUILD else 0,
     }
 
-
 def _verdict(m: dict) -> str:
     bits = [f"check {m['errs']}E/{m['warns']}W",
             f"dead-code {m['dead']}",
@@ -141,7 +137,6 @@ def _verdict(m: dict) -> str:
     if m.get("build"):
         bits.append(f"build >={m['build']}")
     return "  | ".join(bits)
-
 
 def _first_stop(m: dict) -> str:
     """What a human should open first, in the order the evidence gets weaker."""
@@ -160,7 +155,6 @@ def _first_stop(m: dict) -> str:
     if m["unknown"]:
         return "未知助记符 -- 先确认拼写,或它来自非原版"
     return "没问题 -- 这份逻辑的静态层面是干净的"
-
 
 # --------------------------------------------------------------------------- #
 # report
@@ -240,13 +234,13 @@ def cmd_report(args) -> int:
         print(f"  {label}\n    -> {_first_stop(m)}")
     return rc
 
-
 # --------------------------------------------------------------------------- #
 # info
 # --------------------------------------------------------------------------- #
 
 _DATA = ["wiki_block_ids.json", "block_sizes.json", "cmd_index.json",
-         "item_ids.json", "instr_semantics.json", "content_names.json",
+         "item_ids.json", "instr_semantics.json", "instr_enums.json",
+         "content_names.json",
          "unit_attrs.json", "block_attrs.json", "sensor_attrs.json", "status_names.json"]
 # aigenerated.py is a runtime dependency of mlog.py (:87 imports it) even
 # though nothing else here imports it; leaving it out shipped a stale copy.
@@ -256,10 +250,11 @@ _MODULES = ["mlog.py", "aigenerated.py", "mlogcheck.py", "mlogir.py",
             "mlogval.py", "mlogpack.py", "mlogcross.py", "msch.py",
             "mschgen.py", "mlogagent.py", "rule_ids.py"]
 
-
 def _sha(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
-
+    # Line-ending-insensitive: git checkouts (autocrlf) rewrite LF as CRLF,
+    # and a manifest generated on the author box would false-STALE on CI.
+    # Every payload is text (.py/.json), so normalizing to LF is safe.
+    return hashlib.sha256(path.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
 
 def cmd_info(args) -> int:
     print(f"mlogagent at {HERE}")
@@ -305,7 +300,6 @@ def cmd_info(args) -> int:
         return 1 if bad else 0
     return 0
 
-
 # --------------------------------------------------------------------------- #
 
 def main() -> int:
@@ -337,7 +331,6 @@ def main() -> int:
 
     args = ap.parse_args()
     return args.fn(args)
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

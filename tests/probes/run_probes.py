@@ -26,6 +26,16 @@ What a probe may assert
     processor "world"|"auto"    block to place ("auto" sniffs PRIVILEGED_RE)
     rules {field: value}        Vars.state.rules overrides applied before compiling
                                 (e.g. allowLogicData, which gates clientdata)
+    units [["mono", 1]]         unit spec spawned before the program runs
+                                (default [["flare", 1]])
+    setup_js "..."              JS run after the program compiled and the units exist,
+                                but before the first instruction executes -- for probes
+                                that need the world in a state (kill the bound unit, hand
+                                it to another processor). `b` is this processor's
+                                building; `W` is Vars.world, `team` is Team.sharded.
+                                The whole script is joined into ONE console line, so
+                                ASI does not exist: every statement needs its own ';'
+                                (a setup ending in 'void 0' is a syntax error).
 
 Usage
 -----
@@ -86,6 +96,24 @@ if(b === null || b.executor === null){ print('NOPROC'); } else {
 void 0
 '''
 
+#: reads the compiled radar instruction's fields.  The point is not the values a
+#: player sees but the SHAPE: `radar`/`uradar` have exactly one output LVar and
+#: their 6th operand is a sort direction (an LVar read as a boolean), so there is
+#: no slot where a count could live.
+RADAR_JS = r'''
+var b = Vars.world.build(%d, %d);
+if(b === null || b.executor === null){ print('NOPROC'); } else {
+    var ins = b.executor.instructions;
+    for(var i = 0; i < ins.length; i++){
+        var c = String(ins[i].getClass().getSimpleName());
+        if(c.indexOf('Radar') < 0) continue;
+        var r = ins[i];
+        print('RAD\t' + c + '\toutput=' + r.output.name + '\tsortOrder=' + r.sortOrder.name +
+              '\tsort=' + r.sort + '\ttarget1=' + r.target1);
+    }
+}
+void 0
+'''
 
 def as_lines(out):
     """srv.js() returns a list of lines on some paths and a string on others."""
@@ -95,10 +123,8 @@ def as_lines(out):
         return out.splitlines()
     return [str(x) for x in out]
 
-
 def probe_js(names):
     return JS % json.dumps({n: 1 for n in names})
-
 
 def read_effects(lines):
     got = {}
@@ -109,13 +135,26 @@ def read_effects(lines):
         got[name] = (int(float(dur)), has == 'true')
     return got
 
-
 def read_classes(srv):
     for line in as_lines(srv.js(CLASSES_JS % srv.base)):
         if line.startswith('CLS\t'):
             return [x for x in line.split('\t', 1)[1].split(',') if x]
     return []
 
+def read_radar(srv):
+    """[{field: value}] for every compiled radar instruction (usually one)."""
+    got = []
+    for line in as_lines(srv.js(RADAR_JS % srv.base)):
+        if not line.startswith('RAD\t'):
+            continue
+        parts = line.split('\t')
+        rec = {'class': parts[1]}
+        for kv in parts[2:]:
+            if '=' in kv:
+                k, v = kv.split('=', 1)
+                rec[k] = v
+        got.append(rec)
+    return got
 
 def num_close(got, want):
     try:
@@ -123,8 +162,7 @@ def num_close(got, want):
     except (TypeError, ValueError):
         return str(got) == str(want)
 
-
-def check(p, rec, effects, classes):
+def check(p, rec, effects, classes, radar=None):
     """Return the list of failed assertions; empty means the probe passed."""
     bad = []
     for name, want in (p.get('expect') or {}).items():
@@ -159,6 +197,14 @@ def check(p, rec, effects, classes):
         if name not in classes:
             bad.append('class %s missing (got %s)' % (name, classes))
 
+    if 'expect_radar' in p:
+        if len(radar or []) != 1:
+            bad.append('want exactly 1 radar instruction, got %d' % len(radar or []))
+        else:
+            for k, want in p['expect_radar'].items():
+                got = radar[0].get(k)
+                if str(got) != str(want):
+                    bad.append('radar %s want %r got %r' % (k, want, got))
     text = (rec or {}).get('text')
     if text is None:
         text = ''
@@ -170,7 +216,6 @@ def check(p, rec, effects, classes):
     if p.get('expect_text_empty') and text != '':
         bad.append('text want empty got %r' % (text,))
     return bad
-
 
 def run_one(p, java, M):
     """One probe, one server, one verdict: ("pass"|"fail"|"skip", id, why).
@@ -187,7 +232,7 @@ def run_one(p, java, M):
     try:
         srv = M.Server(java, jar)
         srv._core_spec = 'copper:100'
-        srv._unit_spec = [['flare', 1]]
+        srv._unit_spec = p.get('units') or [['flare', 1]]
         srv.prepare()
         for field, value in (p.get('rules') or {}).items():
             # Server.js() ends a console command by waiting for the line
@@ -197,10 +242,17 @@ def run_one(p, java, M):
             srv.js('Vars.state.rules.%s = %s; void 0' % (
                 field, 'true' if value is True else
                 'false' if value is False else json.dumps(value)))
+        # ticks=1 drives updateTile() with Time.delta=1, so statements with a
+        # time component (wait) and per-tick machinery (AI control leases) behave
+        # like the game; steps= counts instructions and cannot express "600 ticks".
+        ticks = bool(p.get('ticks'))
         rec = M.run_mlog(srv, 'p', p['code'], steps=int(p.get('steps', 20)),
-                         processor=proc)
+                         ticks=ticks,
+                         update=p.get('update') or ('all' if ticks else 'none'),
+                         processor=proc, setup_js=p.get('setup_js'))
         effects = read_effects(as_lines(srv.js(probe_js(names))))
         classes = read_classes(srv)
+        radar = read_radar(srv) if 'expect_radar' in p else []
     except Exception as exc:
         return ('fail', p['id'], '%s: %s' % (type(exc).__name__, str(exc)[:120]))
     finally:
@@ -209,11 +261,10 @@ def run_one(p, java, M):
                 srv.close()
             except Exception:
                 pass
-    bad = check(p, rec, effects, classes)
+    bad = check(p, rec, effects, classes, radar)
     if bad:
         return ('fail', p['id'], '; '.join(bad))
     return ('pass', p['id'], '')
-
 
 def main(argv=None):
     argv = list(argv if argv is not None else sys.argv[1:])
@@ -249,6 +300,16 @@ def main(argv=None):
     else:
         rows = [run_one(pr, java, M) for pr in probes]
 
+    # A run killed by a gate timeout used to leave its JVM behind (61 of them once
+    # starved the box).  Server now puts every child in a kill-on-close job, so
+    # new leftovers should be impossible; this sweeps whatever older runs left.
+    try:
+        stale = M.sweep_orphans()
+    except Exception:
+        stale = []
+    if stale:
+        print('swept %d stale JVM(s): %s' % (len(stale), ' '.join(str(x) for x in stale)))
+
     passed, failed, skipped = [], [], []
     for kind, pid, why in rows:
         if kind == 'pass':
@@ -269,7 +330,6 @@ def main(argv=None):
     if failed:
         return 1
     return 0 if passed else 3
-
 
 if __name__ == '__main__':
     raise SystemExit(main())

@@ -17,7 +17,7 @@
   "hits": 0,
   "programs": 0,
   "share": 0.0,
-  "dir": "C:\\Users\\<you>\\AppData\\Roaming\\Mindustry\\saves"
+  "dir": "<data>/Mindustry/saves"
  },
  "state": "silent -- no longer reported (nothing local is checkable)"
 }

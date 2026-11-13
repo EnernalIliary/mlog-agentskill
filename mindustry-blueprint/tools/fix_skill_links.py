@@ -32,7 +32,6 @@ ROOT_ONLY = {
     "scan_mod_blocks.py", "fix_skill_links.py",
 }
 
-
 def find_root(start: str, explicit: str | None = None) -> str | None:
     if explicit:
         return os.path.abspath(explicit)
@@ -45,7 +44,6 @@ def find_root(start: str, explicit: str | None = None) -> str | None:
             break
         cur = parent
     return None
-
 
 def main() -> int:
     if len(sys.argv) < 2:
@@ -113,7 +111,6 @@ def main() -> int:
         for b in sorted(broken)[:5]:
             print("      ", b)
     return 1 if total_broken else 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

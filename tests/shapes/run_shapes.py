@@ -72,10 +72,8 @@ CHECKS = [
 VARIANTS = [("pad1", " 0"), ("pad2", " 0 0"), ("pad5", " 0 0 0 0 0"),
             ("comment", "  # padded")]
 
-
 def rids(lines, links):
     return {f.rid for f in mlogcheck.analyse(list(lines), links=links)}
-
 
 def main() -> int:
     verbose = "-v" in sys.argv or "--verbose" in sys.argv
@@ -110,7 +108,6 @@ def main() -> int:
           % (len(CHECKS), len(VARIANTS),
              "FAILED (%d)" % bad if bad else "all still fire"))
     return 1 if bad else 0
-
 
 if __name__ == "__main__":
     sys.exit(main())

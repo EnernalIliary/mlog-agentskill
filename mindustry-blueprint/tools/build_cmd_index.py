@@ -14,7 +14,6 @@ import sys
 DOC = os.path.join("Logic", "Logic-Docs-v1.1.0 (1).md")
 OUT = os.path.join("tools", "cmd_index.json")
 
-
 def main() -> None:
     with open(DOC, encoding="utf-8") as fh:
         lines = fh.read().split("\n")
@@ -74,7 +73,6 @@ def main() -> None:
     for c in chapters:
         first = c["format"].split("\n")[0] if c["format"] else "(no format block)"
         print(f"{c['num']:>3} | {c['title'][:34]:<34} | {first[:60]}")
-
 
 if __name__ == "__main__":
     main()

@@ -32,7 +32,6 @@ import mlogval as _val
 
 CROSS = re.compile(r'^(read|write)\s+(\S+)\s+(\S+)\s+"([^"]*)"\s*$')
 
-
 @dataclass
 class Unit:
     """One processor: its program plus its links resolved to absolute tiles."""
@@ -41,7 +40,6 @@ class Unit:
     code: list[str]
     links: dict[str, tuple[int, int]] = field(default_factory=dict)
 
-
 @dataclass
 class Read:
     unit: str
@@ -49,7 +47,6 @@ class Read:
     name: str
     target: tuple[int, int]
     local: str = ""
-
 
 @dataclass
 class Slot:
@@ -68,7 +65,6 @@ class Slot:
             v = _val.join(v, w)
         return v
 
-
 @dataclass
 class Report:
     slots: dict[tuple[tuple[int, int], str], Slot] = field(default_factory=dict)
@@ -78,7 +74,6 @@ class Report:
     exact: list[tuple[Read, str]] = field(default_factory=list)
     dead_writes: list[Slot] = field(default_factory=list)
     unresolved: int = 0
-
 
 def _own_values(prog: "_ir.Program", state: "_val.Analysis") -> dict[str, "_val.V"]:
     """Join over every assignment to each local variable.
@@ -97,7 +92,6 @@ def _own_values(prog: "_ir.Program", state: "_val.Analysis") -> dict[str, "_val.
             own[d] = v if d not in own else _val.join(own[d], v)
     return own
 
-
 def _consumed(prog: "_ir.Program") -> set[str]:
     """Names the program actually reads.
 
@@ -110,7 +104,6 @@ def _consumed(prog: "_ir.Program") -> set[str]:
     for st in prog.stmts:
         seen |= {u for u in st.uses if not u.startswith("@")}
     return seen
-
 
 def analyze_units(units: list[Unit]) -> Report:
     rep = Report()
@@ -164,7 +157,6 @@ def analyze_units(units: list[Unit]) -> Report:
             rep.dead_writes.append(slot)
     return rep
 
-
 def units_from_schematic(sch) -> list[Unit]:
     """Resolve every logic block's links into absolute tile coordinates.
 
@@ -188,7 +180,6 @@ def units_from_schematic(sch) -> list[Unit]:
             code=t.logic.code.split("\n"),
             links=links))
     return units
-
 
 def slot_values(rep: "Report",
                 units: "list[Unit]") -> dict[tuple[int, int], dict[tuple[str, str], "_val.V"]]:
@@ -222,7 +213,6 @@ def slot_values(rep: "Report",
                 continue
             out.setdefault(u.pos, {})[(link, name)] = known
     return out
-
 
 def format_report(rep: Report, label: str = "") -> str:
     out = [f"=== {label}" if label else "==="]

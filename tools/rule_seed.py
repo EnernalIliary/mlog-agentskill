@@ -151,22 +151,6 @@ SEED = [
         "auto_downgrade": False,
     },
     {
-        "id": "undefined-var-is-not-automatically-an-error",
-        "kind": "semantics",
-        "severity": "INFO",
-        "claim": "A never-assigned variable used only in `print` is a signature; used only as a "
-                 "null guard it is a constant-false branch; only other uses are errors.",
-        "why": "The editor lists every referenced name, so authors sign their work with a bare "
-               "identifier (`print by:NOSB(hghg`). Counting those as errors produced 883 hard "
-               "errors on a community pack; classifying them cut it to 367.",
-        "source": "user",
-        "ref": "m07232",
-        "since": "2026-10-18",
-        "counter_example": "tests/cases/virus-logic.mlog",
-        "match": {"sevs": ["INFO", "WARN", "ERR"], "msg_any": ["never assigned", "signature only"]},
-        "auto_downgrade": False,
-    },
-    {
         "id": "surplus-parameter-is-not-an-error",
         "kind": "semantics",
         "severity": "WARN",
@@ -314,16 +298,25 @@ SEED = [
         "id": "undefined-var-read",
         "kind": "semantics",
         "severity": "ERR",
-        "claim": "Reading a variable that is never assigned and is not a link or built-in is a "
-                 "hard error: it silently reads 0.",
-        "why": "This is the residual after signatures (print-only), comments (punctuation-only) "
-               "and constant null guards are peeled off — see "
-               "undefined-var-is-not-automatically-an-error for those.",
+        "claim": "Reading a variable that is never assigned (and is not a link or built-in) "
+                 "yields null. What happens next is decided by the SLOT: a numeric or boolean "
+                 "slot reads null as 0/false (INFO), any other slot (content, unit, block, "
+                 "link, or the payload of set/print) receives the null OBJECT (ERR).",
+        "why": "The editor lists every referenced name, so authors sign their work with a bare "
+               "identifier (`print by:NOSB(hghg`); counting those as errors produced 883 hard "
+               "errors on a community pack, so signature and comparison cases stay INFO "
+               "(print-only, printflush without a message block, a set destination never read, "
+               "punctuation-only names; a null comparison is claimed by constant-null-guard). "
+               "The rest splits on the slot because LExecutor reads number slots with numi() / "
+               "bool() (null -> 0, LExecutor.java:634) but hands obj() to every other slot, "
+               "which then either skips itself (instanceof guard) or writes null onward.",
         "source": "source",
-        "ref": "m07232",
+        "ref": "m07644",
         "since": "2026-10-18",
         "counter_example": "tests/cases/reactor-guard-ok.mlog",
-        "match": {"sevs": ["ERR"], "msg_any": ["is read here but is never assigned"]},
+        "match": {"sevs": ["ERR", "WARN", "INFO"],
+                  "msg_any": ["is never assigned", "is mentioned (so it is declared",
+                              "signature only"]},
         "auto_downgrade": False,
     },
     {
@@ -449,7 +442,6 @@ SEED = [
 ]
 # fmt: on
 
-
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--force", action="store_true", help="overwrite records that already exist")
@@ -468,7 +460,6 @@ def main(argv: list[str] | None = None) -> int:
         written += 1
     print(f"rules: {written} written, {kept} kept ({len(SEED)} in seed)")
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

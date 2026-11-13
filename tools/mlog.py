@@ -93,7 +93,6 @@ try:
 except Exception:                     # pragma: no cover - non-TTY pipes
     pass
 
-
 def _load_json(name: str) -> dict:
     p = os.path.join(HERE, name)
     try:
@@ -101,7 +100,6 @@ def _load_json(name: str) -> dict:
             return json.load(fh)
     except Exception:
         return {}
-
 
 BLOCK_IDS = _load_json("wiki_block_ids.json").get("blocks", {})
 BLOCK_SIZES = _load_json("block_sizes.json")
@@ -111,7 +109,6 @@ SENSOR_ATTRS = _load_json("sensor_attrs.json").get("access", {})
 ITEM_NAME_TO_ID = {v: int(k) for k, v in ITEM_IDS.items()}
 UNIT_ATTRS = _load_json("unit_attrs.json")
 BLOCK_ATTRS = _load_json("block_attrs.json")
-
 
 # --------------------------------------------------------------------------- #
 # loading: a blueprint can arrive in two shapes with the same suffix
@@ -135,7 +132,6 @@ def _load_schematic(path: str):
     except Exception as exc:                      # noqa: BLE001 - report, don't trace
         raise SystemExit(f"!! {path}: not a .msch binary and not a base64 "
                          f"blueprint ({exc})")
-
 
 # --------------------------------------------------------------------------- #
 # parse
@@ -199,7 +195,6 @@ def cmd_parse(args) -> int:
             print(t.logic.code.rstrip("\n"))
             print()
     return 0
-
 
 # --------------------------------------------------------------------------- #
 # gen
@@ -320,7 +315,6 @@ def cmd_gen(args) -> int:
     print(base64.b64encode(data).decode())
     return 0
 
-
 # --------------------------------------------------------------------------- #
 # check
 # --------------------------------------------------------------------------- #
@@ -338,12 +332,10 @@ def _report(label: str, findings: list, show_rule: bool = False) -> int:
     print()
     return 1 if errs else 0
 
-
 def _cost(lines: list[str], links: list[str] | None = None) -> None:
     """Print the reachability / loop-bound / instruction-cost summary."""
     print(_check.cost_report(_check.prepare(lines), links))
     print()
-
 
 def _split_targets(args):
     """Positional paths split by suffix: `.msch` is a blueprint, the rest is text.
@@ -357,7 +349,6 @@ def _split_targets(args):
         (mascs if str(q).lower().endswith(".msch") else text).append(q)
     mascs += list(getattr(args, "msch", None) or [])
     return text, mascs
-
 
 def cmd_check(args) -> int:
     rc = 0
@@ -379,7 +370,6 @@ def cmd_check(args) -> int:
             if args.cost:
                 _cost(lines, names)
     return rc
-
 
 # --------------------------------------------------------------------------- #
 # ir -- structural / dataflow view
@@ -411,11 +401,9 @@ _LITERAL = re.compile(r"^(?:-?\d+(?:\.\d+)?|true|false|@\S+|\"[^\"]*\")$")
 _FULLWIDTH = re.compile(
     "[\uff01-\uff0f\uff1a-\uff20\uff3b-\uff40\uff5b-\uff5e\u3000-\u303f]")
 
-
 def _text(t) -> str:
     """A token's text, whichever shape `mlogir` hands us (Tok or str)."""
     return getattr(t, "text", t)
-
 
 def odd_names(prog) -> dict[str, list[int]]:
     """Variables whose name contains fullwidth punctuation, with their lines.
@@ -430,7 +418,6 @@ def odd_names(prog) -> dict[str, list[int]]:
                 continue
             weird.setdefault(v, []).append(s.line)
     return weird
-
 
 def _ir_tier(prog, i: int, v: str, kind: str) -> str:
     """`reported`, `slot` (forced by syntax), `declaration` or `annotation`."""
@@ -455,7 +442,6 @@ def _ir_tier(prog, i: int, v: str, kind: str) -> str:
                                    for a in s.args[1:]):
         return "declaration"
     return "reported"
-
 
 def _ir_report(label: str, lines: list[str], show_all: bool = False) -> int:
     prog = _ir.parse(lines)
@@ -527,7 +513,6 @@ def _ir_report(label: str, lines: list[str], show_all: bool = False) -> int:
     print()
     return 0
 
-
 def cmd_ir(args) -> int:
     rc = 0
     _text_targets, _msch_targets = _split_targets(args)
@@ -553,7 +538,6 @@ def cmd_ir(args) -> int:
             rc |= 1 if f.sev == "ERR" else 0
     return rc
 
-
 def _val_report(label: str, lines: list[str],
                 traces: list[str] | None = None,
                 slots: dict | None = None) -> int:
@@ -574,7 +558,6 @@ def _val_report(label: str, lines: list[str],
         if not rows:
             print("      (never written)")
     return 0
-
 
 def cmd_values(args) -> int:
     rc = 0
@@ -598,7 +581,6 @@ def cmd_values(args) -> int:
                               known.get((t.x, t.y)))
     return rc
 
-
 def cmd_cross(args) -> int:
     """Cross-processor `read`/`write`: resolve each read against its writers.
 
@@ -615,7 +597,6 @@ def cmd_cross(args) -> int:
         rep = _cx.analyze_units(_cx.units_from_schematic(sch))
         print(_cx.format_report(rep, p))
     return 0
-
 
 def cmd_pack(args) -> int:
     """Recognise packed-config encode/decode and report field capacity."""
@@ -636,7 +617,6 @@ def cmd_pack(args) -> int:
                 _ir.parse(t.logic.code.split("\n")), item_count=item_count,
                 label=f"{p} [{t.block} @({t.x},{t.y})]"))
     return rc
-
 
 # --------------------------------------------------------------------------- #
 # id / cmd reference
@@ -659,7 +639,6 @@ def cmd_id(args) -> int:
         v = BLOCK_IDS[k]
         print(f"  {k:>4}  {_gen.block_size(v):<2}  {v}")
     return 0
-
 
 def cmd_sensor(args) -> int:
     """List what `sensor` can read: one property per line, with what it means."""
@@ -697,7 +676,6 @@ def cmd_sensor(args) -> int:
         print("\n  filter by name or meaning: `mlog.py sensor heat`")
         print("  only the writable ones:       `mlog.py sensor --settable`")
     return 0
-
 
 def cmd_item(args) -> int:
     """Item content ids, plus decoding of the common packed-config idiom."""
@@ -747,7 +725,6 @@ def cmd_item(args) -> int:
     print("tip: mlog.py item --unpack <number>  decodes "
           "status*1e8 + outputID*1e6 + inputMask")
     return 0
-
 
 def cmd_unit(args) -> int:
     """Unit stats from `UnitTypes.java`: the first decision when writing logic."""
@@ -810,7 +787,6 @@ def cmd_unit(args) -> int:
             if rec.get("immune_to"):
                 print(f"               immune to: {', '.join(rec['immune_to'])}")
     return 0
-
 
 def cmd_block(args) -> int:
     """What a block accepts, produces and holds -- recipes straight from source."""
@@ -921,7 +897,6 @@ def cmd_block(args) -> int:
             print("      " + "; ".join(extra))
     return 0
 
-
 def _cheap_profile(code: list[str]) -> tuple[collections.Counter, set[str], str]:
     """Opcodes, identifiers and quoted text, without building the IR.
 
@@ -948,10 +923,8 @@ def _cheap_profile(code: list[str]) -> tuple[collections.Counter, set[str], str]
                 names.add(tok.lower())
     return ops, names, " ".join(strings).lower()
 
-
 def _find_cache_path() -> str:
     return os.path.join(HERE, ".find_cache.json")
-
 
 def _load_find_cache() -> dict:
     try:
@@ -960,7 +933,6 @@ def _load_find_cache() -> dict:
     except Exception:
         return {}
 
-
 def _store_find_cache(cache: dict) -> None:
     try:
         with open(_find_cache_path(), "w", encoding="utf-8") as fh:
@@ -968,11 +940,9 @@ def _store_find_cache(cache: dict) -> None:
     except Exception:
         pass
 
-
 def _corpus_dir() -> str:
     return os.environ.get("MLOG_CORPUS") or os.path.join(
         os.path.expanduser("~"), "AppData", "Roaming", "Mindustry", "schematics")
-
 
 def cmd_find(args) -> int:
     """Find the corpus blueprint that looks most like a described job.
@@ -1079,14 +1049,12 @@ def cmd_find(args) -> int:
         print(f"    read it : python mlog.py ir --msch \"{full_path(root, path)}\"")
     return 0
 
-
 # Mnemonics whose first argument is a keyword, never a variable.
 _STYLE_ENUM1 = {"op", "ucontrol", "draw", "control", "ulocate", "getblock",
                 "lookup", "radar", "uradar", "status", "fetch", "setblock",
                 "setprop", "cutscene", "effect", "setmarker", "setrule"}
 _STYLE_LINK = re.compile(r"^[a-z][a-z-]*\d+$")
 _STYLE_WORD = re.compile(r"[A-Za-z_\u4e00-\u9fff]")
-
 
 def _style_names(code: list[str]) -> collections.Counter:
     """Variable names, weighted by how often they appear, minus the non-names.
@@ -1125,7 +1093,6 @@ def _style_names(code: list[str]) -> collections.Counter:
                 continue
             counts[tok] += 1
     return counts
-
 
 def _style_shape(code: list[str]) -> list[str]:
     """The habits that make a block recognisable, as short phrases."""
@@ -1170,7 +1137,6 @@ def _style_shape(code: list[str]) -> list[str]:
         notes.append("set-heavy (data-first, few branches)")
     return notes
 
-
 def _style_cost(code: list[str], links: list[str]) -> str:
     """The two lines of `--cost` worth quoting: cycle length and processor ticks."""
     try:
@@ -1183,7 +1149,6 @@ def _style_cost(code: list[str], links: list[str]) -> str:
         if t.startswith("worst-case path") or t.startswith("micro-processor"):
             keep.append(t)
     return " ; ".join(keep) if keep else "(no cost lines)"
-
 
 def _style_block(root: str, path: str, label: str, code: list[str],
                  links: list[str], score: int, dump: int) -> list[str]:
@@ -1220,7 +1185,6 @@ def _style_block(root: str, path: str, label: str, code: list[str],
             out.append(f"      … ({len(code) - dump} more lines)")
     out.append(f'    read it : python mlog.py ir --msch "{full_path(root, path)}"')
     return out
-
 
 def cmd_style(args) -> int:
     """Show how the corpus writes a job, before I write it myself.
@@ -1338,10 +1302,8 @@ def cmd_style(args) -> int:
                 print(f"    {v}x {k}")
     return 0
 
-
 def full_path(root: str, name: str) -> str:
     return os.path.join(root, name)
-
 
 def cmd_cmd(args) -> int:
     if not CMD_INDEX:
@@ -1367,7 +1329,6 @@ def cmd_cmd(args) -> int:
         return 1
     return 0
 
-
 # --------------------------------------------------------------------------- #
 # explain -- syntax from cmd_index.json merged with semantics from LExecutor.java
 # --------------------------------------------------------------------------- #
@@ -1378,13 +1339,11 @@ _INSTR = {k.lower(): (k, v)
 _DISAGREE = [d for d in ((SEMANTICS.get("docs_crosscheck") or {})
                          .get("disagreements") or []) if isinstance(d, dict)]
 
-
 def _kv(label: str, text: str, indent: int = 13) -> None:
     """`  label   : text`, wrapped so continuation lines stay aligned."""
     print(textwrap.fill(str(text), width=94,
                         initial_indent=f"  {label:<{indent}} ",
                         subsequent_indent=" " * (indent + 4)))
-
 
 def _slots(idxs, params) -> str:
     if not idxs:
@@ -1395,12 +1354,10 @@ def _slots(idxs, params) -> str:
         out.append(f"{i}={nm}")
     return ", ".join(out)
 
-
 def _bullet(text: str, indent: int = 18) -> None:
     print(textwrap.fill(str(text), width=94,
                         initial_indent=" " * indent + "- ",
                         subsequent_indent=" " * (indent + 2)))
-
 
 def _explain_ops(args) -> int:
     meta = SEMANTICS.get("ops_meta") or {}
@@ -1426,7 +1383,6 @@ def _explain_ops(args) -> int:
         print(f"  (no operator matching {args.sub!r})")
         return 1
     return 0
-
 
 def cmd_explain(args) -> int:
     key = args.name.strip().lower()
@@ -1533,7 +1489,6 @@ def cmd_explain(args) -> int:
         _kv("evidence", d.get("evidence", ""))
     return 0
 
-
 # --------------------------------------------------------------------------- #
 # text: read what a message block (信息板) actually says
 # --------------------------------------------------------------------------- #
@@ -1545,10 +1500,8 @@ _MARKUP = re.compile(r"\[[^\]]{1,24}\]")
 _PUA = re.compile("[\ue000-\uf8ff]")
 _STRING_BLOCKS = ("message", "world-message", "world-label")
 
-
 def _plain(s: str) -> str:
     return _PUA.sub("", _MARKUP.sub("", s)).strip()
-
 
 def cmd_text(args) -> int:
     files = list(args.files)
@@ -1584,7 +1537,6 @@ def cmd_text(args) -> int:
             print(body)
     return rc
 
-
 # --------------------------------------------------------------------------- #
 
 # --------------------------------------------------------------------------- #
@@ -1594,7 +1546,6 @@ def cmd_text(args) -> int:
 _IPT = {"micro-processor": 2, "logic-processor": 8,
         "hyper-processor": 25, "world-processor": 8,
         "world-cell": 8, "world-message": 8}
-
 
 def cmd_map(args) -> int:
     """Pull each processor out of a save and run the same checks as `check`.
@@ -1657,22 +1608,17 @@ def cmd_map(args) -> int:
               f"{total_errs} error/suspect")
     return rc
 
-
 def _tool(name: str):
     return importlib.import_module(name)
-
 
 def cmd_sim(args) -> int:
     return _tool("mlogsim").main(args.sim_args)
 
-
 def cmd_ranges(args) -> int:
     return _tool("mlogrange").cmd_ranges(args.file, args.var)
 
-
 def cmd_jumps(args) -> int:
     return _tool("mlogrange").cmd_jumps(args.file, args.max, args.var)
-
 
 def cmd_post(args) -> int:
     import aigenerated
@@ -1684,7 +1630,6 @@ def cmd_post(args) -> int:
         print(aigenerated.post(Path(f), args.author or aigenerated.DEFAULT_AUTHOR, out))
     return 0
 
-
 def cmd_labelize(args) -> int:
     argv = [args.file, "--prefix", args.prefix]
     if args.output:
@@ -1694,7 +1639,6 @@ def cmd_labelize(args) -> int:
     if args.sign:
         argv.append("--sign")
     return _tool("mlog_labelize").main(argv)
-
 
 def cmd_doctor(_args) -> int:
     """First-run orientation: environment, entry point, five commands."""
@@ -1727,7 +1671,6 @@ def cmd_doctor(_args) -> int:
     print("      sim needs Java 21 + out/_server160.jar (set MLOGSIM_JAVA/MLOGSIM_JAR);")
     print("      docs: mindustry-blueprint/SKILL.md (start at '60 秒上手').")
     return 0
-
 
 def main() -> int:
     ap = argparse.ArgumentParser(
@@ -1783,7 +1726,7 @@ def main() -> int:
     p.add_argument("--no-sign", action="store_true",
                    help="do not auto-attach the @aigenerated signature")
     p.add_argument("--author", default=_sig.DEFAULT_AUTHOR,
-                   help="signature author (default: mlog)")
+                   help="signature author (default: MAI)")
     p.add_argument("--out", help="write the paste code (base64) to this file")
     p.add_argument("--binary", help="write a .msch binary to this path")
     p.add_argument("--quiet", action="store_true", help="do not print the paste code")
@@ -1944,7 +1887,6 @@ def main() -> int:
     if not getattr(args, "cmd", None):
         return cmd_doctor(args)
     return args.fn(args)
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

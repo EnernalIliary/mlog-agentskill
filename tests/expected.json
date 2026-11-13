@@ -38,9 +38,9 @@
     "case": "index-only-summary.mlog",
     "digest": [
       [
-        "ERR",
+        "INFO",
         1,
-        "undefined-var-is-not-automatically-an-error"
+        "undefined-var-read"
       ]
     ]
   },
@@ -52,6 +52,59 @@
         "INFO",
         202,
         "link-name-unbound-fragment"
+      ]
+    ]
+  },
+  "check/undefined-var-num-slot": {
+    "kind": "check_rid",
+    "case": "undefined-var-num-slot.mlog",
+    "digest": [
+      [
+        "INFO",
+        1,
+        "undefined-var-read"
+      ]
+    ]
+  },
+  "check/radar-count-misuse": {
+    "kind": "check_rid",
+    "case": "radar-count-misuse.mlog",
+    "digest": [
+      [
+        "WARN",
+        1,
+        "radar-takes-no-count"
+      ],
+      [
+        "WARN",
+        2,
+        "radar-takes-no-count"
+      ]
+    ]
+  },
+  "check/radar-count-ok": {
+    "kind": "check_rid",
+    "case": "radar-count-ok.mlog",
+    "digest": []
+  },
+  "check/numeric-jump": {
+    "kind": "check_rid",
+    "case": "numeric-jump.mlog",
+    "digest": [
+      [
+        "INFO",
+        1,
+        "numeric-jump"
+      ]
+    ]
+  },
+  "check/numeric-jump-ok": {
+    "kind": "check",
+    "case": "numeric-jump-ok.mlog",
+    "digest": [
+      [
+        "INFO",
+        1
       ]
     ]
   },
@@ -133,7 +186,12 @@
   "check/labels-blank": {
     "kind": "check",
     "case": "labels-check.mlog",
-    "digest": []
+    "digest": [
+      [
+        "INFO",
+        2
+      ]
+    ]
   },
   "check/reactor-slow": {
     "kind": "check",
@@ -142,13 +200,22 @@
       [
         "WARN",
         1
+      ],
+      [
+        "INFO",
+        1
       ]
     ]
   },
   "check/reactor-ok": {
     "kind": "check",
     "case": "reactor-guard-ok.mlog",
-    "digest": []
+    "digest": [
+      [
+        "INFO",
+        1
+      ]
+    ]
   },
   "check/reactor-unknown": {
     "kind": "check",
@@ -157,6 +224,10 @@
       [
         "INFO",
         0
+      ],
+      [
+        "INFO",
+        1
       ]
     ]
   },
@@ -167,18 +238,35 @@
       [
         "WARN",
         1
+      ],
+      [
+        "INFO",
+        1
       ]
     ]
   },
   "check/reactor-impact-ok": {
     "kind": "check",
     "case": "reactor-guard-impact-ok.mlog",
-    "digest": []
+    "digest": [
+      [
+        "INFO",
+        1
+      ]
+    ]
   },
   "check/label-index": {
     "kind": "check",
     "case": "label-index.mlog",
     "digest": [
+      [
+        "WARN",
+        2
+      ],
+      [
+        "INFO",
+        0
+      ],
       [
         "INFO",
         0
@@ -246,6 +334,27 @@
     "case": "link-hyphen-ok.mlog",
     "digest": []
   },
+  "check/link-base-mismatch": {
+    "kind": "check_rid",
+    "case": "link-base-wrong.mlog",
+    "digest": [
+      [
+        "WARN",
+        0,
+        "link-name-base-mismatch"
+      ],
+      [
+        "WARN",
+        1,
+        "link-name-base-mismatch"
+      ]
+    ]
+  },
+  "check/link-base-ok": {
+    "kind": "check",
+    "case": "link-base-ok.mlog",
+    "digest": []
+  },
   "check/sensor-not-prop": {
     "kind": "check",
     "case": "sensor-not-prop.mlog",
@@ -298,13 +407,22 @@
       [
         "ERR",
         3
+      ],
+      [
+        "INFO",
+        3
       ]
     ]
   },
   "check/spin-handshake": {
     "kind": "check",
     "case": "spin-ok.mlog",
-    "digest": []
+    "digest": [
+      [
+        "INFO",
+        3
+      ]
+    ]
   },
   "pack/three-fields": {
     "kind": "pack",
@@ -456,6 +574,38 @@
       ]
     ]
   },
+  "check/unreachable": {
+    "kind": "check",
+    "case": "unreachable-statement.mlog",
+    "digest": [
+      [
+        "WARN",
+        0
+      ],
+      [
+        "WARN",
+        3
+      ],
+      [
+        "INFO",
+        1
+      ]
+    ]
+  },
+  "check/loop-labels-ok": {
+    "kind": "check",
+    "case": "loop-labels-ok.mlog",
+    "digest": [
+      [
+        "WARN",
+        0
+      ],
+      [
+        "INFO",
+        1
+      ]
+    ]
+  },
   "tool/aigenerated": {
     "kind": "aigenerated",
     "case": null,
@@ -470,10 +620,10 @@
       "verify_forced": 0,
       "strip": 2,
       "slot_sign": 0,
-      "slot_line": "jump 27 always 0 \"aigenerated:mlog:55a57f022496\"",
-      "slot_end_kept": true,
+      "slot_line": "jump 27 always 0 \"aigenerated:MAI:3e02ceeac5d7\"",
+      "slot_end_kept": false,
       "terminal_sign": 0,
-      "terminal_line": "jump 0 always 0 \"aigenerated:mlog:39cc5f40ff41\"",
+      "terminal_line": "jump 0 always 0 \"aigenerated:MAI:5c8a0ba4f813\"",
       "comments_sign": 0,
       "comments_body_has_none": true,
       "comments_extract": [

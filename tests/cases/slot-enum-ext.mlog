@@ -1,0 +1,6 @@
+ubind @flare
+radar Enemy any any distance turret1 1 out
+jump 0 Equal a b
+ulocate building 5 false 0 0 x y f
+ucontrol paytake xx
+end

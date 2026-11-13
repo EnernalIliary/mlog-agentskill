@@ -27,7 +27,6 @@ SIZE = re.compile(r"^\s*size\s*=\s*(\d+)\s*;")
 LOOP = re.compile(r"for\s*\(\s*int\s+\w+\s*=\s*1\s*;\s*\w+\s*<=\s*Vars\.maxBlockSize\s*;")
 CAMEL = re.compile(r"(?<!^)(?=[A-Z])")
 
-
 def main() -> None:
     lines = open(BLOCKS, encoding="utf-8").read().split("\n")
     sizes: dict[str, int] = {}
@@ -83,7 +82,6 @@ def main() -> None:
                  "large-canvas", "memory-bank", "world-processor", "message",
                  "build3", "build16", "core-nucleus", "vault", "container"]:
         print(f"   {want:22} size={sizes.get(want, '(unknown)')}")
-
 
 if __name__ == "__main__":
     main()

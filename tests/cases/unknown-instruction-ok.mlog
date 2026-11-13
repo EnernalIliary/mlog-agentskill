@@ -1,0 +1,4 @@
+set x 1
+op add x x 1
+print x
+end

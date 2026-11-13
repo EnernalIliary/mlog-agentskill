@@ -1315,7 +1315,7 @@
     1,
     2
    ],
-   "note": "LStatements.java:1736-1766: fields x,y,natural -> text order 'spawnwave <x> <y> <natural>' (docs put natural first, which is only the UI order, cf. build() :1742). SpawnWaveI(natural,x,y) (LExecutor.java:2151-2191).",
+   "note": "LStatements.java:1736-1766: fields x,y,natural -> text order 'spawnwave <x> <y> <natural>'. mlog text order is the field declaration order (LogicIO.write walks fields; build(LAssembler) order is irrelevant -- SpawnWaveI(natural,x,y) at :1742 is the constructor call, not the text order). The v1.1.0 doc used to say <natural> <x> <y>; fixed 2026-10-28, now checked by tests/docsig.",
    "privileged": true,
    "min_build": 146,
    "min_build_source": "present at the v7 baseline (build 146); see BUILDS.md"

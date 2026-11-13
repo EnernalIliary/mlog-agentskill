@@ -1,0 +1,20 @@
+{
+  "id": "link-name-base-mismatch",
+  "kind": "semantics",
+  "severity": "WARN",
+  "claim": "A name that ends in a digit but whose stem is only the BEGINNING of a block name (`sw1`, `core1`) can never bind: the game builds a link's name from the block's LAST name segment plus a 1-based index and rewrites anything else when the save loads, so the spelling in the code reads null forever.",
+  "why": "LogicBlock.getLinkName (Mindustry-Source/core/src/mindustry/world/blocks/logic/LogicBlock.java:123-135) keeps the text after the block name's last '-', findLinkName (:331-360) appends the link's 1-based index, and load() rewrites a stored name that does not start with that stem (:315-318 `if(!name.startsWith(bestName)) name = findLinkName(build.block)`). Measured on v160.7 with the MG-4 device (m00622): the blueprint said `sw1`/`sw2`, the save loaded them as `switch1`/`switch2`, so `sensor U_RUN sw1 @enabled` read null and both switches were dead until the code named switch1/switch2. The stem table is derived from tools/block_attrs.json + tools/wiki_block_ids.json (last '-' segment of every vanilla block name); a stem no block name starts with is deliberately NOT reported -- that is either a modded block or an ordinary variable ending in a digit, and nothing about it is provable statically.",
+  "source": "source",
+  "ref": "m00622",
+  "since": "2026-11-09",
+  "counter_example": "tests/cases/link-base-ok.mlog",
+  "match": {
+    "sevs": [
+      "WARN"
+    ],
+    "msg_any": [
+      "looks like a link name but cannot bind"
+    ]
+  },
+  "auto_downgrade": false
+}

@@ -284,7 +284,6 @@ python mlog.py block --accepts coal      # 谁吃煤（按 recipe / ammo / any /
 2. **液体量是每秒**（源码写的是每 tick，`_rate()` 折过）。折不了的带布尔重载原样显示源码算式。
 3. **「烧整类物品」没有清单。** `rtg-generator` 显示 `burns radioactive items (no fixed item list)` —— 引擎按类别判，别去查它到底吃哪几种。
 
-
 ## 读整个存档里的逻辑：`mlog.py map`
 
 ```bash
@@ -359,7 +358,7 @@ python tools/review.py ingest                # 把 md 里填的 ok/bad/unsure/sk
 而每条规则都该能被一个人判成「对 / 错 / 不知道」。
 
 ```bash
-python tools/rule_capture.py list            # 25 条规则，带实测命中数
+python tools/rule_capture.py list            # 39 条规则，带实测命中数
 python tools/rule_capture.py lint -v         # schema + 反例必须不命中
 python tools/rule_audit.py --dir out/maps    # 按规则统计噪声 → out/rule_audit_maps.md
 python tools/review.py build --dir out/maps  # 压成可判的行 → out/audit_rows.json

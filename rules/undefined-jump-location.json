@@ -1,0 +1,20 @@
+{
+  "id": "undefined-jump-location",
+  "kind": "semantics",
+  "severity": "ERR",
+  "claim": "A `jump <label> ...` whose label is not defined anywhere in the program is not a jump to -1: LParser.parse() throws \"Invalid code. Undefined jump location\", LAssembler.read() propagates it, and LogicBlock.updateCode() catches it by loading an EMPTY program -- the whole processor stops running, every statement is lost, not just this jump.",
+  "why": "LParser.java:130-133 records the label name and rewrites the operand to -1 only so the line can be parsed; :181-202 then walks the jump table and calls error(\"Undefined jump location: ... Make sure the jump label exists and is typed correctly.\") for any label missing from jumpLocations, which throws a RuntimeException out of parse(). LAssembler.java:53-57 does not catch it, so it reaches LogicBlock.java:430-432, whose catch reloads the executor with `LAssembler.assemble(code = \"\", privileged)` -- an empty program, i.e. the processor goes idle. Real-engine probes (out/_noop_matrix2.py) confirm: `set x 1` + `jump nope always` throws before executing, and label case matters (`start:` with `jump Start` throws too). This is not the -1 fall-through the old WARN message claimed.",
+  "source": "source",
+  "ref": "m07998",
+  "since": "2026-11-10",
+  "counter_example": "tests/cases/jump-missing-label-ok.mlog",
+  "match": {
+    "sevs": [
+      "ERR"
+    ],
+    "msg_any": [
+      "is not a label in this program"
+    ]
+  },
+  "auto_downgrade": false
+}

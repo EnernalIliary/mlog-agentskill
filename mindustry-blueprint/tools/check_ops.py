@@ -50,7 +50,6 @@ LEGACY = {"atan2": "angle", "dst": "len"}
 
 OP_RE = re.compile(r"^op\s+(\S+)((?:\s+.*)?)$")
 
-
 def strip_comment(line: str) -> str:
     """mlog comments start at '#' (LParser.comment()) -- but not inside strings."""
     out, in_str = [], False
@@ -62,8 +61,6 @@ def strip_comment(line: str) -> str:
         out.append(ch)
     return "".join(out).strip()
 
-
-
 def expected_arity(op: str) -> int | None:
     op = LEGACY.get(op, op)
     if op in UNARY:
@@ -71,7 +68,6 @@ def expected_arity(op: str) -> int | None:
     if op in BINARY:
         return 3
     return None
-
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__,
@@ -178,7 +174,6 @@ def main() -> None:
     print(f"  out-of-range jumps  : {len(bad_jump)}")
     print(f"  unknown op / action : {len(unknown) + len(unknown_uctl)}")
     print(f"  (informational) abbreviated ucontrol lines: {len(short_uctl)}")
-
 
 if __name__ == "__main__":
     main()

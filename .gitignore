@@ -34,6 +34,11 @@ out/caime_scan*.txt
 # publishable export (own git repo) - /dist/mlog-toolkit
 /dist/
 
+# 打包产物（tools/package.py 重建即可：树 + zip，几百 KB，含逐文件副本）
+/out/_dist/
+/out/_packtest/
+/out/_exe/
+
 # 外部蓝图语料（tools/dev/fetch_schematics.py 重抓即可，不要入库）
 /logic-corpus/
 
@@ -47,3 +52,4 @@ out/caime_scan*.txt
 
 # temporary probe scripts (archived, not tracked)
 /out/_archive/
+out/_publish/

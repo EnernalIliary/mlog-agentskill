@@ -47,7 +47,6 @@ RULES_DIR = ROOT / "rules"
 DEFAULT_DIR = Path.home() / "AppData" / "Roaming" / "Mindustry" / "saves"
 ROW_CAP = 3  # reviewable rows per rule per save
 
-
 def load_rules() -> list[dict]:
     out = []
     for path in sorted(RULES_DIR.glob("*.json")):
@@ -61,7 +60,6 @@ def load_rules() -> list[dict]:
         out.append(rec)
     return out
 
-
 def classify(sev: str, msg: str, rules: list[dict]) -> dict | None:
     low = msg.lower()
     for rec in rules:
@@ -73,7 +71,6 @@ def classify(sev: str, msg: str, rules: list[dict]) -> dict | None:
             continue
         return rec
     return None
-
 
 def audit_one(path_str: str) -> dict:
     """Worker: one save, deduped by source hash, findings bucketed by rule id."""
@@ -141,7 +138,6 @@ def audit_one(path_str: str) -> dict:
         "unclassified": unclassified,
         "rows": rows,
     }
-
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
@@ -309,7 +305,6 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"  would downgrade `{r['id']}` WARN -> INFO (owns {r['share'] * 100:.0f}% "
                       f"of the report); recorded, not executed")
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

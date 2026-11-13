@@ -125,12 +125,19 @@ Java 21+ is required (the Steam jlink image lacks java.logging).
 v146 is kept for comparison only: it lacks `LogicBlock.readable`, so
 cross-processor `read` by name always yields null there.
 
+Child lifetime: the Java child goes into a Windows job object with
+KILL_ON_JOB_CLOSE, so however this process ends -- a gate timeout, Ctrl-C, a
+crash -- the kernel takes the server down with it. It used to survive (61 of
+them once starved the machine until every probe failed with "insufficient
+memory"). `--sweep-orphans` kills leftovers from older runs (only our jars,
+only when the parent is gone) and exits.
 Note: micro-processor runs 2 instructions/tick, logic-processor 8,
 hyper-processor 25. `--steps` counts *instructions*, not ticks.
 """
 from __future__ import annotations
 
 import argparse
+import atexit
 import json
 import os
 import queue
@@ -161,7 +168,6 @@ V159_JAR = os.path.join(ROOT, "out", "_server159.jar")
 V159_JAVA = os.path.join(ROOT, "out", "jre21", "jdk-21.0.5+11-jre", "bin", "java.exe")
 V146_JAR = os.path.join(ROOT, "out", "_server146.jar")
 
-
 def _default_jar() -> str:
     if os.environ.get("MLOGSIM_JAR"):
         return os.environ["MLOGSIM_JAR"]
@@ -170,7 +176,6 @@ def _default_jar() -> str:
             return jar
     return V146_JAR
 
-
 def _default_java() -> str:
     env = os.environ.get("MLOGSIM_JAVA")
     if env:
@@ -178,7 +183,6 @@ def _default_java() -> str:
     if os.path.exists(V159_JAVA):
         return V159_JAVA
     return STEAM_JAVA
-
 
 def _abs_path(p: str) -> str:
     """Resolve a jar/java path against the caller's cwd; keep bare commands as-is.
@@ -193,10 +197,143 @@ def _abs_path(p: str) -> str:
         return os.path.abspath(p)
     return p
 
+# ------------------------------------------------------------- child lifetime
+# The Java child used to outlive its Python parent: when the parent was killed
+# (a gate timeout, Ctrl-C, a crashed probe) the JVM kept the pipe and stayed
+# resident. 61 of them once piled up and starved the box so badly that the whole
+# probes tier failed with "There is insufficient memory for the Java Runtime
+# Environment to continue". On Windows the fix is a job object with
+# KILL_ON_JOB_CLOSE: the job handle belongs to *this* process, so whenever this
+# process ends for any reason the kernel kills every child inside it. atexit is
+# the polite path; the job object is the one that survives a hard kill.
+_LIVE_SERVERS = []
+
+def _win_kill_with_parent(proc):
+    """Put a Windows child in a job that dies with this process; None elsewhere."""
+    if os.name != "nt":
+        return None
+    try:
+        import ctypes
+        from ctypes import wintypes
+
+        k32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        k32.CreateJobObjectW.restype = ctypes.c_void_p
+        k32.CreateJobObjectW.argtypes = [ctypes.c_void_p, ctypes.c_wchar_p]
+        k32.SetInformationJobObject.argtypes = [ctypes.c_void_p, ctypes.c_int,
+                                                ctypes.c_void_p, wintypes.DWORD]
+        k32.AssignProcessToJobObject.argtypes = [ctypes.c_void_p, ctypes.c_void_p]
+        k32.CloseHandle.argtypes = [ctypes.c_void_p]
+
+        class _IO_COUNTERS(ctypes.Structure):
+            _fields_ = [("ReadOperationCount", ctypes.c_ulonglong),
+                        ("WriteOperationCount", ctypes.c_ulonglong),
+                        ("OtherOperationCount", ctypes.c_ulonglong),
+                        ("ReadTransferCount", ctypes.c_ulonglong),
+                        ("WriteTransferCount", ctypes.c_ulonglong),
+                        ("OtherTransferCount", ctypes.c_ulonglong)]
+
+        class _BASIC_LIMITS(ctypes.Structure):
+            _fields_ = [("PerProcessUserTimeLimit", ctypes.c_int64),
+                        ("PerJobUserTimeLimit", ctypes.c_int64),
+                        ("LimitFlags", wintypes.DWORD),
+                        ("MinimumWorkingSetSize", ctypes.c_size_t),
+                        ("MaximumWorkingSetSize", ctypes.c_size_t),
+                        ("ActiveProcessLimit", wintypes.DWORD),
+                        ("Affinity", ctypes.c_size_t),
+                        ("PriorityClass", wintypes.DWORD),
+                        ("SchedulingClass", wintypes.DWORD)]
+
+        class _EXTENDED_LIMITS(ctypes.Structure):
+            _fields_ = [("BasicLimitInformation", _BASIC_LIMITS),
+                        ("IoInfo", _IO_COUNTERS),
+                        ("ProcessMemoryLimit", ctypes.c_size_t),
+                        ("JobMemoryLimit", ctypes.c_size_t),
+                        ("PeakProcessMemoryUsed", ctypes.c_size_t),
+                        ("PeakJobMemoryUsed", ctypes.c_size_t)]
+
+        job = k32.CreateJobObjectW(None, None)
+        if not job:
+            return None
+        info = _EXTENDED_LIMITS()
+        info.BasicLimitInformation.LimitFlags = 0x2000  # KILL_ON_JOB_CLOSE
+        if not k32.SetInformationJobObject(job, 9, ctypes.byref(info), ctypes.sizeof(info)):
+            k32.CloseHandle(job)
+            return None
+        if not k32.AssignProcessToJobObject(job, ctypes.c_void_p(int(proc._handle))):
+            k32.CloseHandle(job)
+            return None
+        return job
+    except Exception:
+        return None
+
+def _close_live_servers():
+    for srv in list(_LIVE_SERVERS):
+        try:
+            srv.close()
+        except Exception:
+            pass
+
+atexit.register(_close_live_servers)
+
+# Any java.exe still running one of our jars whose parent is gone is a leftover
+# from a killed run. Only our jars count: the game itself also runs a java.exe.
+_JAR_MARKERS = ("_server160.jar", "_server159.jar", "_server146.jar", "jre21")
+
+def _ps_json(script):
+    exe = shutil.which("powershell") or "powershell"
+    out = subprocess.run([exe, "-NoProfile", "-NonInteractive", "-Command", script],
+                         capture_output=True, text=True, encoding="utf-8",
+                         errors="replace", timeout=180)
+    text = (out.stdout or "").strip()
+    return json.loads(text) if text else None
+
+def sweep_orphans(dry_run=False):
+    """Kill simulator JVMs whose Python parent no longer exists; return their pids."""
+    if os.name != "nt":
+        return []
+    try:
+        procs = _ps_json("Get-CimInstance Win32_Process | "
+                         "Select-Object ProcessId,ParentProcessId,Name,CommandLine | "
+                         "ConvertTo-Json -Compress -Depth 3")
+    except Exception:
+        return []
+    if not procs:
+        return []
+    if isinstance(procs, dict):
+        procs = [procs]
+    live = set()
+    for item in procs:
+        try:
+            live.add(int(item.get("ProcessId") or 0))
+        except (TypeError, ValueError):
+            pass
+    killed = []
+    for item in procs:
+        try:
+            pid = int(item.get("ProcessId") or 0)
+            ppid = int(item.get("ParentProcessId") or 0)
+        except (TypeError, ValueError):
+            continue
+        if pid <= 0 or str(item.get("Name") or "").lower() != "java.exe":
+            continue
+        cmd = str(item.get("CommandLine") or "")
+        if not any(mark in cmd for mark in _JAR_MARKERS):
+            continue
+        if ppid in live:
+            continue          # parent still alive: not an orphan (pid reuse reads as alive)
+        if dry_run:
+            killed.append(pid)
+            continue
+        try:
+            subprocess.run(["taskkill", "/PID", str(pid), "/F"],
+                           capture_output=True, timeout=30)
+            killed.append(pid)
+        except Exception:
+            pass
+    return killed
 
 class SimError(RuntimeError):
     pass
-
 
 class Server:
     def __init__(self, java: str, jar: str, world_size: int | None = 64,
@@ -207,7 +344,9 @@ class Server:
         jar = _abs_path(jar)
         # writes must stay inside the workspace: Java child processes are not
         # allowed to write under %TEMP% (sandbox denies with "access denied")
-        base = os.path.join(ROOT, "out", "_sim")
+        # NOTE: on <local>-synced repos tempfile.mkdtemp(dir=<repo>/out/_sim) can
+        # hang for minutes; set MLOG_SIM_BASEDIR to a local (non-synced) dir to avoid it.
+        base = os.environ.get("MLOG_SIM_BASEDIR") or os.path.join(ROOT, "out", "_sim")
         os.makedirs(base, exist_ok=True)
         self.workdir = tempfile.mkdtemp(prefix="run-", dir=base)
         self._save = save
@@ -229,6 +368,13 @@ class Server:
             errors="replace",
             bufsize=1,
         )
+        self._job = _win_kill_with_parent(self.proc)
+        self._closed = False
+        # wall-clock budget for one `js` command; a big scene schematic (thousands
+        # of processors) loops for minutes inside a single command, so this is a
+        # knob, not a constant (--js-timeout).
+        self.js_timeout = 180.0
+        _LIVE_SERVERS.append(self)
         self.lines: queue.Queue = queue.Queue()
         self.buffer: list[str] = []
         self.all: list[str] = []
@@ -301,12 +447,17 @@ class Server:
                 return out
         raise SimError(f"timeout waiting for {needle!r}; tail:\n" + "\n".join(self.all[-20:]))
 
-    def js(self, script: str, timeout: float = 60.0) -> list[str]:
-        """Run one `js` command; return the lines it printed."""
+    def js(self, script: str, timeout: float | None = None) -> list[str]:
+        """Run one `js` command; return the lines it printed.
+
+        TIMEOUT defaults to `self.js_timeout` (180 s unless `--js-timeout`).
+        """
         self.buffer.clear()
         # the console reads one line per command: multi-line scripts would be
         # parsed as separate console commands
         self.send("js " + " ".join(script.splitlines()))
+        if timeout is None:
+            timeout = self.js_timeout
         lines = self.wait_for("undefined", timeout)
         out = [ln.split("[none/base.js]:", 1)[1].strip() for ln in lines if "[none/base.js]:" in ln]
         err = [ln for ln in lines if "Exception" in ln or "Error:" in ln]
@@ -388,12 +539,45 @@ class Server:
                 self.js(weather_js(wname, wint))
 
     def close(self):
+        """Shut the child down; safe to call twice and from atexit."""
+        if getattr(self, "_closed", False):
+            return
+        self._closed = True
         try:
-            self.send("exit")
-            self.proc.wait(timeout=15)
+            _LIVE_SERVERS.remove(self)
+        except ValueError:
+            pass
+        proc = self.proc
+        try:
+            if proc.poll() is None:
+                self.send("exit")
+                try:
+                    proc.wait(timeout=15)
+                except subprocess.TimeoutExpired:
+                    proc.kill()
+                    try:
+                        proc.wait(timeout=10)
+                    except subprocess.TimeoutExpired:
+                        pass
         except Exception:
-            self.proc.kill()
-
+            try:
+                proc.kill()
+            except Exception:
+                pass
+        finally:
+            for stream in (proc.stdin, proc.stdout):
+                try:
+                    stream.close()
+                except Exception:
+                    pass
+            job = getattr(self, "_job", None)
+            if job:
+                try:
+                    import ctypes
+                    ctypes.WinDLL("kernel32").CloseHandle(ctypes.c_void_p(job))
+                except Exception:
+                    pass
+                self._job = None
 
 LOAD_JS = r'''
 Vars.world.loadGenerator(%(n)d,%(n)d,function(tiles){
@@ -405,7 +589,6 @@ Vars.world.loadGenerator(%(n)d,%(n)d,function(tiles){
 });
 print("WORLD\t" + Vars.world.width() + "x" + Vars.world.height());
 '''
-
 
 PICK_BASE_JS = r'''
 print("WORLD\t" + Vars.world.width() + "x" + Vars.world.height());
@@ -437,7 +620,6 @@ for(var r = 3; r < 40 && found == null; r++){
 if(found == null){ found = [1, 1]; }
 print("BASE\t" + found[0] + "\t" + found[1]);
 '''
-
 
 CORE_JS = r'''
 var spec = %(spec)s;
@@ -473,7 +655,6 @@ if(found == 0){
     print("CORE\t" + x + "\t" + y + "\tcore-shard\t" + nb.items.total());
 }
 '''
-
 
 def place_js(x: int, y: int, block: str = "micro-processor") -> str:
     return ("var T=Packages.mindustry.game.Team.sharded;"
@@ -557,6 +738,11 @@ for(var k = 0; k < b.links.size; k++){
 b.executor.team = Packages.mindustry.game.Team.sharded;
 /* a block placed via setBlock keeps efficiency 0 until updateEfficiency runs */
 b.efficiency = 1;
+/* probe hook: runs after the program compiled and the units exist but before the
+   first instruction executes, so a probe can put the world in a state (kill the
+   bound unit, hand it to another processor) and then let the program see it.
+   `b` is this processor's building; empty when the caller passes nothing. */
+%(setup)s
 %(loop)s
 print("@@BEGIN");
 var vs = b.executor.vars;
@@ -630,6 +816,98 @@ for(var i = 0; i < procs.length; i++){
 }
 '''
 
+# --- batched scene loading -------------------------------------------------
+# A scene with thousands of processors cannot travel through one js command:
+# the tile JSON (code included) grows past what the GraalJS bridge will carry
+# (~700 MB for 22k processors) and it dies with
+#   NullPointerException: Cannot invoke "rhino.classfile.FieldOrMethodRef.getType()"
+# Loading in batches keeps every single command small. globalThis.procs holds
+# the processor handles between commands (the JS context survives across js()).
+SCENE_PLACE_JS = r'''
+var content = Vars.content;
+var team = Packages.mindustry.game.Team.sharded;
+var tiles = %(tiles)s;
+var placed = 0;
+for(var i = 0; i < tiles.length; i++){
+    var t = tiles[i];
+    var blk = content.block(t.block);
+    if(blk == null){ print("SKIP\t" + t.block); continue; }
+    Vars.world.tile(t.x, t.y).setBlock(blk, team);
+    placed++;
+}
+print("PLACED\t" + placed);
+'''
+
+SCENE_CONF_JS = r'''
+var content = Vars.content;
+var team = Packages.mindustry.game.Team.sharded;
+var LL = Packages.mindustry.world.blocks.logic.LogicBlock.LogicLink;
+var tiles = %(tiles)s;
+if(globalThis.procs === undefined){ globalThis.procs = []; }
+var procs = globalThis.procs;
+for(var i = 0; i < tiles.length; i++){
+    var t = tiles[i];
+    if(!t.logic){ continue; }
+    var b = Vars.world.build(t.x, t.y);
+    if(b == null){ print("NOPROC\t" + t.x + "," + t.y); continue; }
+    b.code = t.logic;
+    b.links.clear();
+    for(var j = 0; j < t.links.length; j++){
+        var l = t.links[j];
+        b.links.add(new LL(l.x, l.y, l.name, true));
+    }
+    b.updateCode(b.code);
+    if(!b.executor.initialized()){
+        throw new Error("PREFLIGHT: processor at " + t.x + "," + t.y + " did not compile");
+    }
+    for(var k = 0; k < b.links.size; k++){
+        var lk = b.links.get(k);
+        if(!lk.valid){
+            throw new Error("PREFLIGHT: processor at " + t.x + "," + t.y + " link '"
+                            + lk.name + "' did not bind (missing target or farther than 10 tiles)");
+        }
+    }
+    b.executor.team = team;
+    b.efficiency = 1;
+    procs.push(b);
+}
+print("PROCS\t" + procs.length);
+'''
+
+SCENE_DUMP_JS = r'''
+var procs = globalThis.procs;
+var want = %(want)s;
+var dumped = 0;
+for(var i = 0; i < procs.length; i++){
+    var b = procs[i];
+    var vs = b.executor.vars;
+    var keep = (want == null);
+    if(!keep){
+        for(var j = 0; j < vs.length; j++){
+            if(want.indexOf(vs[j].name) >= 0){ keep = true; break; }
+        }
+    }
+    if(!keep){ continue; }
+    dumped++;
+    print("@@BEGIN\t" + b.tileX() + "," + b.tileY());
+    for(var j = 0; j < vs.length; j++){
+        var v = vs[j], val;
+        if(v.isobj){ val = String(v.objval); } else { val = "" + v.numval; }
+        print("VAR\t" + v.name + "\t" + val);
+    }
+    print("COUNTER\t" + b.executor.counter.numval);
+    print("IPT\t" + b.executor.ipt.numval);
+    print("ACC\t" + b.accumulator);
+    print("TEXT\t" + String(b.executor.textBuffer.toString()).replace(/\n/g, "\\n"));
+    print("@@END");
+}
+print("DUMPED\t" + dumped);
+'''
+
+def _scene_chunks(tiles, size):
+    """Split tiles so that no chunk carries more than size entries."""
+    return [tiles[i:i + size] for i in range(0, len(tiles), size)]
+
 UNIT_JS = r'''
 var spec = %(spec)s;            /* [[name, count], ...] */
 var team = Packages.mindustry.game.Team.sharded;
@@ -690,7 +968,6 @@ Vars.state.teams.updateTeamStats();
 print("UNITS\t" + made);
 '''
 
-
 WORLD_JS = r'''
 var GS = Packages.mindustry.core.GameState; var ST = GS.State;
 var GB = Packages.mindustry.gen.Groups.build;
@@ -733,14 +1010,11 @@ function weatherTick(){
 }
 '''
 
-
 def weather_js(name: str, intensity: float = 1.0) -> str:
     return ("var W = Vars.content.weather('%s');"
             "if(W == null){ throw new Error('unknown weather: %s'); }"
             "W.create(%f, 1e30);"
             "print('WEATHER\\t' + W.name);" % (name, name, intensity))
-
-
 
 UNITS_JS = r'''
 var UG = Packages.mindustry.gen.Groups.unit;
@@ -773,7 +1047,6 @@ function preflightTick(){
     }
 }
 '''
-
 
 COMBAT_JS = r'''
 var GBU = Packages.mindustry.gen.Groups.bullet;
@@ -828,7 +1101,6 @@ function traceTick(){
 }
 '''
 
-
 def parse_trace(lines: list[str]) -> list[list[str]]:
     rows = []
     for ln in lines:
@@ -838,11 +1110,8 @@ def parse_trace(lines: list[str]) -> list[list[str]]:
                 rows.append(parts[1:])
     return rows
 
-
 def _world_js(power: float, unit_ai: str = "logic") -> str:
     return WORLD_JS % {"power": power} + UNITS_JS % {"all": "true" if unit_ai == "all" else "false"}
-
-
 
 ITRACE_JS = """
 var ITRACE = [];
@@ -919,7 +1188,6 @@ def _loop_js(obj: str, steps: int, ticks: bool, update: str = "none", power: flo
                 " } finally { Vars.state.set(ST.paused); }%s" % (setup, steps, body, check, dump))
     return "for(var i = 0; i < %d; i++){ %s.executor.runOnce(); }" % (steps, obj)
 
-
 def _scene_loop_js(steps: int, ticks: bool, update: str = "none", power: float = 1.0,
                    combat: bool = False, trace: bool = False, unit_ai: str = "logic",
                    preflight: bool = True) -> str:
@@ -952,7 +1220,6 @@ def _scene_loop_js(steps: int, ticks: bool, update: str = "none", power: float =
     return ("for(var i = 0; i < procs.length; i++){"
             " for(var k = 0; k < %d; k++){ procs[i].executor.runOnce(); } }" % steps)
 
-
 def parse_results(lines: list[str]) -> list[dict]:
     """Turn @@BEGIN blocks into records."""
     recs: list[dict] = []
@@ -980,7 +1247,6 @@ def parse_results(lines: list[str]) -> list[dict]:
                 cur["text"] = ln.split("\t", 1)[1].replace("\\n", "\n")
     return recs
 
-
 LINK_ALIASES = {
     "cell": "memory-cell",
     "bank": "memory-bank",
@@ -996,8 +1262,9 @@ LINK_ALIASES = {
     "spectre": "spectre",
     "furnace": "silicon-arc-furnace",
     "pad": "landing-pad",
+    "container": "container",
+    "turret": "duo",
 }
-
 
 def infer_links(code: str) -> list[dict]:
     """Link names a `.mlog` uses but never assigns (`cell1`, `message2`, ...).
@@ -1025,12 +1292,12 @@ def infer_links(code: str) -> list[dict]:
         out.append({"name": name, "block": LINK_ALIASES[base]})
     return out
 
-
 def run_mlog(srv: Server, name: str, code: str, steps: int, ticks: bool = False,
              update: str = "none", power: float = 1.0, processor: str = "auto",
              combat: bool = False, trace: bool = False, unit_ai: str = "logic",
              preflight: bool = True, links: str = "auto",
-             itrace: str | None = None, itrace_vars: tuple = ()) -> dict:
+             itrace: str | None = None, itrace_vars: tuple = (),
+             setup_js: str | None = None) -> dict:
     # privileged statements exist only in world processors; selecting the block
     # that makes them compile is better than silently dropping whole lines.
     world_proc = processor == "world" or (processor == "auto" and PRIVILEGED_RE.search(code) is not None)
@@ -1047,6 +1314,7 @@ def run_mlog(srv: Server, name: str, code: str, steps: int, ticks: bool = False,
             itr = {"code": code.splitlines(), "vars": list(itrace_vars)}
         js = STEP_JS % {"path": path.replace("\\", "/"), "x": srv.base[0], "y": srv.base[1],
                         "links": json.dumps(link_specs, ensure_ascii=False),
+                        "setup": setup_js or "",
                         "loop": _loop_js("b", steps, ticks, update, power, combat, trace, unit_ai,
                                          preflight, itr)}
         lines = srv.js(js)
@@ -1075,7 +1343,6 @@ def run_mlog(srv: Server, name: str, code: str, steps: int, ticks: bool = False,
     finally:
         os.unlink(path)
 
-
 def run_msch(srv: Server, name: str, path: str, steps: int, ticks: bool = False,
              update: str = "none", power: float = 1.0,
              combat: bool = False, trace: bool = False, unit_ai: str = "logic",
@@ -1102,10 +1369,23 @@ def run_msch(srv: Server, name: str, path: str, steps: int, ticks: bool = False,
                 for l in t.logic.links
             ]
         tiles.append(entry)
-    js = SCENE_JS % {"tiles": json.dumps(tiles),
-                     "loop": _scene_loop_js(steps, ticks, update, power, combat, trace, unit_ai,
-                                            preflight)}
-    lines = srv.js(js, timeout=180)
+    loop = _scene_loop_js(steps, ticks, update, power, combat, trace, unit_ai, preflight)
+    batch = int(getattr(srv, "scene_batch", 0) or 0)
+    if batch and len(tiles) > batch:
+        # big scene: keep every js command small (see SCENE_PLACE_JS above).
+        lines = []
+        for chunk in _scene_chunks(tiles, batch):
+            lines.extend(srv.js(SCENE_PLACE_JS % {"tiles": json.dumps(chunk)}))
+        coded = [t for t in tiles if t.get("logic")]
+        for chunk in _scene_chunks(coded, max(1, batch // 10)):
+            lines.extend(srv.js(SCENE_CONF_JS % {"tiles": json.dumps(chunk)}))
+        lines.extend(srv.js("var procs = globalThis.procs;" + loop))
+        want = getattr(srv, "scene_dump", None)
+        want_js = "null" if not want else json.dumps(list(want))
+        lines.extend(srv.js(SCENE_DUMP_JS % {"want": want_js}))
+    else:
+        js = SCENE_JS % {"tiles": json.dumps(tiles), "loop": loop}
+        lines = srv.js(js)
     recs = parse_results(lines)
     rows = parse_trace(lines) if trace else []
     for r in recs:
@@ -1116,10 +1396,8 @@ def run_msch(srv: Server, name: str, path: str, steps: int, ticks: bool = False,
         r["trace"] = rows
     return recs
 
-
 TRACE_COLUMNS = ["unit", "tick", "ux", "uy", "uhp", "range", "tx", "ty", "dist",
                  "cx", "cy", "chp", "bullets", "shots"]
-
 
 def check_asserts(rows: list[list[str]], exprs: list[str]) -> int:
     """Evaluate EXPR per trace row; return the number of failed evaluations."""
@@ -1156,16 +1434,16 @@ def check_asserts(rows: list[list[str]], exprs: list[str]) -> int:
     print(f"ASSERT FAILED  {len(fails)}/{len(rows) * len(exprs)} evaluation(s)")
     return len(fails)
 
-
 def _write_trace(path: str, rows: list[list[str]]):
     with open(path, "w", encoding="utf-8", newline="") as fh:
         fh.write(",".join(TRACE_COLUMNS) + "\n")
         for row in rows:
             fh.write(",".join(row) + "\n")
 
-
 def configure_server(srv: Server, args):
     """Attach per-run world setup so prepare() can replay it after each reset."""
+    if getattr(args, "js_timeout", None):
+        srv.js_timeout = float(args.js_timeout)
     if args.base:
         srv.base = tuple(int(v) for v in args.base.split(","))
         srv._base0 = srv.base
@@ -1194,9 +1472,7 @@ def configure_server(srv: Server, args):
             wname, _, wint = wspec.partition(":")
             srv._weather_specs.append((wname.strip(), float(wint) if wint else 1.0))
 
-
 DAEMON_FILE = os.path.join(ROOT, "out", "_mlogsimd.json")
-
 
 def serve_daemon(args, steps: int, ticks: bool, update: str, power: float, combat: bool,
                  preflight: bool):
@@ -1251,7 +1527,6 @@ def serve_daemon(args, steps: int, ticks: bool, update: str, power: float, comba
             pass
         srv.close()
 
-
 def remote_client(args) -> int:
     """Send files to a running --daemon and print its results."""
     import socket
@@ -1280,7 +1555,6 @@ def remote_client(args) -> int:
           "\n".join(f"== {r['name']} ==" for r in out))
     return 0
 
-
 def main(argv=None):
     ap = argparse.ArgumentParser(description="run mlog on the real Mindustry LExecutor")
     ap.add_argument("files", nargs="*", help=".mlog files (or .msch schematics)")
@@ -1293,6 +1567,9 @@ def main(argv=None):
     ap.add_argument("--steps", type=int, default=None, help="instructions to execute (default 200)")
     ap.add_argument("--ticks", type=int, default=None,
                     help="simulated ticks: drive updateTile() with Time.delta=1 (accumulator/ipt/wait)")
+    ap.add_argument("--js-timeout", type=float, default=180.0, metavar="SEC",
+                    help="wall-clock budget for one internal js command (default 180); "
+                         "raise it for huge scene schematics (a few thousand processors)")
     ap.add_argument("--world", type=int, default=64, metavar="N",
                     help="blank NxN world loaded with loadGenerator (default 64, 0 = host a random map)")
     ap.add_argument("--host", action="store_true",
@@ -1349,8 +1626,16 @@ def main(argv=None):
                     help="auto (default): for a .mlog, place a block for every name it "
                          "reads but never assigns (cell1 -> memory-cell, message1 -> message) "
                          "and wire it; off: leave them null as a plain .mlog would")
+    ap.add_argument("--sweep-orphans", action="store_true",
+                    help="kill simulator JVMs left behind by killed runs, then exit")
     ap.add_argument("--json", action="store_true")
     args = ap.parse_args(argv)
+
+    if args.sweep_orphans:
+        killed = sweep_orphans()
+        print("orphan sweep: %d stale JVM(s)%s" % (
+            len(killed), (" " + " ".join(str(p) for p in killed)) if killed else ""))
+        return 0
 
     ticks = args.ticks is not None
     steps = args.ticks if ticks else (args.steps if args.steps is not None else 200)
@@ -1437,7 +1722,6 @@ def main(argv=None):
     if args.trace:
         print(f"TRACE  {len(trace_rows)} row(s) -> {args.trace}")
     return 3 if failed else 0
-
 
 if __name__ == "__main__":
     sys.exit(main())

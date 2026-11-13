@@ -101,8 +101,15 @@
       "steps": 6,
       "code": "set r 0\nop acos r 0.5\nend\n",
       "processor": "world",
-      "expect_vars": {"r": {"approx": 60.0, "tol": 0.001}},
-      "expect_classes_has": ["OpI"],
+      "expect_vars": {
+        "r": {
+          "approx": 60,
+          "tol": 0.001
+        }
+      },
+      "expect_classes_has": [
+        "OpI"
+      ],
       "why": "op acos returns DEGREES: Math.acos(0.5) * doubleRadDeg = 60 (float noise 60.00000000000001)",
       "ref": "Mindustry-Source/core/src/mindustry/logic/LogicOp.java:56"
     },
@@ -112,7 +119,9 @@
       "steps": 6,
       "code": "set k 5\nlocaleprint k\nend\n",
       "processor": "world",
-      "expect_classes_has": ["LocalePrintI"],
+      "expect_classes_has": [
+        "LocalePrintI"
+      ],
       "expect_text_empty": true,
       "why": "localeprint only appends when the operand is an object: a numeric variable writes nothing",
       "ref": "Mindustry-Source/core/src/mindustry/logic/LExecutor.java:2393-2413"
@@ -123,8 +132,12 @@
       "steps": 6,
       "code": "localeprint \"no-such-locale-key\"\nend\n",
       "processor": "world",
-      "expect_classes_has": ["LocalePrintI"],
-      "expect_text_contains": ["???no-such-locale-key???"],
+      "expect_classes_has": [
+        "LocalePrintI"
+      ],
+      "expect_text_contains": [
+        "???no-such-locale-key???"
+      ],
       "why": "an unknown map locale key prints the wrapped key (v160.7 jar); the newer source snapshot appends null instead - the jar wins",
       "ref": "Mindustry-Source/core/src/mindustry/logic/LStatements.java:2614-2636"
     },
@@ -134,7 +147,9 @@
       "steps": 6,
       "code": "clientdata \"ch\" 5 1\nend\n",
       "processor": "world",
-      "expect_classes": ["EndI"],
+      "expect_classes": [
+        "EndI"
+      ],
       "why": "ClientDataStatement.build returns null unless state.rules.allowLogicData: the line compiles to nothing (not even a noop)",
       "ref": "Mindustry-Source/core/src/mindustry/logic/LStatements.java:2186-2190"
     },
@@ -144,10 +159,177 @@
       "steps": 6,
       "code": "clientdata \"ch\" 5 1\nend\n",
       "processor": "world",
-      "rules": {"allowLogicData": true},
-      "expect_classes_has": ["ClientDataI"],
+      "rules": {
+        "allowLogicData": true
+      },
+      "expect_classes_has": [
+        "ClientDataI"
+      ],
       "why": "with the map rule allowLogicData the same line compiles to ClientDataI - the gate is a rule, not a version",
       "ref": "Mindustry-Source/core/src/mindustry/logic/LStatements.java:2186-2190"
+    },
+    {
+      "id": "radar-single-output-v160",
+      "jar": "160",
+      "steps": 4,
+      "code": "ubind @flare\nradar enemy any any distance 0 1 u\nend\n",
+      "expect_radar": {
+        "output": "u",
+        "sortOrder": "___1.0"
+      },
+      "why": "radar has exactly one output LVar: the executor writes one unit to it (LExecutor.java:802 output.setobj(targeted)) and there is no loop over a count",
+      "ref": "out/takeover-20261024/26-docsig.md"
+    },
+    {
+      "id": "radar-sixth-slot-is-a-direction-v160",
+      "jar": "160",
+      "steps": 4,
+      "code": "ubind @flare\nradar enemy any any distance 0 5 u\nend\n",
+      "expect_radar": {
+        "output": "u",
+        "sortOrder": "___5.0"
+      },
+      "why": "the 6th operand is the sort direction: writing 5 lands as the constant ___5.0 in sortOrder and is read as a boolean (LExecutor.java:753), it does not mean 'find 5 units'",
+      "ref": "out/takeover-20261024/26-docsig.md"
+    },
+    {
+      "id": "uradar-six-operand-shape-v160",
+      "jar": "160",
+      "steps": 4,
+      "code": "ubind @flare\nuradar enemy any any distance 1 target\nend\n",
+      "expect_radar": {
+        "output": "result",
+        "sortOrder": "target"
+      },
+      "why": "the 6-operand shape the old doc showed is off by one: 'target' is read as the direction and the result falls through to the default `result` variable",
+      "ref": "out/takeover-20261024/26-docsig.md"
+    },
+    {
+      "id": "unit-legal-fresh-v160",
+      "jar": "160",
+      "steps": 20,
+      "code": "ubind @flare\nsensor ctrl @unit @controller\nsensor dd @unit @dead\nset ok 0\njump 9 equal dd 1\njump 8 equal ctrl @unit\njump 8 equal ctrl @this\njump 9 always\nset ok 1\nprint ok\nend\n",
+      "expect_vars": {
+        "ok": 1,
+        "dd": 0
+      },
+      "why": "an AI unit nobody controls: @controller is the unit itself (UnitComp.java:319) and @dead is 0, so the guard says legal",
+      "ref": "out/takeover-20261024/28-unit-legality.md"
+    },
+    {
+      "id": "unit-legal-dead-v160",
+      "jar": "160",
+      "steps": 20,
+      "code": "ubind @flare\nsensor ctrl @unit @controller\nsensor dd @unit @dead\nset ok 0\njump 9 equal dd 1\njump 8 equal ctrl @unit\njump 8 equal ctrl @this\njump 9 always\nset ok 1\nprint ok\nend\n",
+      "setup_js": "var G = Packages.mindustry.gen.Groups.unit; var U = null; for(var i = 0; i < G.size(); i++){ var q = G.index(i); if(q.team == team){ U = q; break; } } U.kill();\n",
+      "expect_vars": {
+        "ok": 0,
+        "dd": 1
+      },
+      "why": "@dead is the only check that sees a dead unit: @unit goes stale, and a null @unit also reads @dead = 1 (LExecutor.java:685-688)",
+      "ref": "out/takeover-20261024/28-unit-legality.md"
+    },
+    {
+      "id": "unit-legal-self-v160",
+      "jar": "160",
+      "steps": 20,
+      "code": "ubind @flare\nsensor ctrl @unit @controller\nsensor dd @unit @dead\nset ok 0\njump 9 equal dd 1\njump 8 equal ctrl @unit\njump 8 equal ctrl @this\njump 9 always\nset ok 1\nprint ok\nend\n",
+      "setup_js": "var G = Packages.mindustry.gen.Groups.unit; var U = null; for(var i = 0; i < G.size(); i++){ var q = G.index(i); if(q.team == team){ U = q; break; } }\nvar la = new (Packages.mindustry.ai.types.LogicAI)();\nla.controller = b;\nU.controller(la);\n",
+      "expect_vars": {
+        "ok": 1,
+        "dd": 0
+      },
+      "why": "a unit this processor drives: @controller returns the controlling building, which is @this, so the guard says legal",
+      "ref": "out/takeover-20261024/28-unit-legality.md"
+    },
+    {
+      "id": "unit-legal-other-v160",
+      "jar": "160",
+      "steps": 20,
+      "code": "ubind @flare\nsensor ctrl @unit @controller\nsensor dd @unit @dead\nset ok 0\njump 9 equal dd 1\njump 8 equal ctrl @unit\njump 8 equal ctrl @this\njump 9 always\nset ok 1\nprint ok\nend\n",
+      "setup_js": "var G = Packages.mindustry.gen.Groups.unit; var U = null; for(var i = 0; i < G.size(); i++){ var q = G.index(i); if(q.team == team){ U = q; break; } }\nvar t = null;\nfor(var r = 3; r < 12 && t === null; r++){\n  for(var dx = -r; dx <= r && t === null; dx++){\n    for(var dy = -r; dy <= r && t === null; dy++){\n      var tt = W.tile(b.tileX() + dx, b.tileY() + dy);\n      if(tt != null && tt.block() == Vars.content.block('air') && tt.build == null){ t = tt; }\n    }\n  }\n}\nt.setBlock(Vars.content.block('micro-processor'), team);\nvar b2 = W.build(t.x, t.y);\nvar la = new (Packages.mindustry.ai.types.LogicAI)();\nla.controller = b2;\nU.controller(la);\n",
+      "expect_vars": {
+        "ok": 0,
+        "dd": 0
+      },
+      "why": "a unit another processor drives: @controller is that building, neither @unit nor @this, so the guard says illegal -- and a later ucontrol would silently steal it (LExecutor.java:324-326)",
+      "ref": "out/takeover-20261024/28-unit-legality.md"
+    },
+    {
+      "id": "unit-control-lease-holds-v160",
+      "jar": "160",
+      "ticks": 400,
+      "steps": 400,
+      "code": "ubind @flare\nucontrol move 60 60 0 0 0\nwait 6\nsensor c @unit @controlled\nprint c\nend\n",
+      "expect_text": "1",
+      "why": "a unit handed to logic stays controlled while the 600-tick lease runs: wait 6 s = 360 ticks is still inside it",
+      "ref": "docs/断言表.md#L2-25"
+    },
+    {
+      "id": "unit-control-lease-expires-v160",
+      "jar": "160",
+      "ticks": 700,
+      "steps": 700,
+      "code": "ubind @flare\nucontrol move 60 60 0 0 0\nwait 11\nsensor c @unit @controlled\nprint c\nend\n",
+      "expect_text": "0",
+      "why": "600 ticks after the last ucontrol the lease expires and the unit reverts: LogicAI.java:59-64 resetController(); every ucontrol re-arms it (LExecutor.java:351)",
+      "ref": "docs/断言表.md#L2-25"
+    },
+    {
+      "id": "unit-range-fortress-v160",
+      "jar": "160",
+      "steps": 20,
+      "units": [
+        [
+          "fortress",
+          1
+        ]
+      ],
+      "code": "ubind @fortress\nsensor r @unit @range\nsensor hp @unit @health\nprint r\nend\n",
+      "expect_vars": {
+        "r": 29.5,
+        "hp": 900
+      },
+      "why": "sensor @unit @range returns the unit type's range (fortress 29.5) and @health its 900 hp",
+      "ref": "docs/断言表.md#L1-19"
+    },
+    {
+      "id": "control-shoot-tile-coords-v160",
+      "jar": "160",
+      "steps": 20,
+      "code": "control shoot turret1 20 20 1\nsensor sx turret1 @shootX\nsensor sy turret1 @shootY\nsensor sh turret1 @shooting\nprint sx\nend\n",
+      "expect_vars": {
+        "sx": 20,
+        "sy": 20
+      },
+      "why": "control shoot takes TILE coordinates (Turret.java:381-386 World.unconv(p1), World.unconv(p2)) and @shootX/@shootY read them back converted; the third operand is only a non-zero flag",
+      "ref": "docs/断言表.md#L2-14"
+    },
+    {
+      "id": "item-transfer-in-range-v160",
+      "jar": "160",
+      "ticks": 240,
+      "steps": 240,
+      "code": "ubind @flare\nwait 1.6\nucontrol itemTake container1 @copper 10\nwait 0.1\nsensor n @unit @totalItems\nprint n\nend\n",
+      "setup_js": "var C = null; for(var i = 0; i < b.links.size; i++){ var L = b.links.get(i); if(String(L.name) == 'container1'){ C = W.build(L.x, L.y); } }\nC.items.add(Vars.content.item('copper'), 100);\nvar G = Packages.mindustry.gen.Groups.unit; var U = null; for(var j = 0; j < G.size(); j++){ var u = G.index(j); if(u.team == team){ U = u; break; } }\nU.x = C.x + 6 * 8; U.y = C.y;\n",
+      "expect_vars": {
+        "n": 10
+      },
+      "why": "flare (itemCapacity 10) and a container 6 tiles away: item transfer runs on a 90-tick (1.5 s) cooldown (LogicAI.java:16 transferDelay, LExecutor.java:98 timeoutDone), and the sim's Time.time starts near zero, so the first take needs a 1.6 s wait; then the reach is Vars.java:125 logicItemTransferRange 45 world + block.size*4 -- 53 world = 6.625 tiles, so this is inside",
+      "ref": "docs/断言表.md#L2-08"
+    },
+    {
+      "id": "item-transfer-out-of-range-v160",
+      "jar": "160",
+      "ticks": 240,
+      "steps": 240,
+      "code": "ubind @flare\nwait 1.6\nucontrol itemTake container1 @copper 10\nwait 0.1\nsensor n @unit @totalItems\nprint n\nend\n",
+      "setup_js": "var C = null; for(var i = 0; i < b.links.size; i++){ var L = b.links.get(i); if(String(L.name) == 'container1'){ C = W.build(L.x, L.y); } }\nC.items.add(Vars.content.item('copper'), 100);\nvar G = Packages.mindustry.gen.Groups.unit; var U = null; for(var j = 0; j < G.size(); j++){ var u = G.index(j); if(u.team == team){ U = u; break; } }\nU.x = C.x + 8 * 8; U.y = C.y;\n",
+      "expect_vars": {
+        "n": 0
+      },
+      "why": "flare (itemCapacity 10) and a container 8 tiles away: item transfer runs on a 90-tick (1.5 s) cooldown (LogicAI.java:16 transferDelay, LExecutor.java:98 timeoutDone), and the sim's Time.time starts near zero, so the first take needs a 1.6 s wait; then the reach is Vars.java:125 logicItemTransferRange 45 world + block.size*4 -- past 6.625 tiles the take silently does nothing",
+      "ref": "docs/断言表.md#L2-08"
     }
   ]
 }

@@ -53,7 +53,6 @@ except Exception as _e:                       # missing file -> assume size 1
           file=sys.stderr)
     BLOCK_SIZES = {}
 
-
 def block_size(block: str) -> int:
     return int(BLOCK_SIZES.get(block, 1))
 
@@ -64,7 +63,6 @@ LOGIC_BLOCKS = {
 }
 MEMORY_BLOCKS = {"memory-cell", "memory-bank"}
 
-
 class Link:
     """A named link from a processor. dx/dy are RELATIVE to the processor tile."""
 
@@ -73,14 +71,12 @@ class Link:
     def __init__(self, name: str, dx: int, dy: int):
         self.name, self.dx, self.dy = name, int(dx), int(dy)
 
-
 class Tile:
     __slots__ = ("block", "x", "y", "rotation", "config")
 
     def __init__(self, block: str, x: int, y: int, rotation: int = 0, config=None):
         self.block, self.x, self.y = block, int(x), int(y)
         self.rotation, self.config = int(rotation), config
-
 
 # --------------------------------------------------------------------------- #
 # TypeIO writer
@@ -141,13 +137,11 @@ def write_object(out: bytearray, obj) -> None:
     else:
         raise TypeError(f"cannot serialize config of type {type(obj).__name__}")
 
-
 def write_utf(out: bytearray, s: str) -> None:
     b = s.encode("utf-8")
     if len(b) > 0xFFFF:
         raise ValueError("string too long for UTF")
     out += struct.pack(">H", len(b)) + b
-
 
 # --------------------------------------------------------------------------- #
 # logic payload
@@ -164,7 +158,6 @@ def build_logic_config(code: str, links: list[Link], level: int = 9) -> bytes:
         write_utf(inner, lk.name)
         inner += struct.pack(">hh", lk.dx, lk.dy)
     return zlib.compress(bytes(inner), level)
-
 
 # --------------------------------------------------------------------------- #
 # blueprint assembly
@@ -356,15 +349,12 @@ class Blueprint:
             fh.write(data)
         return path
 
-
 def _pack(x: int, y: int) -> int:
     return ((x & 0xFFFF) << 16) | (y & 0xFFFF)
-
 
 def _json_labels(labels: list[str]) -> str:
     import json
     return json.dumps(labels, ensure_ascii=False)
-
 
 # --------------------------------------------------------------------------- #
 # link parsing
@@ -380,7 +370,6 @@ def parse_link(spec: str) -> Link:
     except ValueError:
         raise ValueError(f"bad link position in {spec!r}; expected name@dx,dy")
     return Link(name, dx, dy)
-
 
 # --------------------------------------------------------------------------- #
 
@@ -406,7 +395,6 @@ def default_schematics_dir() -> str | None:
         if os.path.isdir(c):
             return c
     return None
-
 
 def _selftest_file(f: str) -> tuple[str, str, list[str]]:
     """One blueprint -> (logic_state, build_state, messages); "skip" = unusable.
@@ -480,7 +468,6 @@ def _selftest_file(f: str) -> tuple[str, str, list[str]]:
         build_state = "skip"
     return (logic_state, build_state, msgs)
 
-
 def selftest(schem_dir: str | None = None, jobs: int | None = None) -> int:
     """
     Round-trip every blueprint found in the schematics folder.
@@ -543,7 +530,6 @@ def selftest(schem_dir: str | None = None, jobs: int | None = None) -> int:
         print("   !! " + e)
     return 1 if logic_bad else 0
 
-
 def link_name_for(block: str, index: int = 1) -> str:
     """Reproduce LogicBlock.getLinkName() + the game's numbering.
 
@@ -564,7 +550,6 @@ def link_name_for(block: str, index: int = 1) -> str:
             name = last
     return f"{name}{index}"
 
-
 def parse_with_block(spec: str) -> tuple[str, int, int, int | None]:
     """`block@dx,dy` or `block@dx,dy=contentId` -> (block, dx, dy, content_id)."""
     body, _, cid_s = spec.partition("=")
@@ -582,7 +567,6 @@ def parse_with_block(spec: str) -> tuple[str, int, int, int | None]:
         except ValueError:
             raise ValueError(f"bad content id in --with-block {spec!r}")
     return block, dx, dy, cid
-
 
 def main() -> int:
     ap = argparse.ArgumentParser(
@@ -668,7 +652,6 @@ def main() -> int:
     if args.format in ("code", "both"):
         print(base64.b64encode(data).decode())
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

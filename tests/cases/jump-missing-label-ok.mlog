@@ -1,0 +1,4 @@
+start:
+set x 1
+jump start equal x 1
+end

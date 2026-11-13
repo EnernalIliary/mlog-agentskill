@@ -27,7 +27,6 @@ OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "wiki_block_ids.j
 
 PAGE = re.compile(r"^content/blocks/([^/]+)/(\d+)-([a-z0-9\-]+)/$")
 
-
 def main() -> None:
     req = urllib.request.Request(INDEX, headers={"User-Agent": "dsh"})
     with urllib.request.urlopen(req, timeout=60) as fh:
@@ -83,7 +82,6 @@ def main() -> None:
                 print(f"  {h:5d}  {want}  [{categories[h]}]")
         else:
             print(f"  {'--':>5}  {want}  (not found)")
-
 
 if __name__ == "__main__":
     main()

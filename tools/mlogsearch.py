@@ -52,7 +52,6 @@ ART_PAT = re.compile(r"(^pic|pic_|BADAPPLE|涩图|^AKIRA|picturebigger|吃吃B|"
                      r"intel corei3|1v1\.msch|^__\.msch|^\.\.\.)", re.I)
 LINUX_PAT = re.compile(r"Linux on mlogv32", re.I)
 
-
 class Block:
     __slots__ = ("file", "name", "kind", "x", "y", "links", "lines", "labels")
 
@@ -72,7 +71,6 @@ class Block:
     @staticmethod
     def from_json(d):
         return Block(*d)
-
 
 def build_cache(verbose=False):
     files = sorted(f for f in os.listdir(SCHEM) if f.lower().endswith(".msch"))
@@ -95,31 +93,25 @@ def build_cache(verbose=False):
         json.dump([b.to_json() for b in out], fh, ensure_ascii=False)
     return out
 
-
 def load(refresh=False) -> list[Block]:
     if refresh or not os.path.exists(CACHE):
         return build_cache()
     with open(CACHE, encoding="utf-8") as fh:
         return [Block.from_json(d) for d in json.load(fh)]
 
-
 def first_op(line: str) -> str:
     p = line.split(" ", 1)
     return p[0] if p else ""
 
-
 def is_art(b: Block) -> bool:
     return bool(ART_PAT.search(b.file))
-
 
 def is_linux(b: Block) -> bool:
     return bool(LINUX_PAT.search(b.file))
 
-
 def header(b: Block) -> str:
     return (f"{b.file}  [{b.kind} @{b.x},{b.y}]  "
             f"{len(b.lines)} stmts" + (f"  links={b.links}" if b.links else ""))
-
 
 # --------------------------------------------------------------------------- #
 # commands
@@ -154,7 +146,6 @@ def cmd_grep(blocks, args):
     print(f"\n{hits} logic block(s) matched." + (
         f" (showing first {args.limit})" if hits > args.limit else ""))
 
-
 def cmd_op(blocks, args):
     wanted = set(args.opcodes)
     rows = []
@@ -168,7 +159,6 @@ def cmd_op(blocks, args):
     for tot, b, used in rows[:args.limit]:
         print(f"{tot:6d}  {used}  {header(b)}")
 
-
 def cmd_var(blocks, args):
     rx = re.compile(r"\b" + re.escape(args.name) + r"\b",
                     re.I if args.insensitive else 0)
@@ -181,7 +171,6 @@ def cmd_var(blocks, args):
     print(f"{len(rows)} block(s) mention '{args.name}'\n")
     for c, b in rows[:args.limit]:
         print(f"{c:6d}  {header(b)}")
-
 
 def cmd_find(blocks, args):
     seen = {}
@@ -199,7 +188,6 @@ def cmd_find(blocks, args):
             print(f"    [{b.kind} @{b.x},{b.y}] {len(b.lines)} stmts "
                   f"links={b.links}")
 
-
 def cmd_show(blocks, args):
     want = args.blueprint.lower()
     sel = [b for b in blocks
@@ -214,7 +202,6 @@ def cmd_show(blocks, args):
         for i, l in enumerate(b.lines):
             print(f"  {i:5d}  {l}")
 
-
 def cmd_stats(blocks, args):
     ops = collections.Counter()
     for b in blocks:
@@ -223,12 +210,10 @@ def cmd_stats(blocks, args):
     for op, c in ops.most_common(args.limit if args.limit != 25 else 60):
         print(f"  {op:18s} {c:10,d}")
 
-
 def cmd_top(blocks, args):
     rows = sorted(blocks, key=lambda b: -len(b.lines))
     for b in rows[:args.limit]:
         print(f"{len(b.lines):6d}  {header(b)}")
-
 
 def cmd_links(blocks, args):
     want = args.blueprint.lower()
@@ -238,7 +223,6 @@ def cmd_links(blocks, args):
             for i, n in enumerate(b.links):
                 print(f"    {i:3d}  {n}")
             print()
-
 
 # --------------------------------------------------------------------------- #
 
@@ -284,7 +268,6 @@ def main():
     if not args.linux:
         blocks = [b for b in blocks if not is_linux(b)]
     args.fn(blocks, args)
-
 
 if __name__ == "__main__":
     main()

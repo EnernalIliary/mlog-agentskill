@@ -85,10 +85,8 @@ CONTENT_TYPES = [
     "error", "planet", "ammo_UNUSED", "team",
 ]
 
-
 class MschError(Exception):
     """Raised when a blueprint cannot be parsed."""
-
 
 class Reader:
     """Big-endian cursor over an in-memory buffer (mirrors arc's Reads)."""
@@ -154,7 +152,6 @@ class Reader:
     def bytes(self, n: int) -> bytes:
         return self._take(n)
 
-
 @dataclass
 class LogicLink:
     """A named link from a processor to another building (LogicLink in source)."""
@@ -164,7 +161,6 @@ class LogicLink:
 
     def __str__(self) -> str:
         return f"{self.name}@({self.x},{self.y})"
-
 
 @dataclass
 class LogicBlockData:
@@ -181,7 +177,6 @@ class LogicBlockData:
         """Non-empty, stripped lines (what the assembly editor shows)."""
         return [ln.strip() for ln in self.lines if ln.strip()]
 
-
 @dataclass
 class Stile:
     """One placed building (Schematic.Stile in source)."""
@@ -192,7 +187,6 @@ class Stile:
     config: object = None
     raw_config: bytes | None = None
     logic: LogicBlockData | None = None
-
 
 @dataclass
 class Schematic:
@@ -219,7 +213,6 @@ class Schematic:
         for t in self.tiles:
             counts[t.block] = counts.get(t.block, 0) + 1
         return dict(sorted(counts.items(), key=lambda kv: -kv[1]))
-
 
 def _read_object(r: Reader, depth: int = 0) -> object:
     """Minimal but faithful TypeIO.readObject (box=False, safe=False)."""
@@ -298,11 +291,9 @@ def _read_object(r: Reader, depth: int = 0) -> object:
         return {"__unitcommand__": r.us()}
     raise MschError(f"unknown TypeIO object type {tag} at offset {r.pos - 1}")
 
-
 def _check_array(n: int, kind: str = "array") -> None:
     if n < 0 or n > 1_000_000:
         raise MschError(f"invalid {kind} size {n}")
-
 
 def _unpack_point(packed: int) -> tuple[int, int]:
     """Point2.unpack: x = (short)(packed >> 16), y = (short)(packed & 0xFFFF)."""
@@ -314,10 +305,8 @@ def _unpack_point(packed: int) -> tuple[int, int]:
         y -= 0x10000
     return x, y
 
-
 def _pack_point(x: int, y: int) -> int:
     return ((x & 0xFFFF) << 16) | (y & 0xFFFF)
-
 
 def parse_logic(data: bytes, relative_to: tuple[int, int] | None = None) -> LogicBlockData:
     """Decode one LogicBlock config payload (LogicBuild.readCompressed)."""
@@ -356,7 +345,6 @@ def parse_logic(data: bytes, relative_to: tuple[int, int] | None = None) -> Logi
             links.append(LogicLink(name, x, y))
 
     return LogicBlockData(version=version, code=code, links=links)
-
 
 def parse_bytes(data: bytes) -> Schematic:
     """Parse raw .msch bytes into a Schematic."""
@@ -433,16 +421,13 @@ def parse_bytes(data: bytes) -> Schematic:
     return Schematic(width=width, height=height, tags=tags, tiles=tiles,
                      version=version, labels=labels)
 
-
 def parse_file(path) -> Schematic:
     with open(path, "rb") as fh:
         return parse_bytes(fh.read())
 
-
 def parse_base64(text: str) -> Schematic:
     """Parse a blueprint copied from the in-game clipboard."""
     return parse_bytes(base64.b64decode(text.strip()))
-
 
 def build_logic_data(code: str, links: list[LogicLink]) -> bytes:
     """Inverse of parse_logic -- used by the verifier and by generators."""
@@ -457,7 +442,6 @@ def build_logic_data(code: str, links: list[LogicLink]) -> bytes:
         out += struct.pack(">H", len(nb)) + nb
         out += struct.pack(">hh", link.x, link.y)
     return zlib.compress(bytes(out), 9)
-
 
 def build_schematic(width: int, height: int, tags: dict[str, str],
                     tiles: list[Stile]) -> bytes:
@@ -487,7 +471,6 @@ def build_schematic(width: int, height: int, tags: dict[str, str],
         body.append(t.rotation & 0xFF)
 
     return MAGIC + bytes([CURRENT_VERSION]) + zlib.compress(bytes(body), 9)
-
 
 def _write_object(out: bytearray, obj: object) -> None:
     """Minimal TypeIO.writeObject covering the types seen in blueprints."""
@@ -521,7 +504,6 @@ def _write_object(out: bytearray, obj: object) -> None:
     else:
         raise MschError(f"cannot serialize config of type {type(obj).__name__}")
 
-
 def decode_variant(text: str) -> Schematic:
     """Accept either base64 clipboard text or raw binary bytes-as-str."""
     stripped = "".join(text.split())
@@ -529,7 +511,6 @@ def decode_variant(text: str) -> Schematic:
         return parse_base64(stripped)
     except Exception:
         return parse_bytes(text.encode("latin-1"))
-
 
 if __name__ == "__main__":
     import sys

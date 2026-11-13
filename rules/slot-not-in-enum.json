@@ -1,0 +1,26 @@
+{
+ "id": "slot-not-in-enum",
+ "kind": "semantics",
+ "severity": "ERR",
+ "claim": "radar's three filter slots and its sort slot, control's first operand, ulocate's mode and flag, ucontrol's command, and the ConditionOp of jump/select are enum WORDS the parser resolves against a fixed list, case-sensitively; a word that is not in the list is not a filter, a sort key, a control type, a mode, a block flag, a unit command or a condition, and the parser turns the whole line into an InvalidStatement.",
+ "why": "The lists are the v160.7 enums read straight out of the shipped jar (out/_server160.jar: RadarTarget, RadarSort, LLocate, BlockFlag, LAccess.controls, ConditionOp, LUnitControl) by out/_enums.py and stored as tools/instr_enums.json; Logic-Docs-v1.1.0.md prints the same values for uradar (:1240-1330), control (:3038-3140) and ulocate (:1326-1400). A model that guesses these slots produces exactly the shapes in out/takeover-20261024/98-quality-analysis.md §4: `radar target salvo1 player any distance` (result first, one filter slot holding a link name) and `control salvo1 shoot px py 1` (block and type swapped). Severity is ERR because the parser's behaviour is now pinned on the real v160.7 engine (out/_noop_matrix2.py, out/_probe_extra.py): LParser.java:142-147 catches the failed LogicIO.read and substitutes `new InvalidStatement()`, so the whole line is shown as noop and never runs -- it does not fall back to reading the slot as a variable. Probes returned InvalidStatement for `radar Enemy ..`, `radar .. foo ..`, `control Enabled ..`, `jump 0 Equal ..`, `select r eq ..`, `ulocate mine ..`, `ulocate building foo ..` (numeric flag too), `ucontrol paytake ..` and the camelCase-sensitivity cases (`payTake` is the real spelling in LUnitControl), while the proper spellings parsed to real statements. Case-sensitivity is part of the claim: the enums' members are lowercase or camelCase and the parser compares exactly.",
+ "source": "source",
+ "ref": "m00174",
+ "since": "2026-11-01",
+ "counter_example": "tests/cases/slot-enum-ok.mlog",
+ "match": {
+  "sevs": [
+   "ERR"
+  ],
+  "msg_any": [
+   "is not a radar filter",
+   "is not a radar sort key",
+   "is not a control type",
+   "is not a ulocate mode",
+   "is not a condition",
+   "is not a block flag",
+   "is not a unit control command"
+  ]
+ },
+ "auto_downgrade": false
+}

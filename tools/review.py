@@ -55,12 +55,10 @@ SAVE_DIR = ROOT / "out" / "maps"
 
 VERDICT_WORDS = {"ok": "ok", "bad": "bad", "unsure": "unsure", "skip": "skip"}
 
-
 def load_rows() -> list[dict]:
     if not ROWS.exists():
         sys.exit(f"no {ROWS}; run: python tools/review.py build")
     return json.loads(ROWS.read_text(encoding="utf-8"))
-
 
 def load_verdicts() -> dict[str, dict]:
     out: dict[str, dict] = {}
@@ -71,7 +69,6 @@ def load_verdicts() -> dict[str, dict]:
             out[row["id"]] = row
     return out
 
-
 def save_verdict(fid: str, verdict: str, note: str) -> None:
     new = not VERDICTS.exists()
     VERDICTS.parent.mkdir(parents=True, exist_ok=True)
@@ -80,7 +77,6 @@ def save_verdict(fid: str, verdict: str, note: str) -> None:
         if new:
             w.writerow(["id", "verdict", "note", "when"])
         w.writerow([fid, verdict, note, time.strftime("%Y-%m-%d %H:%M")])
-
 
 def find_row(rows: list[dict], fid: str) -> dict:
     for r in rows:
@@ -92,7 +88,6 @@ def find_row(rows: list[dict], fid: str) -> dict:
         return hits[0]
     sys.exit(f"no such row: {fid}" + (f" ({len(hits)} prefixes match)" if hits else ""))
 
-
 def cmd_build(args) -> int:
     import rule_audit
 
@@ -102,7 +97,6 @@ def cmd_build(args) -> int:
     if args.serial:
         argv.append("--serial")
     return rule_audit.main(argv)
-
 
 def cmd_list(args) -> int:
     rows = load_rows()
@@ -126,7 +120,6 @@ def cmd_list(args) -> int:
         print(f"... {len(rows) - args.limit} more")
     return 0
 
-
 def _load_code(row: dict) -> str:
     path = SAVE_DIR / row["file"]
     if not path.exists():
@@ -136,7 +129,6 @@ def _load_code(row: dict) -> str:
         if t["x"] == row["x"] and t["y"] == row["y"]:
             return (t.get("code") or "")
     sys.exit(f"no processor at ({row['x']},{row['y']}) in {row['file']}")
-
 
 def _blueprint_for(row: dict, code: str) -> str:
     """A one-processor schematic holding exactly this program, as a paste-able code.
@@ -158,7 +150,6 @@ def _blueprint_for(row: dict, code: str) -> str:
     bp.add_logic(code, 0, 0, "micro-processor", 0, [])
     return base64.b64encode(bp.build()).decode("ascii")
 
-
 def cmd_code(args) -> int:
     row = find_row(load_rows(), args.id)
     code = _load_code(row)
@@ -172,7 +163,6 @@ def cmd_code(args) -> int:
         print(f"wrote {path}  ({len(b64)} chars of code)")
     print(b64)
     return 0
-
 
 def cmd_codes(args) -> int:
     rows = load_rows()
@@ -209,7 +199,6 @@ def cmd_codes(args) -> int:
     print(f"wrote {path} and {len(rows)} .msch file(s) in {out_dir}")
     return 0
 
-
 def cmd_install(args) -> int:
     """Drop the review blueprints into the game's schematic folder."""
     rows = load_rows()
@@ -236,7 +225,6 @@ def cmd_install(args) -> int:
         n += 1
     print(f"installed {n} blueprint(s) into {target}")
     return 0
-
 
 def cmd_show(args) -> int:
     row = find_row(load_rows(), args.id)
@@ -270,13 +258,11 @@ def cmd_show(args) -> int:
         print("verdict: (none)  --  ok / bad / unsure / skip")
     return 0
 
-
 def cmd_verdict(args, word: str) -> int:
     row = find_row(load_rows(), args.id)
     save_verdict(row["id"], word, args.note or "")
     print(f"{row['id']} -> {word}" + (f"  ({args.note})" if args.note else ""))
     return 0
-
 
 def cmd_stats(args) -> int:
     rows = load_rows()
@@ -300,7 +286,6 @@ def cmd_stats(args) -> int:
     print(f"\njudged {sum(total.values())} / {len(rows)} rows  "
           f"(ok {total['ok']}, bad {total['bad']}, unsure {total['unsure']}, skip {total['skip']})")
     return 0
-
 
 def cmd_export(args) -> int:
     rows = load_rows()
@@ -334,13 +319,11 @@ def cmd_export(args) -> int:
     print(f"wrote {path}")
     return 0
 
-
 MD_PATH = ROOT / "out" / "audit_review.md"
 
 _HEAD = re.compile(r"^###\s+`([0-9a-f]{6,})`")
 _VERDICT_LINE = re.compile(r"^\s*判定\s*[:：]\s*(\S*)\s*$")
 _NOTE_LINE = re.compile(r"^\s*备注\s*[:：]\s*(.*)$")
-
 
 def _program(row: dict) -> tuple[str, list[str]]:
     """The processor's full source and its own link names."""
@@ -353,7 +336,6 @@ def _program(row: dict) -> tuple[str, list[str]]:
             names = [(l or {}).get("name") or "" for l in (t.get("links") or [])]
             return (t.get("code") or ""), [n for n in names if n]
     sys.exit(f"no processor at ({row['x']},{row['y']}) in {row['file']}")
-
 
 def _listing(code_text: str, flag: int, window: int) -> list[str]:
     """Numbered statement listing with the flagged line marked. Numbers are statement
@@ -372,7 +354,6 @@ def _listing(code_text: str, flag: int, window: int) -> list[str]:
     if hi < len(lines):
         out.append(f"      ... 下面还有 {len(lines) - hi} 条语句")
     return out
-
 
 def cmd_md(args) -> int:
     if not getattr(args, "no_ingest", False) and MD_PATH.exists():
@@ -455,7 +436,6 @@ def cmd_md(args) -> int:
     print(f"wrote {path}  ({len(rows)} row(s), {len(groups)} rule(s))")
     return 0
 
-
 def cmd_ingest(args) -> int:
     """Read the `判定:` / `备注:` lines back out of an edited markdown file."""
     path = Path(args.path)
@@ -510,13 +490,11 @@ def cmd_ingest(args) -> int:
     print(f"\n统计：python tools/review.py stats")
     return 0 if not problems else 1
 
-
 class _NS:
     """Namespace shim so cmd_md can reuse the ingest parser."""
 
     def __init__(self, path) -> None:
         self.path = str(path)
-
 
 def cmd_fetch(args) -> int:
     """Download maps from api.mindustry.top into --dir (skips ones you have)."""
@@ -553,7 +531,6 @@ def cmd_fetch(args) -> int:
     print(f"fetched {got} new, {had} already here, {failed} failed -> {dest}")
     return 0
 
-
 def cmd_run(args) -> int:
     """fetch (optional) -> build -> md, in that order."""
     if args.pages:
@@ -565,7 +542,6 @@ def cmd_run(args) -> int:
         return rc
     args.limit = 0          # --limit was for fetching; do not truncate the list
     return cmd_md(args)
-
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
@@ -650,7 +626,6 @@ def main(argv: list[str] | None = None) -> int:
 
     args = ap.parse_args(argv)
     return args.fn(args)
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

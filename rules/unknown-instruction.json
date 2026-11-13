@@ -1,0 +1,20 @@
+{
+  "id": "unknown-instruction",
+  "kind": "semantics",
+  "severity": "ERR",
+  "claim": "A line whose first token is not one of v160.7's statement mnemonics is not an instruction at all: the parser builds an InvalidStatement for it, so the line shows as noop and never runs (the rest of the program still compiles).",
+  "why": "LParser.java:142-147 wraps `LogicIO.read(tokens, tok)` in try/catch and substitutes `new InvalidStatement()` on any exception -- an unknown mnemonic is not in LogicIO's table, so it throws and the line becomes a noop. The whitelist is the @RegisterStatement set extracted from the v160.7 jar (LStatements.java, 54 names: noop read write draw print ... playsound playmusic setmarker makemarker localeprint), which is exactly the set stored as INSTR_SPECS. Mnemonics are case-sensitive: real-engine probes (out/_noop_matrix2.py, out/_probe_extra.py) returned InvalidStatement for `RADAR enemy any any distance turret1 1 out`, `END` and `NOOP`, while the lowercase spellings were real statements. Comments (`# ...`) and label lines (`name:`) are stripped before this check and blank lines are skipped.",
+  "source": "source",
+  "ref": "m07998",
+  "since": "2026-11-10",
+  "counter_example": "tests/cases/unknown-instruction-ok.mlog",
+  "match": {
+    "sevs": [
+      "ERR"
+    ],
+    "msg_any": [
+      "is not an instruction"
+    ]
+  },
+  "auto_downgrade": false
+}

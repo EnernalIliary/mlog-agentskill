@@ -32,7 +32,6 @@ WIDE = 10 ** 6
 MAX_ENUM = 64
 ROUNDS = 300
 
-
 def _num(tok):
     if tok is None or getattr(tok, "kind", "") == "str":
         return None
@@ -43,7 +42,6 @@ def _num(tok):
             return int(v)
     return None
 
-
 def _name(tok):
     if tok is None or getattr(tok, "kind", "") == "str":
         return None
@@ -51,7 +49,6 @@ def _name(tok):
     if NUM.match(s) or s.startswith("@"):
         return None
     return s
-
 
 def _val(tok, state):
     """token -> interval or None (unknown)."""
@@ -67,12 +64,10 @@ def _val(tok, state):
         return None  # 由调用处替换
     return state.get(name, (0, 0))
 
-
 def _join(a, b):
     if a is None or b is None:
         return None
     return (min(a[0], b[0]), max(a[1], b[1]))
-
 
 def _op(kind, x, y):
     if x is None or y is None:
@@ -103,7 +98,6 @@ def _op(kind, x, y):
             return (0, max(0, x[1] // d))
         return None
     return None
-
 
 def _refine(state, cond, name, c, truth):
     """按比较条件收紧 name 的区间; 返回 None 表示这条边不可能."""
@@ -142,7 +136,6 @@ def _refine(state, cond, name, c, truth):
     out[name] = (lo, hi)
     return out
 
-
 def _edge(state, s, taken):
     """沿一条边传播时, 用 jump 条件收紧状态."""
     if s.mnemonic != "jump":
@@ -159,7 +152,6 @@ def _edge(state, s, taken):
     if bn is not None and _name(a):
         return _refine(state, cond, _name(a), bn, taken)
     return state
-
 
 def _counter_targets(s, i, st, n):
     """Possible jump targets of a statement that writes @counter."""
@@ -186,7 +178,6 @@ def _counter_targets(s, i, st, n):
     sign = 1 if kind == "add" else -1
     return [base + sign * x for x in range(v[0], v[1] + 1)]
 
-
 def _transfer(s, i, st):
     out = dict(st)
     m = s.mnemonic
@@ -207,7 +198,6 @@ def _transfer(s, i, st):
     if m == "sensor" and defs:
         out[defs[0]] = None
     return out
-
 
 def analyse(prog: mlogir.Program):
     """前向区间分析 (Gauss-Seidel 扫描). entry[i] = {var: (lo,hi) | None}."""
@@ -253,7 +243,6 @@ def analyse(prog: mlogir.Program):
             break
     return entry
 
-
 def cmd_ranges(path, var_filter=None):
     prog = mlogir.parse(Path(path).read_text(encoding="utf-8-sig"))
     entry = analyse(prog)
@@ -272,7 +261,6 @@ def cmd_ranges(path, var_filter=None):
         print(f"L{i:<3} {body}")
     return 0
 
-
 def _dispatch(s):
     if s.mnemonic != "op":
         return None
@@ -289,7 +277,6 @@ def _dispatch(s):
         if var:
             return ("add", var, 1)
     return None
-
 
 def cmd_jumps(path, max_enum=MAX_ENUM, var_filter=None):
     prog = mlogir.parse(Path(path).read_text(encoding="utf-8-sig"))
@@ -323,7 +310,6 @@ def cmd_jumps(path, max_enum=MAX_ENUM, var_filter=None):
         print("no @counter arithmetic found")
     return 0
 
-
 def main(argv):
     if len(argv) < 3 or argv[1] not in ("ranges", "jumps"):
         print(__doc__)
@@ -338,7 +324,6 @@ def main(argv):
     if cmd == "ranges":
         return cmd_ranges(path, var)
     return cmd_jumps(path, max_enum, var)
-
 
 if __name__ == "__main__":
     raise SystemExit(main(sys.argv))

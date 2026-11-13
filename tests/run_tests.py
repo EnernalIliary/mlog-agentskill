@@ -45,7 +45,6 @@ TOOLS = HERE.parent / "mindustry-blueprint" / "tools"
 ROOT = HERE.parent
 sys.path.insert(0, str(TOOLS))
 
-
 def _mirror_stale_reason() -> str | None:
     """Why is this suite about to grade stale code?  None = fine.
 
@@ -75,14 +74,11 @@ import mlogir as I             # noqa: E402
 import mlogpack as P           # noqa: E402
 import mlogval as V            # noqa: E402
 
-
 def _lines(name: str) -> list[str]:
     return (CASES / name).read_text("utf-8").splitlines()
 
-
 def _prepared(name: str) -> list[tuple[int, str]]:
     return C.prepare(_lines(name))
-
 
 # --------------------------------------------------------------------------- #
 # Each digest_* returns JSON-able data. Keep them small and semantic: if a
@@ -93,13 +89,11 @@ def digest_check(name: str) -> list:
     st = _prepared(name)
     return [[f.sev, f.line] for f in C.analyse([c for _, c in st])]
 
-
 def digest_check_msg(name: str) -> list:
     """First 40 chars of each message -- catches a finding changing its *kind*
     (signature vs error) without pinning the whole wording."""
     st = _prepared(name)
     return [[f.sev, f.line, f.msg[:40]] for f in C.analyse([c for _, c in st])]
-
 
 def digest_check_rid(name: str) -> list:
     """(severity, statement line, rule id) -- pins the *classification*, not wording.
@@ -112,7 +106,6 @@ def digest_check_rid(name: str) -> list:
     st = _prepared(name)
     return [[f.sev, f.line, f.rid] for f in C.analyse([c for _, c in st])]
 
-
 def digest_check_nolinks(name: str) -> list:
     """Same as digest_check_rid, but links=[] -- the corpus case.
 
@@ -123,7 +116,6 @@ def digest_check_nolinks(name: str) -> list:
     """
     st = _prepared(name)
     return [[f.sev, f.line, f.rid] for f in C.analyse([c for _, c in st], links=[])]
-
 
 def digest_ir(name: str) -> dict:
     """Dead code / dead stores, reported as **1-based file lines**.
@@ -142,14 +134,12 @@ def digest_ir(name: str) -> dict:
             "labels": prog.labels,
             "writes_counter": prog.writes_counter()}
 
-
 def digest_values(name: str) -> dict:
     prog = I.parse(_lines(name))
     a = V.analyze(prog)
     return {"rounds": a.rounds, "stable": a.stable,
             "branches": [[ln, verdict, str(v)] for ln, verdict, v in a.branches],
             "nulls": sorted(a.nulls)}
-
 
 def digest_pack(name: str) -> dict:
     prog = I.parse(_lines(name))
@@ -162,12 +152,10 @@ def digest_pack(name: str) -> dict:
         for s in sites],
         "peels": [[p.line, p.value, p.lowbit] for p in peels]}
 
-
 def digest_gate(name: str) -> dict:
     floor, users = C.build_floor(_prepared(name))
     return {"floor": floor, "users": users, "baseline": C.BASELINE_BUILD,
             "reports": floor > C.BASELINE_BUILD}
-
 
 def digest_cost(name: str) -> dict:
     """Pull the numbers a human actually checks; the prose can change."""
@@ -191,7 +179,6 @@ def digest_cost(name: str) -> dict:
     if unreachable:
         out["unreachable"] = unreachable
     return out
-
 
 def digest_cross_values() -> dict:
     """`values` fed by `cross`: a read of a constant slot folds to that constant.
@@ -218,13 +205,11 @@ def digest_cross_values() -> dict:
                     "x": str(fed.after.get(0, {}).get("x")),
                     "y": str(fed.after.get(2, {}).get("y"))}}
 
-
 def digest_odd() -> dict:
     """Fullwidth punctuation in a name (the IME-typo check, `ir`-level)."""
     import mlog
     prog = I.parse(_lines("oddname.mlog"))
     return {"odd": {k: v for k, v in mlog.odd_names(prog).items()}}
-
 
 def digest_cross_unit() -> dict:
     """Cross-processor analysis on hand-built units -- no .msch needed.
@@ -247,7 +232,6 @@ def digest_cross_unit() -> dict:
             "constant": sorted((r.name, str(v)) for r, v in rep.exact),
             "dead_writes": sorted(s.name for s in rep.dead_writes)}
 
-
 def digest_selftest() -> dict:
     """The corpus round-trip is *not* duplicated here.
 
@@ -257,7 +241,6 @@ def digest_selftest() -> dict:
     from.
     """
     return {}
-
 
 # name -> (kind, file-or-None, digest fn)
 SUITE: list[tuple[str, str, str | None]] = [
@@ -270,6 +253,19 @@ SUITE: list[tuple[str, str, str | None]] = [
     # 0 links + >200 statements = a fragment cropped out of a larger base: the
     # block-shaped name is INFO (link-name-unbound-fragment), not WARN.
     ("check/link-unbound-fragment", "check_nolinks", "link-unbound-fragment.mlog"),
+    # A never-assigned name in a numeric slot reads as 0 (INFO); the same name
+    # in an object slot hands null to the instruction (ERR) -- ref m07644.
+    ("check/undefined-var-num-slot", "check_rid", "undefined-var-num-slot.mlog"),
+    # radar/uradar take no count: the 6th operand is a sort direction, so a
+    # number > 1 there is the shape the old doc taught (radar-takes-no-count).
+    ("check/radar-count-misuse", "check_rid", "radar-count-misuse.mlog"),
+    ("check/radar-count-ok", "check_rid", "radar-count-ok.mlog"),
+    # `jump 3` counts STATEMENTS, not lines: label lines and blank lines do not
+    # take a slot, so a hand-counted number re-points itself the moment anything
+    # above it changes. 0-based index of the jump is 1; the label version of the
+    # same program is silent.
+    ("check/numeric-jump", "check_rid", "numeric-jump.mlog"),
+    ("check/numeric-jump-ok", "check", "numeric-jump-ok.mlog"),
     ("ir/labels-resolved",     "ir",      "label.mlog"),
     ("ir/odd-name",            "odd",     None),
     ("ir/stale-write",        "ir",      "stale.mlog"),
@@ -296,6 +292,13 @@ SUITE: list[tuple[str, str, str | None]] = [
     # A hyphenated name the program assigns is a legal variable; a hyphen
     # inside a quoted string is not a name at all. Neither may be reported.
     ("check/link-hyphen-ok",  "check",   "link-hyphen-ok.mlog"),
+    # A link name is the block's LAST name segment plus a 1-based index, and the
+    # game rewrites anything else when the save loads (m00622: `sw1` came back as
+    # `switch1`, so the switch read null and looked dead).  A stem that is merely
+    # the beginning of a block name (`sw1`, `core1`) can never bind: WARN with its
+    # own rid, not silence -- and a real base (`switch1`, `cell1`) stays quiet.
+    ("check/link-base-mismatch", "check_rid", "link-base-wrong.mlog"),
+    ("check/link-base-ok",       "check",     "link-base-ok.mlog"),
     # `sensor` reads LAccess attributes; an item/block name there reads null.
     ("check/sensor-not-prop", "check",   "sensor-not-prop.mlog"),
     # The effect slot of `status` is a literal content name, not a variable
@@ -322,6 +325,12 @@ SUITE: list[tuple[str, str, str | None]] = [
     # the line with an InvalidStatement (a noop), the destination variable stays
     # null and nothing says why. Eight-token line, one ERR, nothing else.
     ("check/op-long-unknown", "check_msg", "op-long-unknown.mlog"),
+    # v0.13.2: a statement no jump can reach is a finding now, not just a line
+    # in the cost report. The positive fixture has `jump loop always` in front of
+    # a `control shootp ... null 0`, i.e. the statement that turns a turret off;
+    # the counter-example does the same loop with labels and stays silent.
+    ("check/unreachable",      "check",   "unreachable-statement.mlog"),
+    ("check/loop-labels-ok",   "check",   "loop-labels-ok.mlog"),
     ("tool/aigenerated",       "aigenerated", None),
     ("gen/normalized",         "gen",     None),
     ("tool/mcp",               "mcp",     None),
@@ -355,13 +364,16 @@ def digest_aigenerated() -> dict:
         out["verify_forced"], _ = run("verify", str(p))
         out["strip"], _ = run("strip", str(p))
 
-        # placement: reuse the compare slot of an existing unconditional jump
+        # placement: reuse the compare slot of an existing unconditional jump.
+        # v0.14.2: the `end` behind such a jump can never run, so signing drops it
+        # (mlogcheck would report it as an unreachable statement) -- the token line
+        # is therefore the LAST line now, and no `end` survives.
         j = Path(d) / "slot.mlog"
         j.write_text("set x 1\njump 27 always 0\nend\n", "utf-8", newline="\n")
         out["slot_sign"], _ = run("sign", str(j))
         sl = j.read_text(encoding="utf-8").splitlines()
-        out["slot_line"] = sl[-2]
-        out["slot_end_kept"] = sl[-1].strip() == "end"
+        out["slot_line"] = sl[-1]
+        out["slot_end_kept"] = any(l.strip() == "end" for l in sl)
         # placement: no end -> append terminal jump 0
         t = Path(d) / "term.mlog"
         t.write_text("set x 1\nprint x\n", "utf-8", newline="\n")
@@ -402,7 +414,6 @@ def digest_aigenerated() -> dict:
                 encoding="utf-8")
     return out
 
-
 def digest_gen() -> dict:
     """`gen` must normalise schematic coordinates and strip a source BOM.
 
@@ -433,7 +444,6 @@ def digest_gen() -> dict:
         out["first_line"] = sch.logic_tiles()[0].logic.code.splitlines()[0]
     return out
 
-
 def digest_mcp() -> dict:
     """The MCP server must hand out the tool list and serve real results."""
     out: dict = {}
@@ -463,7 +473,6 @@ def digest_mcp() -> dict:
         p.wait(timeout=10)
     return out
 
-
 DIGESTS = {
     "gate": digest_gate, "check": digest_check, "check_msg": digest_check_msg,
     "check_rid": digest_check_rid, "check_nolinks": digest_check_nolinks,
@@ -475,7 +484,6 @@ DIGESTS = {
     "mcp": lambda _f: digest_mcp(),
     "odd": lambda _f: digest_odd(),
 }
-
 
 def run(only: str | None) -> dict:
     out = {}
@@ -493,7 +501,6 @@ def run(only: str | None) -> dict:
             out[label] = {"kind": kind, "case": case,
                           "error": f"{type(exc).__name__}: {exc}"}
     return out
-
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
@@ -554,15 +561,20 @@ def main() -> int:
             print(f"      expected {a!r}")
             print(f"      got      {b!r}")
 
+    # A case that disappeared from the suite is a failure, not a note: otherwise
+    # "delete the case that broke" is a green path past the whole gate.
     missing = sorted(set(want) - set(got))
     for label in missing:
+        bad += 1
         print(f"STALE {label}  (in expected.json, no longer in the suite)")
+    if missing:
+        print("      restoring the case or dropping its expected.json entry are the"
+              " only two honest fixes")
 
     total = len(got)
     print(f"\n{total - bad}/{total} passed" + ("" if not missing else
                                                f", {len(missing)} stale"))
     return 1 if bad else 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

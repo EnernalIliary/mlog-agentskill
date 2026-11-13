@@ -35,13 +35,11 @@ RETRIES = 3
 
 _last = [0.0]
 
-
 def _throttle() -> None:
     wait = RATE - (time.time() - _last[0])
     if wait > 0:
         time.sleep(wait)
     _last[0] = time.time()
-
 
 def _request(path: str, params: dict | None = None, raw: bool = False) -> bytes:
     url = BASE + path
@@ -66,10 +64,8 @@ def _request(path: str, params: dict | None = None, raw: bool = False) -> bytes:
             time.sleep(1.5 * (attempt + 1) ** 2)
     raise RuntimeError(f"GET {url} failed after {RETRIES} tries: {last_err}")
 
-
 def _json(path: str, params: dict | None = None):
     return json.loads(_request(path, params).decode("utf-8"))
-
 
 def list_maps(search: str | None = None, begin: int | str | None = None) -> list[dict]:
     """One page of the map list. `begin` is the site's own cursor (it sent the
@@ -77,18 +73,14 @@ def list_maps(search: str | None = None, begin: int | str | None = None) -> list
     data = _json("/maps/list", {"begin": begin, "search": search})
     return data if isinstance(data, list) else []
 
-
 def detail(map_id: int | str) -> dict:
     return _json(f"/maps/{map_id}.json")
 
-
 IPFS = "https://ipfs.mindustry.top"
-
 
 class _NoRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         return None                       # stop at the 302 and read Location
-
 
 def _ipfs_url(map_id: int | str) -> str:
     """The api host stores blobs on ipfs and 302s to their gateway."""
@@ -104,7 +96,6 @@ def _ipfs_url(map_id: int | str) -> str:
             return loc
         raise RuntimeError(f"GET /maps/{map_id}.msav -> HTTP {e.code}") from e
 
-
 def _unwrap(body: bytes) -> bytes:
     """Some uploads are stored zlib/gzip-compressed behind the same `.msav` URL."""
     for wbits in (zlib.MAX_WBITS, zlib.MAX_WBITS | 32):
@@ -115,7 +106,6 @@ def _unwrap(body: bytes) -> bytes:
         if out.startswith(b"MSAV"):
             return out
     return body
-
 
 def download(map_id: int | str, dest: Path) -> Path:
     """Fetch one .msav. The slow part is the IPFS gateway, not the api host."""
@@ -138,12 +128,10 @@ def download(map_id: int | str, dest: Path) -> Path:
             time.sleep(2.0 * (attempt + 1) ** 2)
     raise RuntimeError(f"GET {url} failed after {RETRIES} tries: {last_err}")
 
-
 def _fmt(m: dict) -> str:
     tags = " ".join(m.get("tags") or [])
     return (f"{m.get('id'):>6}  {m.get('mode','?'):<7} {m.get('width',0):>4}x{m.get('height',0):<4} "
             f"{m.get('name','')[:40]:<40} | {tags}")
-
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="map_site.py", description=__doc__.splitlines()[0])
@@ -196,7 +184,6 @@ def main(argv: list[str] | None = None) -> int:
         dest = download(mid, out / f"mindustrytop-{mid}.msav")
         print(f"{dest}  {dest.stat().st_size} B")
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

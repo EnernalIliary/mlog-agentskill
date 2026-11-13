@@ -6,7 +6,6 @@ whenToUse: 涉及 Mindustry 蓝图（.msch / 蓝图码）、mlog 逻辑编写或
 
 # Mindustry 蓝图与 mlog 工具链
 
-
 ## 60 秒上手（第一次用先跑这条）
 
 ```bash
@@ -58,7 +57,6 @@ python tools/mlog.py doctor
 - 环境要求（分享给别人之前先看这段）
 - 参考数据
 - 关键事实速查
-
 
 | `ucontrol move x y` 是 **4 个字段** | 语句对象有 6 个槽、`LExecutor` 无条件转换 `p1..p3`，但 `move` 只读 `x,y`（`approach` 才读第三个当半径）；`pathfind` 同理。别照编辑器补的 `0 0 0` 数参数 |
 | 一元算子多写一个操作数不算错 | `op floor a b`、`op sin y angle 90` —— 多出来的 token 被 `LParser` 丢弃，运行时无影响，只算 INFO。但 `op sin` 吃弧度，写 `90` 往往说明作者以为是角度 |
@@ -775,12 +773,11 @@ python tools/review.py ingest && python tools/review.py stats
 - **重写清单前会先把上一份 md 里填过的判定读回来**，所以可以反复 `run`/`md`，判定不会丢。
 - 只有 `build`（重新扫描）会换行 id；这时候先 `ingest` 再 `build`，否则旧判定对不上新 id。
 
-
 分析器说的每一句「这行有问题」，都该能追到一条**有证据、有反例**的规则；
 而每条规则都该能被一个人判成「对 / 错 / 不知道」。
 
 ```bash
-python tools/rule_capture.py list            # 25 条规则，带实测命中数
+python tools/rule_capture.py list            # 39 条规则，带实测命中数
 python tools/rule_capture.py lint -v         # schema + 反例必须不命中
 python tools/rule_audit.py --dir out/maps    # 按规则统计噪声 → out/rule_audit_maps.md
 python tools/review.py build --dir out/maps  # 压成可判的行 → out/audit_rows.json
@@ -801,7 +798,6 @@ python tools/review.py ingest                # 把 md 里填的 ok/bad/unsure/sk
 - **kind**：`semantics`（游戏就是这样，禁止自动降级）/ `heuristic`（统计，可降级）/ `negative`（看着像错其实对，用来挡住想写的规则）。
 - **单向棘轮**：降级（WARN→INFO）可以让机器提议，升级永远要人点头。
 - 判词只有四个：`ok` / `bad` / `unsure` / `skip`。`bad` 攒够了就说明规则该删或该收窄。
-
 
 ## 参考数据
 

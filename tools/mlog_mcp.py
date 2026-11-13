@@ -121,7 +121,6 @@ TOOLS = [
 _SRV = None
 _SRV_KEY = None
 
-
 def _server(save: str | None):
     global _SRV, _SRV_KEY
     key = save or ""
@@ -138,7 +137,6 @@ def _server(save: str | None):
     _SRV_KEY = key
     return _SRV
 
-
 def _programs(path: str):
     p = Path(path)
     if p.suffix.lower() == ".msch":
@@ -150,7 +148,6 @@ def _programs(path: str):
                    [l.name for l in t.logic.links])
     else:
         yield path, p.read_text(encoding="utf-8-sig").split("\n"), None
-
 
 def tool_doctor(_args):
     root = HERE.parent
@@ -173,7 +170,6 @@ def tool_doctor(_args):
         ],
     }
 
-
 def tool_check(args):
     out = []
     for label, lines, names in _programs(args["path"]):
@@ -189,7 +185,6 @@ def tool_check(args):
             out[-1]["cost"] = _check.cost_report(_check.prepare(lines), names)[:4000]
     return out
 
-
 def tool_ir(args):
     out = []
     for label, lines, names in _programs(args["path"]):
@@ -203,7 +198,6 @@ def tool_ir(args):
         })
     return out
 
-
 def tool_values(args):
     out = []
     for label, lines, names in _programs(args["path"]):
@@ -212,7 +206,6 @@ def tool_values(args):
         out.append({"program": label,
                     "report": _val.format_report(label, prog, st)[:5000]})
     return out
-
 
 def tool_gen(args):
     root = HERE.parent
@@ -237,7 +230,6 @@ def tool_gen(args):
     return {"blueprint_base64": code,
             "binary": args.get("out"),
             "stderr": (p.stderr or "").strip()[:500]}
-
 
 def _sim_subprocess(args):
     """Advanced options (units/save/core) go through the CLI so behaviour stays
@@ -273,7 +265,6 @@ def _sim_subprocess(args):
     rec = (data.get("results") or [data])[0]
     return rec
 
-
 def tool_sim(args):
     path = args.get("path")
     logic = args.get("logic")
@@ -306,7 +297,6 @@ def tool_sim(args):
         "links": rec.get("links", []),
     }
 
-
 HANDLERS = {
     "mlog_doctor": tool_doctor,
     "mlog_check": tool_check,
@@ -316,7 +306,6 @@ HANDLERS = {
     "mlog_sim": tool_sim,
 }
 
-
 def _reply(rid, result=None, error=None):
     msg = {"jsonrpc": "2.0", "id": rid}
     if error is not None:
@@ -325,7 +314,6 @@ def _reply(rid, result=None, error=None):
         msg["result"] = result
     sys.stdout.write(json.dumps(msg, ensure_ascii=False) + "\n")
     sys.stdout.flush()
-
 
 def handle(req):
     method = req.get("method")
@@ -361,7 +349,6 @@ def handle(req):
         return
     return _reply(rid, error={"code": -32601, "message": f"method not found: {method}"})
 
-
 def main():
     for line in sys.stdin:
         line = line.strip()
@@ -373,7 +360,6 @@ def main():
         except Exception:
             traceback.print_exc(file=sys.stderr)
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

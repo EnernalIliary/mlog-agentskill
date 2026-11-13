@@ -32,7 +32,6 @@ DEFAULT_OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "item_ids
 # `copper = new Item("copper", ...)`  /  `copper = new Item("copper")`
 CONSTRUCT = re.compile(r'(\w+)\s*=\s*new\s+Item\s*\(\s*"([^"]+)"')
 
-
 def load_body(src: str) -> str:
     """Extract the text of `public static void load(){ ... }`."""
     text = open(src, encoding="utf-8").read()
@@ -51,7 +50,6 @@ def load_body(src: str) -> str:
         i += 1
     return text[start:i - 1]
 
-
 def derive(src: str) -> dict[int, str]:
     body = load_body(src)
     out: dict[int, str] = {}
@@ -59,7 +57,6 @@ def derive(src: str) -> dict[int, str]:
         # sanity: the field name should match the constructor name
         out[idx] = mm.group(2)
     return out
-
 
 def main() -> int:
     args = [a for a in sys.argv[1:] if not a.startswith("-")]
@@ -90,7 +87,6 @@ def main() -> int:
     for k, v in sorted(items.items()):
         print(f"{k:>3}  {v}")
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

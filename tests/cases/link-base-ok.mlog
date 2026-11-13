@@ -1,0 +1,7 @@
+# counter example for link-name-base-mismatch: every stem below is a block
+# name's LAST segment, so the name can bind (`switch1`, `cell1`, `bank1`).
+sensor x switch1 @enabled
+read c cell1 0
+write c bank1 1 0
+printflush message1
+end

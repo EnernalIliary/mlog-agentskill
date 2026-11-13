@@ -40,7 +40,6 @@ from pathlib import Path
 MEM_PER_WORKER_MB = 192.0
 CPU_RESERVE = 2
 
-
 def _meminfo_windows() -> tuple[int, int] | None:
     try:
         import ctypes
@@ -66,7 +65,6 @@ def _meminfo_windows() -> tuple[int, int] | None:
     except Exception:
         return None
 
-
 def _meminfo_linux() -> tuple[int, int] | None:
     try:
         info = {}
@@ -76,7 +74,6 @@ def _meminfo_linux() -> tuple[int, int] | None:
         return info.get("MemTotal"), info.get("MemAvailable")
     except Exception:
         return None
-
 
 def sysinfo() -> dict:
     """Cores plus memory in MB. Never raises -- unknown fields come back None."""
@@ -89,7 +86,6 @@ def sysinfo() -> dict:
         "total_mb": total,
         "avail_mb": avail,
     }
-
 
 def pick_workers(
     n_items: int,
@@ -118,7 +114,6 @@ def pick_workers(
     )
     return workers, note
 
-
 def order_by_size(items: list) -> list:
     """Biggest first, so the slow tail starts early instead of finishing late."""
     def size(x):
@@ -129,13 +124,11 @@ def order_by_size(items: list) -> list:
 
     return sorted(items, key=size, reverse=True)
 
-
 def _size_mb(x) -> float:
     try:
         return os.path.getsize(x) / 2**20
     except OSError:
         return 0.0
-
 
 def _pool(fn, items, workers: int, label: str, progress: bool, stall_s: float) -> list:
     """Run one batch; returns results in ``items`` order."""
@@ -168,7 +161,6 @@ def _pool(fn, items, workers: int, label: str, progress: bool, stall_s: float) -
                 print(f"  {label} {done}/{len(items)}  still running: {names}", flush=True)
                 last_report = now
     return out
-
 
 def run(
     fn,
@@ -246,7 +238,6 @@ def run(
         print(f"  {name}: {len(items)} item(s) in {el:.1f}s ({len(items) / max(el, 1e-6):.1f}/s)", flush=True)
     return results
 
-
 def main(argv: list[str]) -> int:
     import argparse
 
@@ -264,7 +255,6 @@ def main(argv: list[str]) -> int:
     print(f"workers    : {workers}")
     print(f"because    : {note}")
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main(sys.argv[1:]))

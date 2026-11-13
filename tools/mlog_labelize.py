@@ -41,7 +41,6 @@ import mlogir  # noqa: E402
 LABEL_RE = re.compile(r"^\s*[A-Za-z_][\w.\-]*:\s*$")
 JUMP_RE = re.compile(r"^(\s*jump\s+)(-?\d+)(\s+.*)?$", re.I)
 
-
 def split_lines(text: str):
     """Return (lines, kinds, stmt_index) where kind is blank/comment/label/stmt."""
     text = text.replace("\r\n", "\n").replace("\r", "\n")
@@ -62,7 +61,6 @@ def split_lines(text: str):
             idx += 1
     return lines, kinds, idx
 
-
 def existing_label_above(lines, kinds, line_no: int) -> str | None:
     """Label on the line directly above (skipping blanks only)."""
     j = line_no - 1
@@ -71,7 +69,6 @@ def existing_label_above(lines, kinds, line_no: int) -> str | None:
     if j >= 0 and kinds[j][0] == "label":
         return lines[j].strip().rstrip(":")
     return None
-
 
 def labelize(text: str, prefix: str = "L"):
     lines, kinds, total = split_lines(text)
@@ -117,7 +114,6 @@ def labelize(text: str, prefix: str = "L"):
             out.append(name)
         out.append(line)
     return "\n".join(out) + "\n", total, len(jumps), sorted(set(names.values()))
-
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="convert numeric jump targets to labels")
@@ -172,7 +168,6 @@ def main(argv=None) -> int:
         if r.returncode:
             return r.returncode
     return 0
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

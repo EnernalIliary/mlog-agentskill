@@ -1,0 +1,171 @@
+{
+  "slot-not-in-enum": [
+    "bool-param-zero.mlog",
+    "radar-filter-swapped.mlog",
+    "slot-enum-ext.mlog",
+    "slot-enum.mlog",
+    "under-arity-radar.mlog"
+  ],
+  "bool-param-constantly-zero": [
+    "bool-param-zero.mlog",
+    "slot-enum-ext.mlog"
+  ],
+  "constant-null-guard": [
+    "const-null-guard.mlog"
+  ],
+  "numeric-jump": [
+    "const-null-guard.mlog",
+    "counter-op.mlog",
+    "jump-range.mlog",
+    "label-index.mlog",
+    "numeric-jump.mlog",
+    "reactor-guard-impact-ok.mlog",
+    "reactor-guard-impact.mlog",
+    "reactor-guard-ok.mlog",
+    "reactor-guard-slow.mlog",
+    "reactor-guard-unknown.mlog",
+    "slot-enum-ext.mlog",
+    "virus-logic-clean.mlog"
+  ],
+  "unreachable-statement": [
+    "counter-op.mlog",
+    "counter-set.mlog",
+    "jump-range.mlog",
+    "label-index.mlog",
+    "unreachable-statement.mlog"
+  ],
+  "self-read-undefined": [
+    "declared-by-mention.mlog",
+    "self-readwrite.mlog"
+  ],
+  "version-gate": [
+    "gate-emod.mlog",
+    "gate1.mlog",
+    "select-gate.mlog"
+  ],
+  "noop-means-version-drift": [
+    "gate1.mlog"
+  ],
+  "undefined-var-read": [
+    "index-only-summary.mlog",
+    "pack1.mlog",
+    "slot-enum-ext.mlog",
+    "status-effect-slot.mlog",
+    "undefined-var-num-slot.mlog",
+    "undefined-var-read.mlog",
+    "virus-logic-clean.mlog"
+  ],
+  "undefined-jump-location": [
+    "jump-missing-label.mlog"
+  ],
+  "jump-target-out-of-range": [
+    "jump-range.mlog"
+  ],
+  "jump-to-jump-chain": [
+    "label-index.mlog"
+  ],
+  "link-name-not-bound": [
+    "link-base-ok.mlog",
+    "link-base-wrong.mlog",
+    "link-hyphen-ok.mlog",
+    "link-hyphen.mlog",
+    "loop-labels-ok.mlog",
+    "reactor-guard-impact-ok.mlog",
+    "reactor-guard-impact.mlog",
+    "reactor-guard-ok.mlog",
+    "reactor-guard-slow.mlog",
+    "reactor-guard-unknown.mlog",
+    "slot-enum-ext.mlog",
+    "slot-enum-ok.mlog",
+    "slot-enum.mlog",
+    "surplus-slot.mlog",
+    "under-arity-control.mlog",
+    "under-arity-ok.mlog",
+    "unreachable-statement.mlog",
+    "val3.mlog"
+  ],
+  "link-name-base-mismatch": [
+    "link-base-wrong.mlog",
+    "loop-labels-ok.mlog",
+    "unreachable-statement.mlog"
+  ],
+  "link-name-hyphen": [
+    "link-hyphen.mlog"
+  ],
+  "link-shaped-variable": [
+    "link-shaped-var.mlog"
+  ],
+  "link-name-unbound-fragment": [
+    "link-unbound-fragment.mlog"
+  ],
+  "unknown-op": [
+    "op-long-unknown.mlog"
+  ],
+  "link-name-unbindable": [
+    "printflush-clears.mlog",
+    "sensor-not-prop.mlog",
+    "sensor-not-property.mlog",
+    "slot-enum.mlog"
+  ],
+  "printflush-clears-buffer": [
+    "printflush-clears.mlog"
+  ],
+  "privileged-var-needs-world-processor": [
+    "privileged-var.mlog"
+  ],
+  "radar-takes-no-count": [
+    "radar-count-misuse.mlog"
+  ],
+  "under-arity": [
+    "radar-filter-swapped.mlog",
+    "under-arity-control.mlog",
+    "under-arity-radar.mlog"
+  ],
+  "impact-reactor-cap-is-not-protection": [
+    "reactor-guard-impact.mlog"
+  ],
+  "reactor-guard-response-time": [
+    "reactor-guard-slow.mlog"
+  ],
+  "reactor-link-name-proves-nothing": [
+    "reactor-guard-unknown.mlog"
+  ],
+  "self-write-noop": [
+    "self-readwrite.mlog"
+  ],
+  "sensor-content-not-a-property": [
+    "sensor-not-prop.mlog"
+  ],
+  "sensor-not-a-property": [
+    "sensor-not-property.mlog"
+  ],
+  "spin-deadlock": [
+    "spin.mlog"
+  ],
+  "status-effect-slot": [
+    "status-at-prefix.mlog",
+    "status-effect-slot.mlog"
+  ],
+  "surplus-parameter-is-not-an-error": [
+    "surplus-slot.mlog"
+  ],
+  "ubind-missing": [
+    "ubind-missing.mlog"
+  ],
+  "ulocate-flag-invalid": [
+    "ulocate-flag.mlog"
+  ],
+  "ulocate-outbuild-discarded": [
+    "ulocate-flag.mlog",
+    "ulocate-outbuild.mlog"
+  ],
+  "ulocate-outxy-discarded": [
+    "ulocate-outxy.mlog"
+  ],
+  "unknown-instruction": [
+    "unknown-instruction.mlog"
+  ],
+  "virus-logic": [
+    "virus-logic.mlog"
+  ]
+}

@@ -1,0 +1,8 @@
+# `sw1` can never bind: the game builds a link's name from a block's LAST name
+# segment plus a 1-based index (`switch1`), and rewrites anything else when the
+# save loads -- so this sensor reads null forever (m00622).
+sensor x sw1 @enabled
+# `core1` likewise: the core blocks are named core-shard/core-zone/..., so the
+# only possible link names are shard1, zone1, ...
+sensor y core1 @copper
+end
